@@ -5,4 +5,4 @@ venv
 .vscode
 
 # ignore data/pickle directory for now
-data/graph_pickle
+data/graph_pickle/**
