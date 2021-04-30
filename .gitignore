@@ -1,0 +1,7 @@
+# ignore virtual env
+venv
+
+# ignore vscode
+.vscode
+
+# ignore data directory for now
