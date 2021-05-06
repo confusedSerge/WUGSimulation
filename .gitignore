@@ -4,5 +4,8 @@ venv
 # ignore vscode
 .vscode
 
-# ignore data/pickle directory for now
-data/graph_pickle/**
+# ignore data for now
+data
+
+# ignor doc folder
+doc

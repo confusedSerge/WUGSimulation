@@ -72,14 +72,14 @@ class GraphDrawer:
     def draw_graph(self, edge_label_flag: bool = False, save_flag: bool = False, path: str = None):
         #
         pos = nx.spring_layout(self.G, k=1/(len(self.G.nodes)))
-        plt.figure(figsize=(20, 20))
+        plt.figure(figsize=(50, 50))
 
         # just ehhhh
         options = {"node_size": 500, "alpha": 0.8}
 
         for k, v in self.community_node_labels_dic.items():
             nx.draw_networkx_nodes(
-                self.G, pos, nodelist=v, node_color=self.node_mapper_color.get(k, 'w'), node_shape=self.node_mapper_shape.get(k, '8'), **options)
+                self.G, pos, nodelist=v, node_color=self.node_mapper_color[k % len(self.node_mapper_color)], node_shape=self.node_mapper_shape[k % len(self.node_mapper_shape)], **options)
 
         for k, v in self.weight_edge_dic.items():
             nx.draw_networkx_edges(
