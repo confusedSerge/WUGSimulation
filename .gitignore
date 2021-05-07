@@ -9,3 +9,6 @@ data
 
 # ignor doc folder
 doc
+
+#ignore pycache
+__pycache__

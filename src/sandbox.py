@@ -1,18 +1,16 @@
-import graph_sim as gs
 import graph_plot as gp
-from datetime import datetime
 
-gss = gs.GraphSimulatorSamplerFactory().add_ul_bound_nodes(200, 500).add_ul_bound_communities(2, 10).add_dist_binomial(3, 3, 0.9, 0.9).build_graph_simulator_sampler()
+from true_graph.true_graph_sampler import TrueGraphSampler
 
-for _ in range(5):
-    graph, info = gss.sample_graph(True)
+graph_generator = TrueGraphSampler(100, [*range(1, 11)], ('log', [0.99]), ['binomial', 3, 0.9]).sample_graph_generator()
 
-    number_nodes, number_communities, node_com, distribution = info
-    now = datetime.now()
-    stmp = now.strftime("%Y%m%d%H%M%S%f")
+drawer = gp.GraphDrawer()
+for graph in graph_generator:
+    nx_graph = graph.get_nx_graph_rep()
+    drawer.draw_graph(nx_graph)
 
-    # graph.save_graph('./data/graph_pickle/nodes_{}_communities_{}_bin_{}_{}_stmp_{}'.format(number_nodes, number_communities, distribution.tries, distribution.probability, stmp))
+# graph = TrueGraphSampler((1, 1000), (1, 10), ('log', [0.99]), ['binomial', 3, 0.9]).sample_graph()
+# drawer = gp.GraphDrawer()
 
-    drawer = gp.GraphDrawer()
-    drawer.draw_graph_from_graph_sim(graph, save_flag=True, path='./data/figs/nodes_{}_communities_{}_bin_{}_{}_stmp_{}.png'.format(number_nodes, number_communities, distribution.tries, distribution.probability, stmp))
-
+# nx_graph = graph.get_nx_graph_rep()
+# drawer.draw_graph(nx_graph)
