@@ -117,7 +117,7 @@ class TrueGraphSampler:
     # TODO Fix that params solution, its not nice
     def _log_distribute_communities(self, num_nodes, num_communities, params):
         """
-        TODO: Fix Problem with std_dev close to 1 adding too many edges to first community 
+        TODO: Fix Problem with std_dev close to 1 adding too many nodes to first community 
 
         Uses a lognorm probability density to calculate the sizes of each community
         """

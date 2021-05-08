@@ -1,4 +1,4 @@
-import graph_plot as gp
+import visualization.graph_plot as gp
 
 from true_graph.true_graph_sampler import TrueGraphSampler
 

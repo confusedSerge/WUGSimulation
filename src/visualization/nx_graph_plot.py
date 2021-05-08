@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from true_graph.true_graph import TrueGraph
 
 class GraphDrawer:
+    # TODO: Should probably not be a class
 
     def __init__(self):
         self.community_node_labels_dic = {}
@@ -27,9 +28,9 @@ class GraphDrawer:
 
     def draw_graph(self, G: nx.Graph, edge_label_flag: bool = False, save_flag: bool = False, path: str = None):
         #
-        pos = nx.spring_layout(G, scale=20)
+        pos = nx.spring_layout(G, scale=50)
         # pos = nx.spring_layout(G, k=1/(len(G.nodes)), scale=20)
-        plt.figure(figsize=(200, 200))
+        plt.figure(figsize=(250, 250))
 
         # just ehhhh
         options = {"node_size": 250, "alpha": 0.8}
