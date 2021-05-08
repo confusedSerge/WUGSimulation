@@ -35,17 +35,17 @@ class GraphDrawer:
         # just ehhhh
         options = {"node_size": 250, "alpha": 0.8}
 
-        for k, v in G.graph['community_node_labels_dic'].items():
+        for k, v in G.graph['community_node'].items():
             nx.draw_networkx_nodes(
                 G, pos, nodelist=v, node_color=self.node_mapper_color[k % len(self.node_mapper_color)], node_shape=self.node_mapper_shape[k % len(self.node_mapper_shape)], **options)
 
-        for k, v in reversed(G.graph['weight_edge_dic'].items()):
+        for k, v in reversed(G.graph['weight_edge'].items()):
             nx.draw_networkx_edges(
                 G, pos, edgelist=v, edge_color=self.edge_mapper_color.get(k, 'w'), label=k)
 
         if edge_label_flag:
             nx.draw_networkx_edge_labels(
-                G, pos=pos, edge_labels=G.graph['edge_weight_label_dic'])
+                G, pos=pos, edge_labels=G.graph['edge_weight'])
 
         if save_flag:
             if path == None:

@@ -37,34 +37,34 @@ class TrueGraph:
         """
         # Builds weighted edge list, edge-weight dict, and weight-edges dict
         edge_list = []
-        edge_weight_label_dic = {}
-        weight_edge_dic = {}
+        edge_weight = {}
+        weight_edge = {}
 
         for i in range(len(self.G)):
             for j in range(i + 1, len(self.G)):
                 edge_list.append((i, j, int(self.G[i][j])))
-                edge_weight_label_dic[(i, j)] = int(self.G[i][j])
+                edge_weight[(i, j)] = int(self.G[i][j])
 
-                if weight_edge_dic.get(int(self.G[i][j]), None) == None:
-                    weight_edge_dic[int(self.G[i][j])] = []
-                weight_edge_dic[int(self.G[i][j])].append((i, j))
+                if weight_edge.get(int(self.G[i][j]), None) == None:
+                    weight_edge[int(self.G[i][j])] = []
+                weight_edge[int(self.G[i][j])].append((i, j))
 
         # init new graph
-        nx_graph = nx.Graph()
+        nx_graph = nx.Graph(directed=False)
         nx_graph.add_weighted_edges_from(edge_list)
 
         # save edge/weight dicts
-        nx_graph.graph['edge_weight_label_dic'] = edge_weight_label_dic
-        nx_graph.graph['weight_edge_dic'] = weight_edge_dic
+        nx_graph.graph['edge_weight'] = edge_weight
+        nx_graph.graph['weight_edge'] = weight_edge
 
         # community-node dict
-        community_node_labels_dic = {}
+        community_node = {}
         for node_id, label in enumerate(self.labels):
-            if community_node_labels_dic.get(label, None) == None:
-                community_node_labels_dic[label] = []
-            community_node_labels_dic[label].append(node_id)
+            if community_node.get(label, None) == None:
+                community_node[label] = []
+            community_node[label].append(node_id)
 
-        nx_graph.graph['community_node_labels_dic'] = community_node_labels_dic
+        nx_graph.graph['community_node'] = community_node
 
         # add rest of information
         nx_graph.graph['number_nodes'] = self.number_nodes
