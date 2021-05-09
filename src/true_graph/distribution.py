@@ -45,3 +45,6 @@ class Binomial(Distribution):
 
     def get_dist_param_dict(self) -> dict:
         return self.probability_dict
+
+    def __str__(self):
+        return 'binomial({}, {})'.format(self.tries, self.probability)

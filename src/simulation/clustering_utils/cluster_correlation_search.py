@@ -11,7 +11,7 @@ import networkx as nx
 import numpy as np
 from scipy.stats import spearmanr
 from networkx.algorithms.dag import transitive_closure
-# WARNING: mlrose has broken import, using mlrose_hiive
+# WARNING: mlrose has broken imports, using mlrose_hiive
 # import mlrose
 import mlrose_hiive as mlrose
 
@@ -86,7 +86,7 @@ def cluster_correlation_search(G, s=10, max_attempts=200, max_iters=5000):
             G.nodes()), fitness_fn=conflict_loss_cust, maximize=False, max_val=max_val)
 
         schedule = mlrose.ExpDecay()
-        best_state, best_fitness = mlrose.simulated_annealing(
+        best_state, best_fitness, fitness_curve = mlrose.simulated_annealing(
             problem, schedule=schedule, max_attempts=max_attempts, max_iters=max_iters)
 
         l2s[best_fitness].append((best_state, max_val))

@@ -20,7 +20,7 @@ def random_sampling(tG: TrueGraph, params: dict) -> list:
     Args:
         :param tG: TrueGraph to sample
         :param sample_size: number of edges to sample
-        :param sampled_edge_list: sampled edges with weights as [(u, v, w)...]
+        :return sampled_edge_list: sampled edges with weights as [(u, v, w)...]
     
     """
     assert type(tG) == TrueGraph

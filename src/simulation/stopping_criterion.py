@@ -8,6 +8,7 @@ All method signatures should look like this:
 Each stopping criterion function should only return a boolean, that indicates, if the criterion is reached  
 """
 
+
 def cluster_connected(sG: SimulationGraph, params: dict) -> bool:
     """
     Cluster connectivity as described in paper:
@@ -22,6 +23,7 @@ def cluster_connected(sG: SimulationGraph, params: dict) -> bool:
         :param min_num_edges: minimum number of edges between clusters, 
             can be int for number of edges, or 'fully' for fully connected clusters; default = 1
         :param min_size_one_cluster: int at which this function considers the only cluster as big enough
+        :return flag: if stopping criterion is met
     """
     cluster_min_size = params.get('cluster_min_size', 5)
     assert type(cluster_min_size) == int
@@ -29,18 +31,19 @@ def cluster_connected(sG: SimulationGraph, params: dict) -> bool:
     min_num_edges = params.get('min_num_edges', 1)
     assert type(min_num_edges) == int or min_num_edges == 'fully'
 
-    min_size_one_cluster = params.get('min_size_one_cluster', len(sG.G.nodes()))
+    min_size_one_cluster = params.get(
+        'min_size_one_cluster', len(sG.G.nodes()))
     assert type(min_size_one_cluster) == int
 
     # communities = dict(map(lambda kv: (kv[0], kv[1]) if len(kv[1]) >= 10 else None, sG.self.G.graph['communities'].items()))
     communities = []
-    for k, v in sG.self.G.graph['communities'].items():
+    for k, v in sG.G.graph['community_node'].items():
         if len(v) >= cluster_min_size:
             communities.append(v)
 
     if len(communities) == 0:
         return False
-        
+
     if len(communities) == 1:
         return len(communities[0]) >= min_size_one_cluster
 
@@ -48,7 +51,9 @@ def cluster_connected(sG: SimulationGraph, params: dict) -> bool:
 
     for i in range(len(communities)):
         for j in range(i + 1, len(communities)):
-            min_connections = min_num_edges if min_num_edges != 'fully' else len(communities[i]) * len(communities[j]) 
-            flag = flag and check_connectivity_two_clusters(sG.G.edges(), communities[i], communities[j], min_num_edges)
+            min_connections = min_num_edges if min_num_edges != 'fully' else len(
+                communities[i]) * len(communities[j])
+            flag = flag and check_connectivity_two_clusters(
+                sG.G.edges(), communities[i], communities[j], min_connections)
 
     return flag

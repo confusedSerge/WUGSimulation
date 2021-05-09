@@ -25,6 +25,9 @@ def simulation(tG: TrueGraph, max_iter: int = 500, save_flag: bool = False, save
         :param stopping_criterion: function to use as stopping criterion
         :param stopping_params: params as dict for stopping criterion
     """
+    if len(params) == 1:
+        params = params['params']
+
     sampling_strategy = params.get('sampling_strategy', None)
     assert type(sampling_strategy) != None
     
@@ -59,11 +62,22 @@ def simulation(tG: TrueGraph, max_iter: int = 500, save_flag: bool = False, save
             sG.update_community_membership(clusters)
 
         # stopping criterion
-        if stopping_criterion(sG, stopping_criterion):
+        if stopping_criterion(sG, stopping_params):
             break
+
+    sG.update_graph_attributes()
 
     return (tG, sG)
 
 
+def simulation_with_tG_generator(tGs, max_iter: int = 500, save_flag: bool = False, save_path: str = None, **params) -> list:
+    """
+    See documentation simulation.
+    It only differs in the True Graph input, as now a generator for tG is expected.
+    """
+    results = []
+    for tG in tGs:
+        results.append(simulation(tG, max_iter, save_flag, save_path, params=params))
 
+    return results
 

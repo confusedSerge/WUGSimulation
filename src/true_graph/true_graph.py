@@ -69,6 +69,7 @@ class TrueGraph:
         # add rest of information
         nx_graph.graph['number_nodes'] = self.number_nodes
         nx_graph.graph['communities'] = self.communities
+        nx_graph.graph['community_sizes'] = [(com_id, len(v)) for com_id, v in nx_graph.graph['community_node'].items()]
         nx_graph.graph['distribution'] = self.distribution
 
         return nx_graph

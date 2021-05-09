@@ -30,4 +30,12 @@ def correlation_clustering(sG: SimulationGraph, params: dict) -> dict:
     max_iters = params.get('max_iters', 500)
     assert type(max_iters) == int
 
-    return cluster_correlation_search(G=sG.get_nx_graph_with_pos_neg_edges(), s=s, max_attempts=max_attempts, max_iters=max_iters)
+    clusters = cluster_correlation_search(G=sG.get_nx_graph_with_soft_pos_neg_edges(), s=s, max_attempts=max_attempts, max_iters=max_iters)
+    # clusters = cluster_correlation_search(G=sG.get_nx_graph_with_hard_pos_neg_edges(), s=s, max_attempts=max_attempts, max_iters=max_iters)
+    # clusters = cluster_correlation_search(G=sG.G, s=s, max_attempts=max_attempts, max_iters=max_iters)
+
+    community_node = {}
+    for cluster_id, cluster in enumerate(clusters):
+        community_node[cluster_id] = list(cluster)
+
+    return community_node

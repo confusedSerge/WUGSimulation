@@ -1,5 +1,6 @@
 import networkx as nx
 import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
 
 from true_graph.true_graph import TrueGraph
 
@@ -30,22 +31,28 @@ class GraphDrawer:
         #
         pos = nx.spring_layout(G, scale=50)
         # pos = nx.spring_layout(G, k=1/(len(G.nodes)), scale=20)
-        plt.figure(figsize=(250, 250))
+        
+        px = 1/plt.rcParams['figure.dpi'] 
+        plt.figure(figsize=(800*px, 800*px))
 
         # just ehhhh
         options = {"node_size": 250, "alpha": 0.8}
 
         for k, v in G.graph['community_node'].items():
             nx.draw_networkx_nodes(
-                G, pos, nodelist=v, node_color=self.node_mapper_color[k % len(self.node_mapper_color)], node_shape=self.node_mapper_shape[k % len(self.node_mapper_shape)], **options)
+                G, pos, nodelist=v, node_color=self.node_mapper_color[k % len(self.node_mapper_color)], node_shape=self.node_mapper_shape[k % len(self.node_mapper_shape)], label=len(v), **options)
 
         for k, v in reversed(G.graph['weight_edge'].items()):
             nx.draw_networkx_edges(
-                G, pos, edgelist=v, edge_color=self.edge_mapper_color.get(k, 'w'), label=k)
+                G, pos, edgelist=v, edge_color=self.edge_mapper_color.get(k, 'w'))
 
         if edge_label_flag:
             nx.draw_networkx_edge_labels(
                 G, pos=pos, edge_labels=G.graph['edge_weight'])
+
+        plt.legend(title='Legend', scatterpoints=1)
+        plt.figtext(.12, .02, 'Distribution: {}\nNumber of Nodes: {}\nNumber of Communities: {}'.format(G.graph['distribution'], G.graph['number_nodes'], G.graph['communities']))
+
 
         if save_flag:
             if path == None:

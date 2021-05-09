@@ -8,7 +8,8 @@ class SimulationGraph():
         self.G = nx.Graph(directed=False)
 
         # differently weighted edges
-        self.G.graph['mvd_edges'] = []
+        self.G.graph['soft_mvd_edges'] = []
+        self.G.graph['hard_mvd_edges'] = []
 
         # community/node dict
         self.G.graph['community_node'] = {}
@@ -19,6 +20,7 @@ class SimulationGraph():
 
         self.G.graph['number_nodes'] = 0
         self.G.graph['communities'] = 0
+        self.G.graph['community_sizes'] = []
         self.G.graph['distribution'] = 'simulated'
 
     def add_edge(self, node_u: int, node_v: int, weight: int):
@@ -30,8 +32,11 @@ class SimulationGraph():
             assert len(edge) == 3
 
         self.G.add_weighted_edges_from(edge_list)
-        self.G.graph['mvd_edges'].extend(
+        
+        self.G.graph['soft_mvd_edges'].extend(
             list(map(lambda w: (w[0], w[1], w[2] - 2.5), edge_list)))
+        self.G.graph['hard_mvd_edges'].extend(
+            list(map(lambda w: (w[0], w[1], (w[2] - 2.5) * 2), edge_list)))
 
         # update edge/weight dicts
         for u, v, w in edge_list:
@@ -41,7 +46,6 @@ class SimulationGraph():
     def update_community_membership(self, community_node: dict):
         assert type(community_node) == dict
         self.G.graph['community_node'] = community_node
-        self.G.graph['communities'] = len(self.G.graph['community_node'])
 
     def update_graph_attributes(self):
         for k, v in self.G.graph['edge_weight'].items():
@@ -51,9 +55,18 @@ class SimulationGraph():
 
         self.G.graph['number_nodes'] = len(self.G.nodes())
 
-    def get_nx_graph_with_pos_neg_edges(self) -> nx.Graph:
+        self.G.graph['communities'] = len(self.G.graph['community_node'])
+        self.G.graph['community_sizes'] = [(com_id, len(v)) for com_id, v in self.G.graph['community_node'].items()]
+
+    def get_nx_graph_with_soft_pos_neg_edges(self) -> nx.Graph:
         nx_graph = nx.Graph(directed=False)
-        nx_graph.add_weighted_edges_from(self.G.graph['mvd_edges'])
+        nx_graph.add_weighted_edges_from(self.G.graph['soft_mvd_edges'])
+
+        return nx_graph
+
+    def get_nx_graph_with_hard_pos_neg_edges(self) -> nx.Graph:
+        nx_graph = nx.Graph(directed=False)
+        nx_graph.add_weighted_edges_from(self.G.graph['hard_mvd_edges'])
 
         return nx_graph
 
@@ -68,3 +81,8 @@ class SimulationGraph():
             graph = pickle.load(file)
         file.close()
         return graph
+
+    def __str__(self):
+        return "number_nodes: {} \ncommunities: {} \ncommunity_sizes: {}".format(
+            self.G.graph['number_nodes'], self.G.graph['communities'],
+            [(com_id, len(v)) for com_id, v in self.G.graph['community_node'].items()])
