@@ -57,3 +57,38 @@ def cluster_connected(sG: SimulationGraph, params: dict) -> bool:
                 sG.G.edges(), communities[i], communities[j], min_connections)
 
     return flag
+
+
+def number_edges_found(sG: SimulationGraph, params: dict) -> bool:
+    """
+    Rather simple stopping criterion, where if an number of edges has been discovered,
+    this returns true.
+    This means, if the simulation graph contains at least n edges, it returns true, else false.
+    Args:
+        :param sG: SimulationGraph to check on
+        :param num_edges: number of edges that sG should contain
+        :return flag: if sG contains the number of edges
+    """
+    number_edges = params.get('number_edges', None)
+    assert type(number_edges) == int
+
+    return sG.G.graph['number_edges'] >= number_edges
+
+
+def percentage_edges_found(sG: SimulationGraph, params: dict) -> bool:
+    """
+    Rather simple stopping criterion, where if the simulation graph contains a certaint percentage of edges
+    this returns true.
+    Args:
+        :param sG: SimulationGraph to check on
+        :param percentage: percentage of edges that sG should contain
+        :param num_edges: number of max edges
+        :return flag: if sG contains the percentage of edges
+    """
+    percentage = params.get('percentage', None)
+    assert type(percentage) == float    
+    
+    number_edges = params.get('number_edges', None)
+    assert type(number_edges) == int
+
+    return sG.G.graph['number_edges'] >= (percentage * number_edges)

@@ -52,6 +52,7 @@ class TrueGraph:
         # init new graph
         nx_graph = nx.Graph(directed=False)
         nx_graph.add_weighted_edges_from(edge_list)
+        nx_graph.graph['number_edges'] = len(nx_graph.edges())
 
         # save edge/weight dicts
         nx_graph.graph['edge_weight'] = edge_weight

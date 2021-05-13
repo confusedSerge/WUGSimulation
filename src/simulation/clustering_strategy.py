@@ -13,7 +13,6 @@ def correlation_clustering(sG: SimulationGraph, params: dict) -> dict:
     This clustering implementation uses the clustering algorithm mentioned in:
         'Word Usage Graphs (WUGs):Measuring Changes in Patterns of Contextual Word Meaning'
     
-    # TODO returns more clusters than s! Correct?
     Args:
         :param sG: SimulationGraph where to find clusters
         :param s: maximal number of senses a word can have

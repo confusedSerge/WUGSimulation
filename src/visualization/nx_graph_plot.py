@@ -51,7 +51,7 @@ class GraphDrawer:
                 G, pos=pos, edge_labels=G.graph['edge_weight'])
 
         plt.legend(title='Legend', scatterpoints=1)
-        plt.figtext(.12, .02, 'Distribution: {}\nNumber of Nodes: {}\nNumber of Communities: {}'.format(G.graph['distribution'], G.graph['number_nodes'], G.graph['communities']))
+        plt.figtext(.12, .02, 'Distribution: {}\nNumber of Nodes: {}\nNumber of Edges: {}\nNumber of Communities: {}'.format(G.graph['distribution'], G.graph['number_nodes'], G.graph['number_edges'], G.graph['communities']))
 
 
         if save_flag:

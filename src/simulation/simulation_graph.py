@@ -6,6 +6,7 @@ class SimulationGraph():
 
     def __init__(self):
         self.G = nx.Graph(directed=False)
+        self.labels = []
 
         # differently weighted edges
         self.G.graph['soft_mvd_edges'] = []
@@ -19,6 +20,7 @@ class SimulationGraph():
         self.G.graph['weight_edge'] = {}
 
         self.G.graph['number_nodes'] = 0
+        self.G.graph['number_edges'] = 0
         self.G.graph['communities'] = 0
         self.G.graph['community_sizes'] = []
         self.G.graph['distribution'] = 'simulated'
@@ -43,9 +45,14 @@ class SimulationGraph():
             u, v = sorted([u, v])
             self.G.graph['edge_weight'][(u, v)] = w
 
+        self.G.graph['number_edges'] = len(self.G.edges)
+
     def update_community_membership(self, community_node: dict):
         assert type(community_node) == dict
         self.G.graph['community_node'] = community_node
+        self.G.graph['communities'] = len(self.G.graph['community_node'])
+        self.G.graph['community_sizes'] = [(com_id, len(v)) for com_id, v in self.G.graph['community_node'].items()]
+
 
     def update_graph_attributes(self):
         for k, v in self.G.graph['edge_weight'].items():
@@ -54,6 +61,7 @@ class SimulationGraph():
             self.G.graph['weight_edge'][v].append(k)
 
         self.G.graph['number_nodes'] = len(self.G.nodes())
+        self.G.graph['number_edges'] = len(self.G.edges())
 
         self.G.graph['communities'] = len(self.G.graph['community_node'])
         self.G.graph['community_sizes'] = [(com_id, len(v)) for com_id, v in self.G.graph['community_node'].items()]
@@ -69,6 +77,18 @@ class SimulationGraph():
         nx_graph.add_weighted_edges_from(self.G.graph['hard_mvd_edges'])
 
         return nx_graph
+
+    def get_label_list(self, size: int) -> list:
+        label = [-1]*size
+        for k, v in self.G.graph['community_node'].items():
+            for node in v:
+                label[node] = k
+        for i in range(len(label)):
+            if label[i] == -1:
+                k + 1
+                label[i] = k
+
+        return label
 
     def save_graph(self, path: str):
         with open(path, "xb") as file:
