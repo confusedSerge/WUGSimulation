@@ -14,6 +14,9 @@ class Distribution:
     def get_dist_param_dict(self) -> dict:
         raise NotImplementedError
 
+    def __str__(self):
+        raise NotImplementedError
+
 
 class Binomial(Distribution):
 
@@ -47,4 +50,4 @@ class Binomial(Distribution):
         return self.probability_dict
 
     def __str__(self):
-        return 'binomial({}, {})'.format(self.tries, self.probability)
+        return 'Binomial({}, {})'.format(self.tries, self.probability)

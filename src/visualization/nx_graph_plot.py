@@ -2,7 +2,7 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 
-from true_graph.true_graph import TrueGraph
+from graphs.wu_graph import WUGraph
 
 class GraphDrawer:
     # TODO: Should probably not be a class
