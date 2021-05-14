@@ -28,6 +28,9 @@ def simulation(trueGraph: BaseGraph, simulationGraph: BaseGraph, max_iter: int =
             and if maximal iteration was hit
     """
     # ===Guard Phase===
+    assert isinstance(trueGraph, BaseGraph)
+    assert isinstance(simulationGraph, BaseGraph)
+
     if len(params) == 1:
         params = params['params']
 

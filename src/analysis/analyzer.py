@@ -16,7 +16,7 @@ def analyze(trueGraph: BaseGraph, simulatedGraph: BaseGraph, **params) -> dict:
         :param tG: True Graph
         :param sG: predicted/simulated graph
         :param **params: metrics to use
-        :res: predicted/simulated graph
+        :return res: predicted/simulated graph
     """
 
     result = {}

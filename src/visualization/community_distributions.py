@@ -16,6 +16,8 @@ def community_distribution(graph: BaseGraph, name: str, directory: str, combine:
         :param directory: where plots will be saved 
         :param combine: if plots should also be combined to one img containing all plots 
     """
+    assert isinstance(graph, BaseGraph)
+
     # ===Find communities===
     in_communities = _calc_distribution_in_communities(
         graph.get_community_nodes(), graph.G.edges(), graph.get_edge_weight())

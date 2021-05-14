@@ -23,7 +23,7 @@ def random_sampling(trueGraph: BaseGraph, params: dict) -> list:
         :return sampled_edge_list: sampled edges with weights as [(u, v, w)...]
     
     """
-    assert type(trueGraph) == BaseGraph
+    assert isinstance(trueGraph, BaseGraph)
 
     sample_size = params.get('sample_size', None)
     assert sample_size != None and type(sample_size) == int

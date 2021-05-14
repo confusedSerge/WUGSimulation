@@ -18,6 +18,7 @@ class WUSimulationGraph(BaseGraph):
 
         # Max number of nodes
         self._max_nodes = max_nodes
+        self.labels = [-1] * self._max_nodes
 
         # differently weighted edges. Need to be addressed through params in functions
         self.G.graph['edge_soft_weight'] = {}  # only important for wug
@@ -70,8 +71,8 @@ class WUSimulationGraph(BaseGraph):
             self.G.graph['edge_soft_weight'][(u, v)] = w - 2.5
 
             if self.G.graph['weight_edge'].get(w, None) == None:
-                self.G.graph['weight_edge'][v] = []
-            self.G.graph['weight_edge'][v].append((u, v))
+                self.G.graph['weight_edge'][w] = []
+            self.G.graph['weight_edge'][w].append((u, v))
 
     def get_nx_graph_copy(self, weight: str) -> nx.Graph:
         """
@@ -84,8 +85,7 @@ class WUSimulationGraph(BaseGraph):
         assert type(weights) != None and type(weights) == dict
 
         graph = nx.Graph()
-        graph.add_edges_from(
-            list(map(lambda k: (*k[0], k[1]), weights.items())))
+        graph.add_weighted_edges_from(list(map(lambda k: (*k[0], k[1]), weights.items())))
 
         return graph
 
@@ -100,10 +100,9 @@ class WUSimulationGraph(BaseGraph):
         self.G.graph['community_nodes'] = new_community_nodes
 
         # -1 resembles that this node is not yet in the graph
-        label = [-1] * self._max_nodes
         for k, v in self.G.graph['community_nodes'].items():
             for node in v:
-                label[node] = k
+                self.labels[node] = k
 
     def __str__(self):
         return 'Distribution: {}\nNumber of Nodes: {}\nNumber of Edges: {}\nNumber of Communities: {}'\

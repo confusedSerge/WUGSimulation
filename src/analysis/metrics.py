@@ -59,7 +59,7 @@ def accuracy(trueGraph: BaseGraph, simulatedGraph: BaseGraph, params: dict) -> f
     return contingency_matrix[row_ind, col_ind].sum() / np.sum(contingency_matrix)
 
 
-def jensen_shannon_distance(trueGraph: BaseGraph, simulatedGraph: BaseGraph, params: dict) -> float:
+def inverse_jensen_shannon_distance(trueGraph: BaseGraph, simulatedGraph: BaseGraph, params: dict) -> float:
     """
     Calculates the Jensen Shannon Distance between two clustered graphs
 
@@ -78,4 +78,4 @@ def jensen_shannon_distance(trueGraph: BaseGraph, simulatedGraph: BaseGraph, par
     for _ in range(len(tG_cluster_prob), len(sG_cluster_prob)):
         tG_cluster_prob.append(0.0)
 
-    return jensenshannon(tG_cluster_prob, sG_cluster_prob, base=2)
+    return 1 - jensenshannon(tG_cluster_prob, sG_cluster_prob, base=2)

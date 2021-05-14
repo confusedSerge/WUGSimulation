@@ -26,7 +26,7 @@ def correlation_clustering(simulationGraph: BaseGraph, params: dict) -> dict:
     assert type(s) == int    
     
     weights = params.get('weights', 'edge_weight')
-    assert type(s) == str
+    assert type(weights) == str
 
     max_attempts = params.get('max_attempts', 200)
     assert type(max_attempts) == int
