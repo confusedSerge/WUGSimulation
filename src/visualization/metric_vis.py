@@ -5,8 +5,7 @@ import matplotlib.pyplot as plt
 This module contains various visualizations for metrics
 """
 
-
-def bar_metric(labels, title: str, y_label: str, save_flag: bool = False, save_path: str = None, **metrics):
+def bar_metric(labels, title: str, y_label: str, save_flag: bool = False, save_path: str = None, **metrics) -> None:
     """
     Creates a bar plot containing len(labels) seperated bargraph-groups, 
         where the nth bargraph-group contains the nth metric 
@@ -43,7 +42,7 @@ def bar_metric(labels, title: str, y_label: str, save_flag: bool = False, save_p
     else:
         plt.show()
 
-def line_ploter(steps, title: str, x_label: str, y_label: str, save_flag: bool = False, save_path: str = None, **data):
+def line_ploter(steps, title: str, x_label: str, y_label: str, save_flag: bool = False, save_path: str = None, **data) -> None:
     """
     Creates a line plot of the data 
     Args:

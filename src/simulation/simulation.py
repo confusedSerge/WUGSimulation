@@ -1,5 +1,4 @@
-from true_graph.true_graph import TrueGraph
-from simulation.simulation_graph import SimulationGraph
+from graphs.base_graph import BaseGraph
 
 """
 This module contains different simulations and can be extended to new ones.
@@ -7,14 +6,14 @@ This module contains different simulations and can be extended to new ones.
 
 """
 
-def simulation(tG: TrueGraph, sG: SimulationGraph = None, max_iter: int = 500, save_flag: bool = False, save_path: str = None, **params) -> (TrueGraph, SimulationGraph, bool):
+def simulation(trueGraph: BaseGraph, simulationGraph: BaseGraph, max_iter: int = 500, save_flag: bool = False, save_path: str = None, **params) -> (BaseGraph, BaseGraph, bool):
     """
     Runs the simulation for the given iterations.
     Every iteration consists of a sampling phase, clustering (optional) phase, and checking the stopping criterion.
 
     Args:
         :param tG: True Graph used for sampling
-        :param sG: Simulation graph, if provided continues the simulation based on this graph
+        :param simulationGraph: Simulation graph, if provided starts/continues the simulation based on this graph
         :param max_iter: maximal iterations to prevent non ending simulations, default 500 iterations
         :param save_flag: if results should be saved
         :param save_path: path to save to
@@ -28,6 +27,7 @@ def simulation(tG: TrueGraph, sG: SimulationGraph = None, max_iter: int = 500, s
         :return tuple: returns a tuple containing the simulation graph, the true graph used, 
             and if maximal iteration was hit
     """
+    # ===Guard Phase===
     if len(params) == 1:
         params = params['params']
 
@@ -51,37 +51,35 @@ def simulation(tG: TrueGraph, sG: SimulationGraph = None, max_iter: int = 500, s
     
     stopping_params = params.get('stopping_params', None)
     assert type(stopping_params) == dict
-
-    if sG == None:
-        sG = SimulationGraph()
+    # ===Guard Phase===
 
     for _ in range(max_iter):
         # sampling phase
-        sampled_edges = sampling_strategy(tG, sampling_params)
-        sG.add_edges(sampled_edges)
+        sampled_edges = sampling_strategy(trueGraph, sampling_params)
+        simulationGraph.add_edges(sampled_edges)
 
         # clustering phase
         if clustering_flag:
-            clusters = clustering_strategy(sG, clustering_params)
-            sG.update_community_membership(clusters)
+            clusters = clustering_strategy(simulationGraph, clustering_params)
+            simulationGraph.update_community_nodes_membership(clusters)
 
         # stopping criterion
-        if stopping_criterion(sG, stopping_params):
+        if stopping_criterion(simulationGraph, stopping_params):
             break
 
-    sG.update_graph_attributes()
-
-    return (tG, sG, _ + 1 >= max_iter)
+    return (trueGraph, simulationGraph, _ + 1 >= max_iter)
 
 
-def simulation_with_tG_generator(tGs, max_iter: int = 500, save_flag: bool = False, save_path: str = None, **params) -> list:
+def simulation_with_tG_generator(trueGraphs, simulationGraphClass, max_iter: int = 500, save_flag: bool = False, save_path: str = None, **params) -> list:
     """
     See documentation simulation.
-    It only differs in the True Graph input, as now a generator for tG is expected.
+    The big difference is, that this function takes in an BaseGraph generator 
+        and for each simulation creates a new simulationGraph based on the class given
     """
     results = []
-    for tG in tGs:
-        results.append(simulation(tG, max_iter, save_flag, save_path, params=params))
+    for trueGraph in trueGraphs:
+        simulationGraph = simulationGraphClass()
+        results.append(simulation(trueGraph, simulationGraph, max_iter, save_flag, save_path, params=params))
 
     return results
 

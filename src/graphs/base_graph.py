@@ -2,6 +2,13 @@ import pickle
 import networkx as nx
 
 class BaseGraph():
+    """
+    Base Graph for this framework.
+    All graph-classes should inherit from this class, 
+        as this class implements the bare minimum functionality,
+        that a graphs needs to work with the current framework.
+    Thus also allowing for new graphs to be used with this framework! 
+    """
 
     def __init__(self):
         self.G = nx.Graph(directed=False)
@@ -16,10 +23,10 @@ class BaseGraph():
 
 
     # Edge functionality
-    def get_edge(self, u_node: int, v_node: int) -> int:
+    def get_edge(self, u_node: int, v_node: int) -> float:
         raise NotImplementedError
 
-    def add_edge(self, node_u: int, node_v: int, weight: int) -> None:
+    def add_edge(self, node_u: int, node_v: int, weight: float) -> None:
         raise NotImplementedError
 
     def add_edges(self, edge_list: list) -> None:
@@ -35,11 +42,23 @@ class BaseGraph():
     def get_number_communities(self) -> int:
         return len(self.G.graph['community_nodes'])
 
-    def get_community_sizes(self) -> int:
+    def get_community_sizes(self) -> list:
         return [len(v) for k, v in self.G.graph['community_nodes'].items()]
+
+    def get_edge_weight(self) -> dict: 
+        return self.G.graph['edge_weight']
+
+    def get_weight_edge(self) -> dict: 
+        return self.G.graph['weight_edge']
+
+    def get_community_nodes(self) -> dict: 
+        return self.G.graph['community_nodes']
 
     # util functions
     def update_community_nodes_membership(self, new_community_nodes: dict) -> None:
+        raise NotImplementedError
+
+    def get_nx_graph_copy(self, weight: str) -> nx.Graph:
         raise NotImplementedError
 
     def save_graph(self, path: str):

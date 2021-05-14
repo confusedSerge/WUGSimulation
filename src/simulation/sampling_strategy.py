@@ -1,6 +1,6 @@
 import random
 
-from true_graph.true_graph import TrueGraph
+from graphs.base_graph import BaseGraph
 
 """
 This module contains different sampling function and can be extended to new ones.
@@ -10,7 +10,7 @@ Each sampling function should return a list of sampled edges
 """
 
 
-def random_sampling(tG: TrueGraph, params: dict) -> list:
+def random_sampling(trueGraph: BaseGraph, params: dict) -> list:
     """
     Random sampling. 
     As described in TACL paper 'Word Usage Graphs (WUGs):Measuring Changes in Patterns of Contextual Word Meaning'
@@ -23,7 +23,7 @@ def random_sampling(tG: TrueGraph, params: dict) -> list:
         :return sampled_edge_list: sampled edges with weights as [(u, v, w)...]
     
     """
-    assert type(tG) == TrueGraph
+    assert type(trueGraph) == BaseGraph
 
     sample_size = params.get('sample_size', None)
     assert sample_size != None and type(sample_size) == int
@@ -31,7 +31,7 @@ def random_sampling(tG: TrueGraph, params: dict) -> list:
     sampled_edge_list = []
 
     for i in range(sample_size):
-        u, v = sorted(random.sample(range(1,len(tG.G)), 2))
-        sampled_edge_list.append((u, v, tG.sample_edge(u, v)))
+        u, v = sorted(random.sample(range(1,len(trueGraph.G)), 2))
+        sampled_edge_list.append((u, v, trueGraph.get_edge(u, v)))
 
     return sampled_edge_list

@@ -7,16 +7,18 @@ from graphs.distribution import Distribution
 from graspologic.simulations import sbm
 
 
-# TODO typing
-# TODO good documentation
-
 class WUGraph(BaseGraph):
 
     def __init__(self, communities: int, communities_probability: list = None, distribution: Distribution = None):
-        super().__init__()
+        """
+        WUG class.
 
-        # TODO: find out structure
-        # labels[node] = community
+        Args:
+            :param communities: number of communities/word usages
+            :param communities_probability: probability of a connection inside/between community
+            :param distribution: used for creating weights between edges
+        """
+        super().__init__()
 
         self.adjacency_matrix, self.labels, self.communities_probability = self._gen_graph_from_params(
             communities, communities_probability, distribution)
@@ -81,9 +83,5 @@ class WUGraph(BaseGraph):
         ), wtargs=distribution.get_dist_param_dict(), return_labels=True), communities_probability
 
     def __str__(self):
-        return 'Distribution: {}\n  \
-            Number of Nodes: {}\n   \
-            Number of Edges: {}\n   \
-            Number of Communities: {}'\
-            .format(self.G.graph['distribution'], self.get_number_nodes(),
-                    self.get_number_edges(), self.get_number_communities())
+        return 'Distribution: {}\nNumber of Nodes: {}\nNumber of Edges: {}\nNumber of Communities: {}'\
+            .format(self.G.graph['distribution'], self.get_number_nodes(), self.get_number_edges(), self.get_number_communities())

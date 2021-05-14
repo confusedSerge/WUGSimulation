@@ -1,10 +1,11 @@
-# from visualization.nx_graph_plot import GraphDrawer
+from visualization.graph_visualization import draw_graph_graphviz
+from visualization.graph_visualization import draw_graph_spring
 from graphs.wu_graph_sampler import WUGraphSampler
 # from simulation.simulation import *
 # from simulation.sampling_strategy import random_sampling
 # from simulation.clustering_strategy import correlation_clustering
 # from simulation.stopping_criterion import percentage_edges_found
-# from visualization.community_distributions import community_distribution
+from visualization.community_distributions import community_distribution
 # from analysis.analyzer import analyze
 # from analysis.metrics import *
 
@@ -25,9 +26,10 @@ from graphs.wu_graph_sampler import WUGraphSampler
 
 graph = WUGraphSampler(100, 3, ('log', {'std_dev': 0.99}), [
                          'binomial', 3, 0.9]).sample_wug()
-# drawer = GraphDrawer()
 
-print(graph.labels)
+
+draw_graph_graphviz(graph)
+# community_distribution(graph, 'Test', 'data/figs/tmp', True)
 
 # print('started sim')
 # tG, sG, max_iter_flag = simulation(graph, max_iter=250,

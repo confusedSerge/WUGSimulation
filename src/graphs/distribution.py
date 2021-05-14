@@ -8,7 +8,7 @@ class Distribution:
     def get_distribution(self):
         raise NotImplementedError
 
-    def get_dist_param(self):
+    def get_dist_param(self) -> tuple:
         raise NotImplementedError
 
     def get_dist_param_dict(self) -> dict:
@@ -43,8 +43,8 @@ class Binomial(Distribution):
     def get_distribution(self):
         return self.distribution
 
-    def get_dist_param(self):
-        return self.get_dist_param
+    def get_dist_param(self) -> tuple:
+        return (self.tries, self.probability)
 
     def get_dist_param_dict(self) -> dict:
         return self.probability_dict

@@ -13,3 +13,7 @@
 #     func2=[0.3, 0.4, 0.6, 0.6, 0.7, 0.7], 
 #     func3=[0.5, 0.9, 0.8, 0.9, 0.8, 0.9],
 #     func4=[0.2, 0.2, 0.3, 0.4, 0.3, 0.6])
+
+for i in range(len(['white', 'lightgray', 'darkgray', 'dimgray', 'black'])):
+    print(['white', 'lightgray', 'darkgray', 'dimgray', 'black'][i])
+    print(len('so^>v<dph8'))

@@ -11,6 +11,7 @@ class WUGraphSampler:
 
     def __init__(self, num_nodes, num_communities, size_communities, distribution):
         """
+        Creates a WUG sampler, from witch new WUGs can be sampled.
 
         Args:
             num_nodes :          n, number of nodes. Can be int (static size) or tuple (rand choose)
@@ -32,7 +33,10 @@ class WUGraphSampler:
         self.distribution_flag = distribution[0]
         self.distribution_data = distribution[1:]
 
-    def sample_wug(self):
+    def sample_wug(self) -> WUGraph:
+        """
+        Samples one new WUG
+        """
         # ===Guard & Parameter Build Phase===
         # setup number nodes
         nodes = self.num_nodes
@@ -71,6 +75,9 @@ class WUGraphSampler:
         return WUGraph(community_dispensation, distribution=distribution)
 
     def sample_wug_generator(self):
+        """
+        Returns a WUG generator for the given k parameter.
+        """
         # ===Guard & Parameter Build Phase===
         # setup number nodes
         nodes = self.num_nodes
@@ -117,7 +124,7 @@ class WUGraphSampler:
 
     # functions for building correct distribution
 
-    def _build_binomila_distr(self, number_communities, tries, probability):
+    def _build_binomila_distr(self, number_communities, tries, probability) -> Binomial:
         _tries = tries
         if (type(tries) == tuple):
             _tries = random.randint(*tries)

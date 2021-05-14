@@ -1,5 +1,3 @@
-
-
 def check_connectivity_two_clusters(edge_list: list, f_community: list, s_community: list, min_connections: int) -> bool:
     """
     Check if minimum connections between both communities.
