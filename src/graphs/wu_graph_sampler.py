@@ -155,10 +155,8 @@ class WUGraphSampler:
         assert type(params) == dict
         std_dev = params.get('std_dev', 0.5)
 
-        community_split = lognorm.pdf(np.linspace(
-            1, num_communities, num_communities), std_dev) * num_nodes
-        community_split = [int(x) if int(
-            x) > 0 else 1 for x in community_split]
+        community_split = lognorm.pdf(np.linspace(1, num_communities, num_communities), std_dev) * num_nodes
+        community_split = [int(x) if int(x) > 0 else 1 for x in community_split]
 
         community_split[0] += num_nodes - sum(community_split)
 
