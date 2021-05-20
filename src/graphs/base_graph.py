@@ -23,13 +23,13 @@ class BaseGraph():
 
 
     # Edge functionality
-    def get_edge(self, u_node: int, v_node: int) -> float:
+    def get_edge(self, u_node: int, v_node: int, **params) -> float:
         raise NotImplementedError
 
-    def add_edge(self, node_u: int, node_v: int, weight: float) -> None:
+    def add_edge(self, node_u: int, node_v: int, weight: float, **params) -> None:
         raise NotImplementedError
 
-    def add_edges(self, edge_list: list) -> None:
+    def add_edges(self, edge_list: list, **params) -> None:
         raise NotImplementedError
 
     # info functions

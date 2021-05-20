@@ -3,7 +3,7 @@ import numpy as np
 import networkx as nx
 
 from graphs.base_graph import BaseGraph
-from graphs.distribution import Distribution
+from graphs.utils.distribution import *
 from graspologic.simulations import sbm
 
 
@@ -29,7 +29,7 @@ class WUGraph(BaseGraph):
         # adding distribution info
         self.G.graph['distribution'] = distribution
 
-    def get_edge(self, u_node: int, v_node: int) -> int:
+    def get_edge(self, u_node: int, v_node: int, **params) -> int:
         return int(self.adjacency_matrix[u_node][v_node])
 
     def _build_nx_graph_rep(self) -> None:

@@ -26,7 +26,7 @@ class WUSimulationGraph(BaseGraph):
 
         self.G.graph['distribution'] = 'simulated'  # only important for wug
 
-    def get_edge(self, u_node: int, v_node: int) -> float:
+    def get_edge(self, u_node: int, v_node: int, **params) -> float:
         """
         Returns the weight of an edge between two nodes, if it is present.
 
@@ -37,9 +37,10 @@ class WUSimulationGraph(BaseGraph):
         """
         return self.G.graph['edge_weight'].get((u_node, v_node), None)
 
-    def add_edge(self, node_u: int, node_v: int, weight: float) -> None:
+    def add_edge(self, node_u: int, node_v: int, weight: float, **params) -> None:
         """
         Adds an edge to the graph.
+        # TODO Add possibility to add edges to specific weight dict
 
         Args:
             :param u_node: first node
@@ -48,7 +49,7 @@ class WUSimulationGraph(BaseGraph):
         """
         self.add_edges([(node_u, node_v, weight)])
 
-    def add_edges(self, edge_list: list) -> None:
+    def add_edges(self, edge_list: list, **params) -> None:
         """
         Adds an list of edges to the graph.
 

@@ -1,15 +1,20 @@
 import random
 import numpy as np
 
+from typing import List
+
 from scipy.stats import lognorm
 
-from graphs.distribution import *
+from graphs.utils.distribution import *
+from graphs.utils.annotator import Annotator
+
 from graphs.wu_graph import WUGraph
+from graphs.wu_annotator_graph import WUAnnotatorGraph
 
 
 class WUGraphSampler:
 
-    def __init__(self, num_nodes, num_communities, size_communities, distribution):
+    def __init__(self, num_nodes, num_communities, size_communities, distribution, annotators: List(Annotator) = None):
         """
         Creates a WUG sampler, from witch new WUGs can be sampled.
 
@@ -32,10 +37,26 @@ class WUGraphSampler:
         self.size_communities = size_communities
         self.distribution_flag = distribution[0]
         self.distribution_data = distribution[1:]
+        self.annotators = annotators if annotators != None else []
 
-    def sample_wug(self) -> WUGraph:
+    def sample_wug(self):
         """
-        Samples one new WUG
+        Samples a new WUG
+        """
+        community_dispensation, distribution = self._build_parameters()
+        return WUGraph(community_dispensation, distribution=distribution)
+
+    def sample_annotator_wug(self):
+        """
+        Samples a new annotator WUG
+        """
+        community_dispensation, distribution = self._build_parameters()
+        return WUAnnotatorGraph(community_dispensation, distribution=distribution, annotators=self.annotators)
+
+
+    def _build_parameters(self) -> WUGraph:
+        """
+        Builds a new (annotator) WUG
         """
         # ===Guard & Parameter Build Phase===
         # setup number nodes
@@ -72,7 +93,7 @@ class WUGraphSampler:
                 nodes, communities, params)
         # ===Guard & Parameter Build Phase End===
 
-        return WUGraph(community_dispensation, distribution=distribution)
+        return community_dispensation, distribution
 
     def sample_wug_generator(self):
         """
@@ -134,6 +155,25 @@ class WUGraphSampler:
             _probability = random.randint(*probability)
 
         return Binomial(_tries, _probability, number_communities)
+
+    # util functions
+
+    def add_annotator(self, annotator: Annotator) -> self:
+        """
+        Adds another annotator to the current list
+
+        Args:
+            :params annotator: Annotator to add
+            :returns: self
+        """
+        self.annotators.append(annotator)
+        return self
+
+    def remove_all_annotator(self) -> None:
+        """
+        Removes all Annotatos
+        """
+        self.annotators = []
 
     """
     Functions to dispensate nodes across communities
