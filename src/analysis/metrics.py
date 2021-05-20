@@ -1,6 +1,7 @@
 import numpy as np
 
 from graphs.base_graph import BaseGraph
+from analysis.utils.metrics_utils import clean_labels
 from sklearn import metrics
 from scipy.optimize import linear_sum_assignment
 from scipy.spatial.distance import jensenshannon
@@ -15,19 +16,21 @@ Each sampling function should return a list of sampled edges
 
 def adjusted_randIndex(trueGraph: BaseGraph, simulatedGraph: BaseGraph, params: dict) -> float:
     """
-    Calculates the adjusted RandIndex of two clustered graphs
+    Calculates the adjusted RandIndex of two clustered graphs, 
+        where only nodes of the simulated graph are considered.
 
     Args:
         :param tG: first graph
         :param sG: second graph
         :returns float: adjusted randIndex value
     """
-    return metrics.adjusted_rand_score(trueGraph.labels, simulatedGraph.labels)
+    return metrics.adjusted_rand_score(*clean_labels(trueGraph.labels, simulatedGraph.labels))
 
 
 def purity(trueGraph: BaseGraph, simulatedGraph: BaseGraph, params: dict) -> float:
     """
-    Calculates the purity of two clustered graphs
+    Calculates the purity of two clustered graphs, 
+        where only nodes of the simulated graph are considered.
 
     Args:
         :param tG: first graph
@@ -35,14 +38,15 @@ def purity(trueGraph: BaseGraph, simulatedGraph: BaseGraph, params: dict) -> flo
         :returns float: purity value
     """
     # compute contingency matrix (also called confusion matrix)
-    contingency_matrix = metrics.cluster.contingency_matrix(trueGraph.labels, simulatedGraph.labels)
+    contingency_matrix = metrics.cluster.contingency_matrix(*clean_labels(trueGraph.labels, simulatedGraph.labels))
     # return purity
     return np.sum(np.amax(contingency_matrix, axis=0)) / np.sum(contingency_matrix)
 
 
 def accuracy(trueGraph: BaseGraph, simulatedGraph: BaseGraph, params: dict) -> float:
     """
-    Calculates the accuracy with optimal mapping of two clustered graphs
+    Calculates the accuracy with optimal mapping of two clustered graphs,
+        where only nodes of the simulated graph are considered.
 
     Args:
         :param tG: first graph
@@ -50,7 +54,7 @@ def accuracy(trueGraph: BaseGraph, simulatedGraph: BaseGraph, params: dict) -> f
         :returns float: accuracy value
     """
     # compute contingency matrix (also called confusion matrix)
-    contingency_matrix = metrics.cluster.contingency_matrix(trueGraph.labels, simulatedGraph.labels)
+    contingency_matrix = metrics.cluster.contingency_matrix(*clean_labels(trueGraph.labels, simulatedGraph.labels))
 
     # Find optimal one-to-one mapping between cluster labels and true labels
     row_ind, col_ind = linear_sum_assignment(-contingency_matrix)

@@ -18,6 +18,7 @@ class WUSimulationGraph(BaseGraph):
 
         # Max number of nodes
         self._max_nodes = max_nodes
+        # -1 means, node not currently in the graph
         self.labels = [-1] * self._max_nodes
 
         # differently weighted edges. Need to be addressed through params in functions

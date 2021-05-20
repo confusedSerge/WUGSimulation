@@ -68,7 +68,7 @@ def number_edges_found(simulationGraph: BaseGraph, params: dict) -> bool:
     This means, if the simulation graph contains at least n edges, it returns true, else false.
     Args:
         :param simulationGraph: Simulation Graph to check on
-        :param num_edges: number of edges that sG should contain
+        :param number_edges: number of edges that sG should contain
         :return flag: if sG contains the number of edges
     """
     number_edges = params.get('number_edges', None)
