@@ -58,3 +58,8 @@ class WUAnnotatorSimulationGraph(WUSimulationGraph):
         if annotator == None:
             return self.last_edge[1] if self.last_edge != None else None 
         return self.annotators[annotator]['last_edge'][1] if self.annotators[annotator]['last_edge'] != None else None
+
+    def get_num_added_edges(self, annotator: int = None) -> int:
+        if annotator == None:
+            return self.judgements
+        return self.annotators[annotator]['judgements']

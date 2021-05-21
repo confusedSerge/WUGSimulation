@@ -39,7 +39,10 @@ class BaseGraph():
         raise NotImplementedError
 
     # Node functionality
-    def get_last_added_node(self):
+    def get_last_added_node(self) -> tuple:
+        raise NotImplementedError
+
+    def get_num_added_edges(self) -> int:
         raise NotImplementedError
 
     # info functions

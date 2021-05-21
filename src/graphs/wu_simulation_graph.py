@@ -21,8 +21,9 @@ class WUSimulationGraph(BaseGraph):
         # -1 means, node not currently in the graph
         self.labels = [-1] * self._max_nodes
 
-        #Last node added
+        # last node added & judgements
         self.last_edge = None
+        self.judgements = 0
 
         # differently weighted edges. Need to be addressed through params in functions
         self.G.graph['edge_soft_weight'] = {}  # only important for wug
@@ -68,6 +69,7 @@ class WUSimulationGraph(BaseGraph):
 
         self.G.add_weighted_edges_from(edge_list)
         self.last_edge = edge_list[-1]
+        self.judgements += len(edge_list)
 
         # update edge/weight dicts
         for u, v, w in edge_list:
@@ -85,6 +87,10 @@ class WUSimulationGraph(BaseGraph):
 
     def get_last_added_node(self):
         return self.last_edge[1] if self.last_edge != None else None 
+
+    def get_num_added_edges(self) -> int:
+        return self.judgements
+
 
     def get_nx_graph_copy(self, weight: str) -> nx.Graph:
         """
