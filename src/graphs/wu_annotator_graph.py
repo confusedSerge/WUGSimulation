@@ -28,7 +28,7 @@ class WUAnnotatorGraph(WUGraph):
             :returns: edgeweight with/out error
         """
         annotator = params.get('annotator', None)
-        assert type(annotator) == int or type(annotator) == None
+        assert type(annotator) == int or annotator == None
 
         if len(self.annotators) == 0 or annotator == None:
             return super().get_edge(u_node, v_node)

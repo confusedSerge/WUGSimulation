@@ -8,13 +8,13 @@ class Annotator():
             based on which an error is calculated
 
         We expect sth like:
-            Annotator(np.random.poisson, 0.2)
+            Annotator(np.random.poisson, 0.2, 1)
         """
         self.distribution = distribution
-        self.args = args
+        self.parameters = args
 
     def sample_error(self) -> int:
         """
         Calculates the annotator-error based on the given distribution
         """
-        return self.distribution(*args)
+        return self.distribution(*self.parameters)[0]

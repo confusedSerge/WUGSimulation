@@ -96,7 +96,6 @@ def page_rank_per_annotator(trueGraph: WUAnnotatorGraph, params: dict) -> list:
         :param tp_coef: teleportation coefficient
     """
     # ===Guard===
-    trueGraph = params.get('trueGraph', None)
     assert isinstance(trueGraph, WUAnnotatorGraph)
 
     simGraph = params.get('simGraph', None)
@@ -109,17 +108,17 @@ def page_rank_per_annotator(trueGraph: WUAnnotatorGraph, params: dict) -> list:
     assert type(tp_coef) == float and 0 <= tp_coef <= 1
     # ===END Guard===
 
-    for i in range(trueGraph.get_num_annotators):
+    for i in range(trueGraph.get_num_annotators()):
         edge_list = page_rank(trueGraph, 
             {'sample_size': sample_size, 'tp_coef': tp_coef, 'start': simGraph.get_last_added_node(i)})
-        for i in range(len(edge_list)):
-            new_weight = trueGraph.get_edge(*edge_list[i][:2], annotator=i, add_prob=0.5)
-            edge_list[i] = (*edge_list[i][:2], new_weight)
+        for j in range(len(edge_list)):
+            new_weight = trueGraph.get_edge(*edge_list[j][:2], annotator=i, add_prob=0.5)
+            edge_list[j] = (*edge_list[j][:2], new_weight)
         simGraph.add_edges(edge_list, annotator=i)
     
     return None
 
-def page_rank_across_annotator(trueGraph: WUAnnotatorGraph, params: dict) -> list:
+def page_rank_across_annotators(trueGraph: WUAnnotatorGraph, params: dict) -> list:
     """
     Page Rank sampling strategy with equal transition probability
 
@@ -132,7 +131,6 @@ def page_rank_across_annotator(trueGraph: WUAnnotatorGraph, params: dict) -> lis
         :param tp_coef: teleportation coefficient
     """
     # ===Guard===
-    trueGraph = params.get('trueGraph', None)
     assert isinstance(trueGraph, WUAnnotatorGraph)
 
     simGraph = params.get('simGraph', None)

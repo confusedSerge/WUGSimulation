@@ -63,6 +63,9 @@ def _draw_graph(baseGraph: BaseGraph, pos, edge_label_flag: bool = False, save_f
     else:
         plt.show()
 
+    plt.clf()
+    plt.close()
+
 
 def _get_node_shape(i: int) -> str:
     return 'so^>v<dph8'[i % 10]

@@ -42,6 +42,9 @@ def bar_metric(labels, title: str, y_label: str, save_flag: bool = False, save_p
     else:
         plt.show()
 
+    plt.clf()
+    plt.close()
+
 def line_ploter(steps, title: str, x_label: str, y_label: str, save_flag: bool = False, save_path: str = None, **data) -> None:
     """
     Creates a line plot of the data 
@@ -81,9 +84,12 @@ def line_ploter(steps, title: str, x_label: str, y_label: str, save_flag: bool =
         plt.savefig(save_path)
     else:
         plt.show()
+
+    plt.clf()
+    plt.close()
     
 
-def threed_line_ploter(x_labels: list, x_label: str, y_labels: list, y_label: str, z_label:str, title: str, save_flag: bool = False, save_path: str = None, **data) -> None:
+def threed_line_ploter(x_labels: list, x_label: str, y_labels: list, y_label: str, z_label:str, title: str, legend_flag: bool = False, save_flag: bool = False, save_path: str = None, **data) -> None:
     """
     Creates a 3d line plot based on data. 
     The line is fixed on the y achsis!
@@ -125,11 +131,16 @@ def threed_line_ploter(x_labels: list, x_label: str, y_labels: list, y_label: st
     ax.set_xticklabels(x_labels)    
     ax.set_yticks(_y_points)
     ax.set_yticklabels(y_labels)
-    ax.legend()
+
+    if legend_flag:
+        plt.legend()
 
     if save_flag:
         assert save_path != None and type(save_path) == str
         plt.savefig(save_path)
     else:
         plt.show()
+
+    plt.clf()
+    plt.close()
 

@@ -40,14 +40,18 @@ class WUAnnotatorSimulationGraph(WUSimulationGraph):
         median_edge_list = []
 
         for edge in edge_list:
-            self.G.graph['edge_weight_hist'].get(edge[:2], []).append(edge[3])
-            median_edge_list.append((*edge[:2], np.median(self.G.graph['edge_weight_hist'].get(edge[:2], []))))
+            u, v = sorted(edge[:2])
+            if self.G.graph['edge_weight_hist'].get((u, v), None) == None:
+                self.G.graph['edge_weight_hist'][(u, v)] = [] 
+            self.G.graph['edge_weight_hist'][(u, v)].append(edge[2])
+            tmp = (u, v, round(np.median(self.G.graph['edge_weight_hist'].get((u, v), []))))
+            median_edge_list.append(tmp)
 
         super().add_edges(median_edge_list)
 
         if annotator != None:
-            self.annotators[annotator]['last_edge'] = median_edge_list[-1]
-            self.annotators[annotator]['judgements'] = self.annotators[annotator]['judgements'] + len(median_edge_list)
+            self.annotators[annotator]['last_edge'] = edge_list[-1]
+            self.annotators[annotator]['judgements'] = self.annotators[annotator]['judgements'] + len(edge_list)
 
     def get_last_added_edge(self, annotator: int = None):
         if annotator == None:

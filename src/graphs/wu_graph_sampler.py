@@ -100,7 +100,7 @@ class WUGraphSampler:
         Returns a WUG generator for the given k parameter.
         """
 
-        rand_node_flag, distribution_method, communities, community_dispensation_method_flag, community_dispensation_method, params = self._build_yield_parameters()
+        nodes, rand_node_flag, distribution_method, communities, community_dispensation_method_flag, community_dispensation_method, params = self._build_yield_parameters()
 
         for k in communities:
             # gen nodes
@@ -117,12 +117,12 @@ class WUGraphSampler:
 
             yield WUGraph(community_dispensation, distribution=distribution)
 
-    def sample_wug_generator(self):
+    def sample_wug_annotator_generator(self):
         """
         Returns a WUG Annotator generator for the given k parameter.
         """
 
-        rand_node_flag, distribution_method, communities, community_dispensation_method_flag, community_dispensation_method, params = self._build_yield_parameters()
+        nodes, rand_node_flag, distribution_method, communities, community_dispensation_method_flag, community_dispensation_method, params = self._build_yield_parameters()
 
         for k in communities:
             # gen nodes
@@ -169,7 +169,7 @@ class WUGraphSampler:
             community_dispensation_method = self.dispensation_flags[dist_flag]
         # ===Guard & Parameter Build Phase===
 
-        return rand_node_flag, distribution_method, communities, community_dispensation_method_flag, community_dispensation_method, params
+        return nodes, rand_node_flag, distribution_method, communities, community_dispensation_method_flag, community_dispensation_method, params
     # functions for building correct distribution
 
     def _build_binomila_distr(self, number_communities, tries, probability) -> Binomial:
