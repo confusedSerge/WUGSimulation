@@ -14,7 +14,7 @@ from graphs.wu_annotator_graph import WUAnnotatorGraph
 
 class WUGraphSampler:
 
-    def __init__(self, num_nodes, num_communities, size_communities, distribution, annotators: List(Annotator) = None):
+    def __init__(self, num_nodes, num_communities, size_communities, distribution, annotators: list = None):
         """
         Creates a WUG sampler, from witch new WUGs can be sampled.
 
@@ -158,7 +158,7 @@ class WUGraphSampler:
 
     # util functions
 
-    def add_annotator(self, annotator: Annotator) -> self:
+    def add_annotator(self, annotator: Annotator):
         """
         Adds another annotator to the current list
 

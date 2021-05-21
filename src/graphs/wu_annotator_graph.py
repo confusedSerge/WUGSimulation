@@ -2,14 +2,17 @@ import pickle
 import numpy as np
 import networkx as nx
 
-from typing import List
-
 from graphs.wu_graph import WUGraph
 from graphs.utils.annotator import Annotator
 
 class WUAnnotatorGraph(WUGraph):
 
-    def __init__(self, communities, communities_probability=None, distribution=None, annotators: List(Annotator) = []):
+    def __init__(self, communities, communities_probability=None, distribution=None, annotators: list = []):
+        """
+        Extension of WUG implementation
+
+        Important: This is a specialized Graph which is used in special simulations
+        """
         super().__init__(communities, communities_probability=communities_probability, distribution=distribution)
 
         self.annotators = annotators
@@ -31,9 +34,12 @@ class WUAnnotatorGraph(WUGraph):
             return super().get_edge(u_node, v_node)
 
         p = params.get('add_prob', 1)
+        assert 0 <= p <= 1
 
         error = self.annotators[annotator].sample_error()
         coefficient = np.random.choice([1, -1], p=[p, 1 - p])
         
         return round(np.min([np.max([super().get_edge(u_node, v_node) + coefficient * error, 1]), 4]))
 
+    def get_num_annotators(self):
+        return len(self.annotators)

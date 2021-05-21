@@ -21,15 +21,25 @@ class BaseGraph():
         self.G.graph['edge_weight'] = {}
         self.G.graph['weight_edge'] = {}
 
+        # metric dict
+        self.G.graph['metrics'] = {}
+
 
     # Edge functionality
     def get_edge(self, u_node: int, v_node: int, **params) -> float:
+        raise NotImplementedError
+
+    def get_last_added_edge(self):
         raise NotImplementedError
 
     def add_edge(self, node_u: int, node_v: int, weight: float, **params) -> None:
         raise NotImplementedError
 
     def add_edges(self, edge_list: list, **params) -> None:
+        raise NotImplementedError
+
+    # Node functionality
+    def get_last_added_node(self):
         raise NotImplementedError
 
     # info functions
@@ -53,6 +63,9 @@ class BaseGraph():
 
     def get_community_nodes(self) -> dict: 
         return self.G.graph['community_nodes']
+
+    def get_metric_dict(self) -> dict:
+        return self.G.graph['metrics']
 
     # util functions
     def update_community_nodes_membership(self, new_community_nodes: dict) -> None:

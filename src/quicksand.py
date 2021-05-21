@@ -28,11 +28,9 @@
 
 # print(np.max([1, 2]))
 
-print(
-round(1.1),
-round(1.2),
-round(1.3),
-round(1.4),
-round(1.5),
-round(1.6),
-round(1.7))
+bla = [1, 2, 3, 4, 5, 6, 7]
+
+# for i in range(len(bla)):
+#     bla[i] = bla[i] +1
+
+print(bla[0:2])
