@@ -1,4 +1,4 @@
-# from visualization.metric_vis import bar_metric
+from visualization.metric_vis import threed_line_ploter
 # # from graphs.wu_simulation_graph import WUSimulationGraph
 
 # # # True, 'data/figs/test.png',
@@ -28,9 +28,10 @@
 
 # print(np.max([1, 2]))
 
-bla = [1, 2, 3, 4, 5, 6, 7]
-
-# for i in range(len(bla)):
-#     bla[i] = bla[i] +1
-
-print(bla[0:2])
+# threed_line_ploter(['20%', '40%', '60%', '80%'], 'n', 
+#     [1, 2, 3], 'k', 'Performance', 'Wow...', 
+#     metric1={1: [0.5, 0.7, 0.8, 0.99], 2: [0.1, 0.2, 0.3, 0.1], 3: [0.8, 0.7, 0.6, 0.15]},
+#     metric2={1: [0.1, 0.2, 0.3, 0.4], 2: [0.5, 0.99, 0.8, 0.99], 3: [0.16, 0.3, 0.5, 0.7]},
+#     metric3={1: [0.3, 0.4, 0.8, 0.99], 2: [0.1, 0.46, 0.546, 0.4], 3: [0.2, 0.7, 0.5, 0.3]},
+#     metric4={1: [0.2, 0.7, 0.8, 0.99], 2: [0.1, 0.2, 0.3, 0.1], 3: [0.8, 0.7, 0.6, 0.15]}
+#     )

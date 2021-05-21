@@ -54,7 +54,7 @@ class WUGraphSampler:
         return WUAnnotatorGraph(community_dispensation, distribution=distribution, annotators=self.annotators)
 
 
-    def _build_parameters(self) -> WUGraph:
+    def _build_parameters(self):
         """
         Builds a new (annotator) WUG
         """
@@ -99,7 +99,48 @@ class WUGraphSampler:
         """
         Returns a WUG generator for the given k parameter.
         """
-        # ===Guard & Parameter Build Phase===
+
+        rand_node_flag, distribution_method, communities, community_dispensation_method_flag, community_dispensation_method, params = self._build_yield_parameters()
+
+        for k in communities:
+            # gen nodes
+            if rand_node_flag:
+                nodes = random.randint(*self.num_nodes)
+
+            # gen community sizes
+            if community_dispensation_method_flag:
+                community_dispensation = community_dispensation_method(
+                    nodes, k, params)
+
+            # gen distribution
+            distribution = distribution_method(k, *self.distribution_data)
+
+            yield WUGraph(community_dispensation, distribution=distribution)
+
+    def sample_wug_generator(self):
+        """
+        Returns a WUG Annotator generator for the given k parameter.
+        """
+
+        rand_node_flag, distribution_method, communities, community_dispensation_method_flag, community_dispensation_method, params = self._build_yield_parameters()
+
+        for k in communities:
+            # gen nodes
+            if rand_node_flag:
+                nodes = random.randint(*self.num_nodes)
+
+            # gen community sizes
+            if community_dispensation_method_flag:
+                community_dispensation = community_dispensation_method(
+                    nodes, k, params)
+
+            # gen distribution
+            distribution = distribution_method(k, *self.distribution_data)
+
+            yield WUAnnotatorGraph(community_dispensation, distribution=distribution, annotators=self.annotators)
+
+    def _build_yield_parameters(self):
+                # ===Guard & Parameter Build Phase===
         # setup number nodes
         nodes = self.num_nodes
         assert type(nodes) == int or type(nodes) == tuple
@@ -128,21 +169,7 @@ class WUGraphSampler:
             community_dispensation_method = self.dispensation_flags[dist_flag]
         # ===Guard & Parameter Build Phase===
 
-        for k in communities:
-            # gen nodes
-            if rand_node_flag:
-                nodes = random.randint(*self.num_nodes)
-
-            # gen community sizes
-            if community_dispensation_method_flag:
-                community_dispensation = community_dispensation_method(
-                    nodes, k, params)
-
-            # gen distribution
-            distribution = distribution_method(k, *self.distribution_data)
-
-            yield WUGraph(community_dispensation, distribution=distribution)
-
+        return rand_node_flag, distribution_method, communities, community_dispensation_method_flag, community_dispensation_method, params
     # functions for building correct distribution
 
     def _build_binomila_distr(self, number_communities, tries, probability) -> Binomial:
