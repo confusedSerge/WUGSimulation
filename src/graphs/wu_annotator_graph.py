@@ -39,7 +39,7 @@ class WUAnnotatorGraph(WUGraph):
         error = self.annotators[annotator].sample_error()
         coefficient = np.random.choice([1, -1], p=[p, 1 - p])
         
-        return round(np.min([np.max([super().get_edge(u_node, v_node) + coefficient * error, 1]), 4]))
+        return np.min([np.max([super().get_edge(u_node, v_node) + coefficient * error, 1]), 4])
 
     def get_num_annotators(self):
         return len(self.annotators)
