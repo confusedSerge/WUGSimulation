@@ -18,6 +18,11 @@ def analyze(trueGraph: BaseGraph, simulatedGraph: BaseGraph, **params) -> dict:
         :param **params: metrics to use
         :return res: predicted/simulated graph
     """
+    if len(params) == 1:
+        params = params['params']
+
+    if params == None:
+        raise ValueError
 
     result = {}
 

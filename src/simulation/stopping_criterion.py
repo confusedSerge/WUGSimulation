@@ -84,7 +84,7 @@ def percentage_edges_found(simulationGraph: BaseGraph, params: dict) -> bool:
     Args:
         :param simulationGraph: SimulationGraph to check on
         :param percentage: percentage of edges that sG should contain
-        :param num_edges: number of max edges
+        :param number_edges: number of max edges
         :return flag: if sG contains the percentage of edges
     """
     percentage = params.get('percentage', None)
@@ -104,7 +104,7 @@ def edges_added(simulationGraph: BaseGraph, params: dict) -> bool:
         :param num_edges: number of max edges added
         :return flag: if sG contains the percentage of edges
     """
-    num_edges = params.get('num_edges', None)
-    assert type(num_edges) == int
+    number_edges = params.get('number_edges', None)
+    assert type(number_edges) == int
 
-    return simulationGraph.get_num_added_edges() >= num_edges
+    return simulationGraph.get_num_added_edges() >= number_edges

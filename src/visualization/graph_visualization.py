@@ -4,33 +4,35 @@ import matplotlib.patches as mpatches
 
 from graphs.base_graph import BaseGraph
 
-def draw_graph_graphviz(baseGraph: BaseGraph, edge_label_flag: bool = False, save_flag: bool = False, path: str = None) -> None:
+def draw_graph_graphviz(baseGraph: BaseGraph, plot_title: str, edge_label_flag: bool = False, save_flag: bool = False, path: str = None) -> None:
     """
     Draws the Graph using graphviz as layout position information.
 
     Args:
         :param baseGraph: Graph to draw
+        :param title: title of plot
         :param edge_label_flag: if edge labels should be included
         :param save_flag: if plot should be saved
         :param path: where to save the plot
     """
     pos = nx.drawing.nx_agraph.graphviz_layout(baseGraph.G)
-    _draw_graph(baseGraph, pos, edge_label_flag, save_flag, path)
+    _draw_graph(baseGraph, pos, plot_title, edge_label_flag, save_flag, path)
 
-def draw_graph_spring(baseGraph: BaseGraph, edge_label_flag: bool = False, save_flag: bool = False, path: str = None) -> None:
+def draw_graph_spring(baseGraph: BaseGraph, plot_title: str, edge_label_flag: bool = False, save_flag: bool = False, path: str = None) -> None:
     """
     Draws the Graph using spring as layout position information.
 
     Args:
         :param baseGraph: Graph to draw
+        :param title: title of plot
         :param edge_label_flag: if edge labels should be included
         :param save_flag: if plot should be saved
         :param path: where to save the plot
     """
     pos = nx.spring_layout(baseGraph.G, scale=50)
-    _draw_graph(baseGraph, pos, edge_label_flag, save_flag, path)
+    _draw_graph(baseGraph, pos, plot_title, edge_label_flag, save_flag, path)
 
-def _draw_graph(baseGraph: BaseGraph, pos, edge_label_flag: bool = False, save_flag: bool = False, path: str = None) -> None:
+def _draw_graph(baseGraph: BaseGraph, pos, plot_title: str, edge_label_flag: bool = False, save_flag: bool = False, path: str = None) -> None:
     pos = nx.spring_layout(baseGraph.G, scale=50)
     # pos = nx.spring_layout(G, k=1/(len(G.nodes)), scale=20)
     
@@ -54,6 +56,7 @@ def _draw_graph(baseGraph: BaseGraph, pos, edge_label_flag: bool = False, save_f
 
     plt.legend(title='Legend', scatterpoints=1)
     plt.figtext(.12, .02, str(baseGraph))
+    plt.title(plot_title)
 
 
     if save_flag:
