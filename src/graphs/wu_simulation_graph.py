@@ -123,5 +123,5 @@ class WUSimulationGraph(BaseGraph):
                 self.labels[node] = k
 
     def __str__(self):
-        return 'Distribution: {}\nNumber of Nodes: {}\nNumber of Edges: {}\nNumber of Communities: {}'\
-            .format(self.G.graph['distribution'], self.get_number_nodes(), self.get_number_edges(), self.get_number_communities())
+        return 'Distribution: {}\nNumber of Nodes: {}\nNumber of Edges: {}\nNumber of Judgements: {}\nNumber of Communities: {}'\
+            .format(self.G.graph['distribution'], self.get_number_nodes(), self.get_number_edges(), self.get_num_added_edges(), self.get_number_communities())

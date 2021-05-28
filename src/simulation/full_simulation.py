@@ -24,7 +24,7 @@ def full_simulation(trueGraph: BaseGraph, simulationGraph: BaseGraph, max_iter: 
         :param analyzing_critertion: function to determine when to analyze 
         :param analyzing_critertion_params: params as list of dict for analyzing criterion, for each point
 
-        :param anal_clustering_strategy: function to use for clustering befor analyzing
+        :param anal_clustering_strategy: function to use for clustering befor analyzing (only if no normal clustering is done)
         :param anal_clustering_params: params as dict for clustering function
 
         :param analyzing_func: function used for analyzing 
@@ -77,11 +77,12 @@ def full_simulation(trueGraph: BaseGraph, simulationGraph: BaseGraph, max_iter: 
     acp_list = []
 
     # Get Analyzing Clustering
-    anal_clustering_strategy = params.get('anal_clustering_strategy', None)
-    assert anal_clustering_strategy != None
-    
-    anal_clustering_params = params.get('anal_clustering_params', None)
-    assert type(anal_clustering_params) == dict
+    if not clustering_flag:
+        anal_clustering_strategy = params.get('anal_clustering_strategy', None)
+        assert anal_clustering_strategy != None
+        
+        anal_clustering_params = params.get('anal_clustering_params', None)
+        assert type(anal_clustering_params) == dict
 
     # Get Analyzing 
     analyzing_func = params.get('analyzing_func', None)
@@ -110,8 +111,9 @@ def full_simulation(trueGraph: BaseGraph, simulationGraph: BaseGraph, max_iter: 
         # analyzing phase
         if current_acp_counter != None and analyzing_critertion(simulationGraph, current_acp):
             # clustering
-            clusters = anal_clustering_strategy(simulationGraph, anal_clustering_params)
-            simulationGraph.update_community_nodes_membership(clusters)
+            if not clustering_flag:
+                clusters = anal_clustering_strategy(simulationGraph, anal_clustering_params)
+                simulationGraph.update_community_nodes_membership(clusters)
             # analyzing
             tmp = analyzing_func(trueGraph, simulationGraph, params=analyzing_params)
             acp_list.append(tmp)

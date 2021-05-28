@@ -70,6 +70,9 @@ class BaseGraph():
     def get_metric_dict(self) -> dict:
         return self.G.graph['metrics']
 
+    def get_labels(self) -> list:
+        return self.labels
+
     # util functions
     def update_community_nodes_membership(self, new_community_nodes: dict) -> None:
         raise NotImplementedError

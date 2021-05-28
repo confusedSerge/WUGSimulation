@@ -5,6 +5,8 @@ from graphs.base_graph import BaseGraph
 from graphs.wu_annotator_graph import WUAnnotatorGraph
 from graphs.wu_annotator_simulation_graph import WUAnnotatorSimulationGraph
 
+from simulation.utils.dwug_sampling import dwug_sampling as u_dwug_sampling
+
 """
 This module contains different sampling function and can be extended to new ones.
 All method signatures should look like this:
@@ -159,3 +161,32 @@ def page_rank_across_annotators(trueGraph: WUAnnotatorGraph, params: dict) -> li
         simGraph.add_edges(new_edge_list, annotator=i)
 
     return None
+
+def dwug_sampling(trueGraph: BaseGraph, params: dict) -> list:
+    """
+    Uses the DWUG sampling strategy, as described in the paper.
+
+    Args:
+        :param trueGraph: graph on which to sample edge weight
+        :param simulationGraph: simulation graph
+        :param percentage_nodes: percentage of nodes to add this round
+        :param percentage_edges: percentage of edges to add this round
+        :param min_size_mc: minimum size of cluster to be considered as multi-cluster
+    """
+    # ===Guard Phase===
+    assert isinstance(trueGraph, BaseGraph)
+
+    simulationGraph = params.get('simulationGraph', None)
+    assert simulationGraph != None and isinstance(simulationGraph, BaseGraph)
+
+    percentage_nodes = params.get('percentage_nodes', None)
+    assert type(percentage_nodes) == float and 0.0 <= percentage_nodes <= 1.0
+
+    percentage_edges = params.get('percentage_edges', None)
+    assert type(percentage_edges) == float and 0.0 <= percentage_edges <= 1.0
+
+    min_size_mc = params.get('min_size_mc', None)
+    assert type(min_size_mc) == int
+    # ===Guard Phase over===
+
+    return u_dwug_sampling(trueGraph, simulationGraph, percentage_nodes, percentage_edges, min_size_mc)

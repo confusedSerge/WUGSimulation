@@ -14,7 +14,7 @@ import pickle
 #     adj_randIndex=metrics_dict['adjusted_randIndex'], purity=metrics_dict['purity'], accuracy=metrics_dict['accuracy'], jensenshannon=metrics_dict['inverse_jensen_shannon_distance'])
 
 # from matplotlib import pyplot as plt
-# import numpy as np
+import numpy as np
 # from scipy.stats import lognorm
 
 # std_devs = [0.99, 0.25]
@@ -34,3 +34,10 @@ import pickle
 judgements = [10, 20, 30, 40, 50, 100, 200, 300, 500, 1000, 2000, 3000, 4000, 5000]
 
 print([{'number_edges': x} for x in judgements])
+
+test = [1, 2, 3, 4, 5, 6]
+
+try:
+    print(np.random.choice(test, 7, replace=False))
+except ValueError as identifier:
+    print(test)
