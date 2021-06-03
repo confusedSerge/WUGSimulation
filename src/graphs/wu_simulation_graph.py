@@ -63,7 +63,8 @@ class WUSimulationGraph(BaseGraph):
         Args:
             :param edge_list: edges to add
         """
-        assert len(edge_list) != 0
+        if len(edge_list) == 0:
+            return
         for edge in edge_list:
             assert len(edge) == 3
 

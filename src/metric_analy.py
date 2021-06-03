@@ -2,37 +2,37 @@ import pickle
 
 from visualization.metric_vis import *
 
-with open('data/data_pickle/pw_rw_rs_k13510_wosplit/metric_pr_wosplit.data', 'rb') as file:
-    metrics_dict_pr_wo = pickle.load(file)
-file.close()
+# with open('data/data_pickle/pw_rw_rs_k13510_wosplit/metric_pr_wosplit.data', 'rb') as file:
+#     metrics_dict_pr_wo = pickle.load(file)
+# file.close()
 
-with open('data/data_pickle/pw_rw_rs_k13510_wosplit/metric_rw_wosplit.data', 'rb') as file:
-    metrics_dict_rw_wo = pickle.load(file)
-file.close()
+# with open('data/data_pickle/pw_rw_rs_k13510_wosplit/metric_rw_wosplit.data', 'rb') as file:
+#     metrics_dict_rw_wo = pickle.load(file)
+# file.close()
 
-with open('data/data_pickle/pw_rw_rs_k13510_wosplit/metric_rs_wosplit.data', 'rb') as file:
-    metrics_dict_rs_wo = pickle.load(file)
-file.close()
+# with open('data/data_pickle/pw_rw_rs_k13510_wosplit/metric_rs_wosplit.data', 'rb') as file:
+#     metrics_dict_rs_wo = pickle.load(file)
+# file.close()
 
-with open('data/data_pickle/pw_rw_rs_k13510_wosplit/metric_dwug_wosplit.data', 'rb') as file:
+with open('data/metric_dwug_wosplit.data', 'rb') as file:
     metrics_dict_dwug_wo = pickle.load(file)
 file.close()
 
-with open('data/data_pickle/pw_rw_rs_k13510_wsplit/metric_pr_wsplit.data', 'rb') as file:
-    metrics_dict_pr_w = pickle.load(file)
-file.close()
+# with open('data/data_pickle/pw_rw_rs_k13510_wsplit/metric_pr_wsplit.data', 'rb') as file:
+#     metrics_dict_pr_w = pickle.load(file)
+# file.close()
 
-with open('data/data_pickle/pw_rw_rs_k13510_wsplit/metric_rw_wsplit.data', 'rb') as file:
-    metrics_dict_rw_w = pickle.load(file)
-file.close()
+# with open('data/data_pickle/pw_rw_rs_k13510_wsplit/metric_rw_wsplit.data', 'rb') as file:
+#     metrics_dict_rw_w = pickle.load(file)
+# file.close()
 
-with open('data/data_pickle/pw_rw_rs_k13510_wsplit/metric_rs_wsplit.data', 'rb') as file:
-    metrics_dict_rs_w = pickle.load(file)
-file.close()
+# with open('data/data_pickle/pw_rw_rs_k13510_wsplit/metric_rs_wsplit.data', 'rb') as file:
+#     metrics_dict_rs_w = pickle.load(file)
+# file.close()
 
-with open('data/data_pickle/pw_rw_rs_k13510_wsplit/metric_dwug_wsplit.data', 'rb') as file:
-    metrics_dict_dwug_w = pickle.load(file)
-file.close()
+# with open('data/data_pickle/pw_rw_rs_k13510_wsplit/metric_dwug_wsplit.data', 'rb') as file:
+#     metrics_dict_dwug_w = pickle.load(file)
+# file.close()
 
 # sampling = {'metric1': {'k1': [], 'k2':[], ...}, }
 judgements = [10, 20, 30, 40, 50, 100, 200, 300, 500, 1000, 2000, 3000, 4000, 5000]
@@ -90,7 +90,7 @@ def bargraph_j_k(labels, kom, index, judgement, title: str, y_label: str, **metr
 # three_metric_ploter('Simulation PageRank without Split', judgements, com, metrics_dict_pr_wo, True)
 # three_metric_ploter('Simulation RandomWalk without Split', judgements, com, metrics_dict_rw_wo, True)
 # three_metric_ploter('Simulation RandomSampling without Split', judgements, com, metrics_dict_rs_wo, True)
-# three_metric_ploter('Simulation DWUG without Split', judgements, com, metrics_dict_dwug_wo, True)
+three_metric_ploter('Simulation DWUG without Split', judgements, com, metrics_dict_dwug_wo, True)
 
 # line_plot_metric(judgements, com, 'DWUG without Split', 'Judgements', 'Performance', metrics_dict_dwug_wo)
 # line_plot_metric(judgements, com, 'DWUG with Split', 'Judgements', 'Performance', metrics_dict_dwug_w)
@@ -107,7 +107,7 @@ def bargraph_j_k(labels, kom, index, judgement, title: str, y_label: str, **metr
 # line_plot_metric(judgements, com, 'RandomSampling without Split', 'Judgements', 'Performance', metrics_dict_rs_wo)
 # line_plot_metric(judgements, com, 'RandomSampling with Split', 'Judgements', 'Performance', metrics_dict_rs_w)
 
-for k in com:
-    for i, judgement in enumerate(judgements):
-        bargraph_j_k(['PageRank wS', 'PageRank woS', 'RandomWalk wS', 'RandomWalk woS'], k, i, judgement, 'Performance', 'Performance',
-        prs=metrics_dict_pr_w, pr=metrics_dict_pr_wo, rws=metrics_dict_rw_w, rw=metrics_dict_rw_wo)
+# for k in com:
+#     for i, judgement in enumerate(judgements):
+#         bargraph_j_k(['PageRank wS', 'PageRank woS', 'RandomWalk wS', 'RandomWalk woS'], k, i, judgement, 'Performance', 'Performance',
+#         prs=metrics_dict_pr_w, pr=metrics_dict_pr_wo, rws=metrics_dict_rw_w, rw=metrics_dict_rw_wo)

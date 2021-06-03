@@ -51,6 +51,7 @@ def _n_sampling_round(trueGraph: BaseGraph, simulationGraph: BaseGraph, min_size
     
     # add new nodes to combination phase
     sim_graph_labels = simulationGraph.get_labels()
+    # TODO: this could be a problem, as we asume this graph is a simgraph, not basegraph!!
     not_added_nodes = [i for i in range(len(sim_graph_labels)) if sim_graph_labels[i] == -1]
     num_new_nodes_add = round(trueGraph.get_number_nodes() * percentage_nodes)
 
