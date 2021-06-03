@@ -112,8 +112,7 @@ def cluster_correlation_search(G, s = 10, max_attempts = 200, max_iters = 5000, 
     #classes = get_clusters(G) # only for testing
 
     # Split collapsed clusters without evidence
-    if split_flag:
-        classes = split_non_evidence_clusters(G, classes)
+    if split_flag: classes = split_non_evidence_clusters(G, classes)
 
     classes.sort(key=lambda x:-len(x)) # sort by size
 
