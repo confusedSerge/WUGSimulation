@@ -54,6 +54,7 @@ def page_rank(trueGraph: BaseGraph, params: dict) -> list:
         :param sample_size: number of edges to sample per annotator
         :param start: start node (can be None, int, or function)
         :param tp_coef: teleportation coefficient
+        :return sampled_edge_list: sampled edges with weights as [(u, v, w)...]
 
     """
     # ===Guard===
@@ -96,6 +97,7 @@ def dwug_sampling(trueGraph: BaseGraph, params: dict) -> list:
         :param percentage_edges: percentage of edges to add this round
         :param min_size_mc: minimum size of cluster to be considered as multi-cluster
         :param num_flag: if :percentage_nodes: & :percentage_edges: are the actual number of nodes/edges to be used  (optional)
+        :return sampled_edge_list: sampled edges with weights as [(u, v, w)...]
     """
     # ===Guard Phase===
     assert isinstance(trueGraph, BaseGraph)
