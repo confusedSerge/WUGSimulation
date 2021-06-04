@@ -1,7 +1,7 @@
 from graphs.base_graph import BaseGraph
 from copy import deepcopy
 
-def full_simulation(trueGraph: BaseGraph, simulationGraph: BaseGraph, max_iter: int = 50000, verbose: bool = False, **params) -> (BaseGraph, bool, list, list):
+def full_simulation(trueGraph: BaseGraph, simulationGraph: BaseGraph, max_iter: int = 50000, break_on_sc: bool = True, verbose: bool = False, **params) -> (BaseGraph, bool, list, list):
     """
     Runs a full simulation for the given parameters, (with a limit).
     Every iteration consists of a sampling phase, clustering (optional) phase, analyzing phase (based on some points), and checking the stopping criterion.
@@ -10,6 +10,7 @@ def full_simulation(trueGraph: BaseGraph, simulationGraph: BaseGraph, max_iter: 
         :param tG: True Graph used for sampling
         :param simulationGraph: Simulation graph, if provided starts/continues the simulation based on this graph
         :param max_iter: maximal iterations to prevent non ending simulations, default 500 iterations
+        :param break_on_sc: flag, if false, continues until all analysing points are hit
         :param verbose: flag
 
         :param sampling_strategy: function to use for sampling
@@ -95,6 +96,8 @@ def full_simulation(trueGraph: BaseGraph, simulationGraph: BaseGraph, max_iter: 
     assert type(return_graph_flag) == bool
 
     return_graph = []
+    sc_hit_flag = False
+    sc_sim_graph = None
 
     if verbose: print('Started Sim-Phase')
     # simulation
@@ -128,9 +131,23 @@ def full_simulation(trueGraph: BaseGraph, simulationGraph: BaseGraph, max_iter: 
             else:
                 current_acp_counter = None
 
-        # stopping criterion
-        if stopping_criterion(simulationGraph, stopping_params):
+        # break if all acp hit and sim doesnt break on sc
+        if current_acp_counter == None and not break_on_sc:
             break
-        
+
+        # stopping criterion
+        if not sc_hit_flag and stopping_criterion(simulationGraph, stopping_params):
+            sc_sim_graph = deepcopy(simulationGraph)
+            sc_hit_flag = True
+            if break_on_sc: break
+    
+    # Make sure, if sc was not hit to return the latest graph
+    if not sc_hit_flag:
+        sc_sim_graph = simulationGraph
+
+    # Make sure, that acp is the correct length
+    if len(acp_list) < len(analyzing_critertion_params):
+        acp_list.extend([acp_list[-1]] * (len(analyzing_critertion_params) - len(acp_list)))
+
     if verbose: print('Finished')
-    return (simulationGraph, _ + 1 >= max_iter, acp_list, return_graph)
+    return (sc_sim_graph, sc_hit_flag, acp_list, return_graph)

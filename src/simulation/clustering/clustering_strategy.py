@@ -60,8 +60,8 @@ def new_correlation_clustering(simulationGraph: BaseGraph, params: dict) -> dict
         :param s: maximal number of senses a word can have
         :param max_attempts: number of restarts for optimization
         :param max_iters: number of iterations for optimization
-        :param initial: optional clustering for initialization
         :param split_flag: optional flag, if non evidence cluster should be splitted
+        :param ru_old_cluster: optional flag, if old cluster should be reused
         :return labels: dict with label-node key-value pairs  
     """
     # ===Guard Phase===
@@ -77,12 +77,14 @@ def new_correlation_clustering(simulationGraph: BaseGraph, params: dict) -> dict
     max_iters = params.get('max_iters', 500)
     assert type(max_iters) == int
 
-    initial = params.get('initial', [])
-    assert type(initial) == list
-
     split_flag = params.get('split_flag', True)
     assert type(split_flag) == bool
+
+    ru_old_cluster = params.get('ru_old_cluster', False)
+    assert type(ru_old_cluster) == bool
     # ===Guard Phase===
+
+    initial = simulationGraph.get_labels() if ru_old_cluster else []
 
     clusters, stats = new_cluster_correlation_search(G=simulationGraph.get_nx_graph_copy(
         weights), s=s, max_attempts=max_attempts, max_iters=max_iters, initial=initial, split_flag=split_flag)

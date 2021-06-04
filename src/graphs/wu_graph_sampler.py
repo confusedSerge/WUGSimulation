@@ -140,7 +140,7 @@ class WUGraphSampler:
             yield WUAnnotatorGraph(community_dispensation, distribution=distribution, annotators=self.annotators)
 
     def _build_yield_parameters(self):
-                # ===Guard & Parameter Build Phase===
+        # ===Guard & Parameter Build Phase===
         # setup number nodes
         nodes = self.num_nodes
         assert type(nodes) == int or type(nodes) == tuple

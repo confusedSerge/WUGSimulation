@@ -12,7 +12,7 @@ class MetricResults():
     # ===Util Functions===
     def add_metric(self, name_metric: str, size: tuple, axes_info: tuple = None):
         if name_metric in self.metric_dict.keys():
-            raise KeyError('Key exist already')
+            return
 
         new_metric_matrix = np.full(size, np.NaN)
         self.metric_dict[name_metric] = new_metric_matrix
@@ -94,15 +94,15 @@ class MetricResults():
 
 if __name__ == "__main__":
     res = MetricResults()
-    res.add_metric('randInd', (2, 2, 2))
+    res.add_metric('randInd', (3, 3))
     print(res.get_values('randInd').flatten())
 
-    res.update_value('randInd', [1, 2], 0, 0)
+    res.update_value('randInd', [1, 2, 2], 0)
 
-    print(res.get_values('randInd').flatten())
-    print(res.std('randInd', slice(0, 1), 0))
-    print(res.max('randInd', 0, 0))
-    print(res.min('randInd', 0, 0))
+    # print(res.get_values('randInd').flatten())
+    # print(res.std('randInd', slice(0, 1), 0))
+    # print(res.max('randInd', 0, 0))
+    # print(res.min('randInd', 0, 0))
 
-    res.update_value('randInd', 1)
+    # res.update_value('randInd', 1)
     print(res.get_values('randInd'))
