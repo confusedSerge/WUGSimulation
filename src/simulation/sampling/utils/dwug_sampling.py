@@ -3,7 +3,7 @@ import numpy as np
 
 from graphs.base_graph import BaseGraph
 
-def dwug_sampling(trueGraph: BaseGraph, simulationGraph: BaseGraph,  percentage_nodes: float, percentage_edges: float, min_size_mc: int) -> list:
+def dwug_sampling(trueGraph: BaseGraph, simulationGraph: BaseGraph,  percentage_nodes: float or int, percentage_edges: float or int, min_size_mc: int, num_flag: bool = False) -> list:
     """
     Uses the DWUG sampling strategy, as described in the paper.
 
@@ -13,24 +13,26 @@ def dwug_sampling(trueGraph: BaseGraph, simulationGraph: BaseGraph,  percentage_
         :param percentage_nodes: percentage of nodes to add this round
         :param percentage_edges: percentage of edges to add this round
         :param min_size_mc: minimum size of cluster to be considered as multi-cluster
+        :param num_flag: if :percentage_nodes: & :percentage_edges: are the actual number of nodes/edges to be used  (optional)
     """
     if simulationGraph.get_number_edges() == 0:
         # inital exploration
-        return _z_sampling_round(trueGraph, percentage_nodes, percentage_edges)
-    return _n_sampling_round(trueGraph, simulationGraph, min_size_mc, percentage_nodes, percentage_edges)
+        return _z_sampling_round(trueGraph, percentage_nodes, percentage_edges, num_flag)
+    return _n_sampling_round(trueGraph, simulationGraph, min_size_mc, percentage_nodes, percentage_edges, num_flag)
 
-def _z_sampling_round(trueGraph: BaseGraph, percentage_nodes: float, percentage_edges: float) -> list:
-    number_nodes = round(trueGraph.get_number_nodes() * percentage_nodes)
-
+def _z_sampling_round(trueGraph: BaseGraph, percentage_nodes: float, percentage_edges: float, num_flag: bool) -> list:
+    number_nodes = percentage_nodes if num_flag else round(trueGraph.get_number_nodes() * percentage_nodes)
+    
     try:
         nodes = np.random.choice(trueGraph.G.nodes(), number_nodes, replace=False)
     except ValueError as identifier:
         nodes = trueGraph.G.nodes()
 
+    max_edges = percentage_edges if num_flag else len(nodes) * (len(nodes) - 1) * 0.5 * percentage_edges
 
-    return _exploration_phase(trueGraph, nodes, percentage_edges)
+    return _exploration_phase(trueGraph, nodes, max_edges)
 
-def _n_sampling_round(trueGraph: BaseGraph, simulationGraph: BaseGraph, min_size_mc: int, percentage_nodes: float, percentage_edges: float) -> list:
+def _n_sampling_round(trueGraph: BaseGraph, simulationGraph: BaseGraph, min_size_mc: int, percentage_nodes: float, percentage_edges: float, num_flag: bool) -> list:
     # Nodes not in cluster size >= min_size_mc 
     nodes = [node for k, v in simulationGraph.get_community_nodes().items() if len(v) < min_size_mc for node in v]
     multi_clusters = [v for k, v in simulationGraph.get_community_nodes().items() if len(v) >= min_size_mc]
@@ -51,9 +53,9 @@ def _n_sampling_round(trueGraph: BaseGraph, simulationGraph: BaseGraph, min_size
     
     # add new nodes to combination phase
     sim_graph_labels = simulationGraph.get_labels()
-    # TODO: this could be a problem, as we asume this graph is a simgraph, not basegraph!!
+    # TODO: this could be a problem, as we asume this graph is a simgraph, not basegraph (labels == -1 iff not yet added + clustered)!!
     not_added_nodes = [i for i in range(len(sim_graph_labels)) if sim_graph_labels[i] == -1]
-    num_new_nodes_add = round(trueGraph.get_number_nodes() * percentage_nodes)
+    num_new_nodes_add = percentage_nodes if num_flag else round(trueGraph.get_number_nodes() * percentage_nodes)
 
     try:
         new_nodes = np.random.choice(not_added_nodes, num_new_nodes_add, replace=False)
@@ -62,6 +64,7 @@ def _n_sampling_round(trueGraph: BaseGraph, simulationGraph: BaseGraph, min_size
 
 
     combination_nodes.extend(new_nodes)
+    max_edges = percentage_edges if num_flag else len(exploration_nodes) * (len(exploration_nodes) - 1) * 0.5 * percentage_edges
 
     # execute both phases
     sampled_edge_list = []
@@ -92,12 +95,11 @@ def _check_node_cluster_con(graph: BaseGraph, node: int, cluster: list) -> bool:
 
     return False
 
-def _exploration_phase(trueGraph: BaseGraph, nodes: list, percentage_edges: float) -> list:
+def _exploration_phase(trueGraph: BaseGraph, nodes: list, max_edges: float) -> list:
     # RandomWalk till percentage edges found
     if len(nodes) == 0:
         return []
 
-    max_edges = len(nodes) * (len(nodes) - 1) * 0.5 * percentage_edges
     sampled_edge_list = []
     last_node = random.choice(nodes)
 
