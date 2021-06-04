@@ -1,5 +1,5 @@
 from graphs.base_graph import BaseGraph
-from simulation.utils.stopping_utils import check_connectivity_two_clusters
+from simulation.stopping.utils.stopping_utils import check_connectivity_two_clusters
 
 """
 This module contains different stopping criterion functions and can be extended to new ones.

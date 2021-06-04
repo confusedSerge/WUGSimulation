@@ -1,6 +1,6 @@
 from graphs.base_graph import BaseGraph
-from simulation.utils.cluster_correlation_search import cluster_correlation_search as old_cluster_correlation_search
-from simulation.utils.new_cluster_correlation_search import cluster_correlation_search as new_cluster_correlation_search
+from simulation.clustering.utils.cluster_correlation_search import cluster_correlation_search as old_cluster_correlation_search
+from simulation.clustering.utils.new_cluster_correlation_search import cluster_correlation_search as new_cluster_correlation_search
 
 """
 This module contains different clustering functions and can be extended to new ones.

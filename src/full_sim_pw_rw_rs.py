@@ -6,12 +6,12 @@ from graphs.wu_graph_sampler import WUGraphSampler
 from graphs.wu_graph import WUGraph
 from graphs.wu_simulation_graph import WUSimulationGraph
 
-from simulation.sampling_strategy import page_rank
-from simulation.sampling_strategy import dwug_sampling
-from simulation.clustering_strategy import new_correlation_clustering
-from simulation.stopping_criterion import number_edges_found
-from simulation.stopping_criterion import edges_added
-from simulation.stopping_criterion import cluster_connected
+from simulation.sampling.sampling_strategy import page_rank
+from simulation.sampling.sampling_strategy import dwug_sampling
+from simulation.clustering.clustering_strategy import new_correlation_clustering
+from simulation.stopping.stopping_criterion import number_edges_found
+from simulation.stopping.stopping_criterion import edges_added
+from simulation.stopping.stopping_criterion import cluster_connected
 
 from analysis.analyzer import analyze
 from analysis.metrics import *

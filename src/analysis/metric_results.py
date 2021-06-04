@@ -10,7 +10,6 @@ class MetricResults():
         self.metric_info_dict = {}
 
     # ===Util Functions===
-    # TODO: Add function?
     def add_metric(self, name_metric: str, size: tuple, axes_info: tuple = None):
         if name_metric in self.metric_dict.keys():
             raise KeyError('Key exist already')

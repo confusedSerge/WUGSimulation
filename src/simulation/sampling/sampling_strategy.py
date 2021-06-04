@@ -5,7 +5,7 @@ from graphs.base_graph import BaseGraph
 from graphs.wu_annotator_graph import WUAnnotatorGraph
 from graphs.wu_annotator_simulation_graph import WUAnnotatorSimulationGraph
 
-from simulation.utils.dwug_sampling import dwug_sampling as u_dwug_sampling
+from simulation.sampling.utils.dwug_sampling import dwug_sampling as u_dwug_sampling
 
 """
 This module contains different sampling function and can be extended to new ones.
