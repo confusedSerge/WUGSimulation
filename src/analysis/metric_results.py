@@ -46,12 +46,28 @@ class MetricResults():
         axes = self._gen_slice_tuple(name_metric, axes)
         self.metric_dict[name_metric][axes] = new_values
 
-    # TODO: Add func to extend axis or size
+    def extend_dim(self, name_metric: str, axis: int = 0):
+        if name_metric not in self.metric_dict.keys():
+            raise KeyError
+
+        self.metric_dict[name_metric] = np.expand_dims(self.metric_dict[name_metric], axis=axis)
+
+    def append_values(self, name_metric: str, values, axis: int = 0):
+        if name_metric not in self.metric_dict.keys():
+            raise KeyError
+
+        self.metric_dict[name_metric] = np.append(self.metric_dict[name_metric], values, axis=axis)
+
 
     def get_axes_info(self, name_metric: str):
         if name_metric not in self.metric_info_dict.keys():
             raise KeyError
         return self.metric_info_dict[name_metric]
+
+    def set_axes_info(self, name_metric: str, axes_info: tuple = None):
+        if name_metric not in self.metric_info_dict.keys():
+            raise KeyError
+        self.metric_info_dict[name_metric] = axes_info
 
     # ===Eval Functions===
     def mean(self, name_metric: str, *axes):
