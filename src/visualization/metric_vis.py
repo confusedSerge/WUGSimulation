@@ -78,6 +78,36 @@ def bar_metric_pd(labels, title: str, y_label: str, save_flag: bool = False, sav
     plt.clf()
     plt.close()
 
+def boxplot_metric_pd(labels, title: str, y_label: str, save_flag: bool = False, save_path: str = None, **data) -> None:
+    """
+    Creates a bar plot containing len(labels) boxplots. nth index of data relates to nth label.
+    Args:
+        :param label: label of each bargraph-group
+        :param title: title of plot
+        :param y_label: y axis label 
+        :param save_flag: if to save
+        :param save_path: where to save
+        :param data: the different data points, where the length needs to match up with label. (Key will be used as label)
+    """
+    for k, v in data.items():
+        assert len(labels) == len(v)
+    
+    df = pd.DataFrame(data, labels)
+    ax = df.boxplot(column=labels)
+
+    ax.set_ylabel(y_label)
+    ax.set_title(title)
+    # ax.set_ylim((0.0, 1.0))
+    # ax.legend()
+
+    if save_flag:
+        assert save_path != None and type(save_path) == str
+        plt.savefig(save_path)
+    else:
+        plt.show()
+
+    plt.clf()
+    plt.close()
 
 def line_ploter(steps, title: str, x_label: str, y_label: str, save_flag: bool = False, save_path: str = None, **data) -> None:
     """
