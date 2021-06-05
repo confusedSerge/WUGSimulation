@@ -46,6 +46,8 @@ class MetricResults():
         axes = self._gen_slice_tuple(name_metric, axes)
         self.metric_dict[name_metric][axes] = new_values
 
+    # TODO: Add func to extend axis or size
+
     def get_axes_info(self, name_metric: str):
         if name_metric not in self.metric_info_dict.keys():
             raise KeyError
