@@ -5,6 +5,10 @@ import csv
 from graphs.wu_graph_sampler import WUGraphSampler
 from datetime import datetime
 
+"""
+This is a special script for running some sims.
+"""
+
 # get currenttime
 now = datetime.now()
 current_time = now.strftime("%Y_%m_%d_%H_%M")

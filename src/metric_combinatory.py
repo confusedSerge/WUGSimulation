@@ -1,1 +1,3 @@
-# script to combine metrics (needs to be written, for every case)
+"""
+This is a special script for running some sims.
+"""

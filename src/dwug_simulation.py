@@ -18,6 +18,10 @@ from analysis.metrics import *
 
 from visualization.graph_visualization import draw_graph_graphviz as draw
 
+"""
+This is a special script for running some sims.
+"""
+
 # get currenttime
 now = datetime.now()
 current_time = now.strftime("%Y_%m_%d_%H_%M")

@@ -3,6 +3,11 @@ import pickle
 from analysis.metric_results import MetricResults
 from visualization.metric_vis import bar_metric_pd
 
+
+"""
+This is a special script for running some sims.
+"""
+
 metric_data_path = 'data/graphs/sim_graphs/randomwalk/2021_06_05_10_18/metric/RandomWalk.data'
 
 with open(metric_data_path, 'rb') as file:
