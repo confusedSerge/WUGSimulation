@@ -89,14 +89,52 @@ def boxplot_metric_pd(title: str, y_label: str, save_flag: bool = False, save_pa
         :param save_path: where to save
         :param data: the different data points
     """
-    if type(data) == dict:
-        df = pd.DataFrame(data=data)
-    # else:
-        # df = pd.DataFrame(data=np.stack([v for k, v in data.items()]).T, column=labels)
+    df = pd.DataFrame(data=data)
     ax = df.boxplot(meanline=True, showmeans=True)
 
     ax.set_ylabel(y_label)
     ax.set_title(title)
+
+    if save_flag:
+        assert save_path != None and type(save_path) == str
+        plt.savefig(save_path)
+    else:
+        plt.show()
+
+    plt.clf()
+    plt.close()
+
+def heatmap(data_matrix, title: str, x_label: str, y_label: str, save_flag: bool = False, save_path: str = None):
+    '''
+    Creates a heatmap.
+    Args:
+        :param data_matrix: data points as a matrix
+        :param title: title of plot
+        :param x_label: x axis label 
+        :param y_label: y axis label 
+        :param save_flag: if to save
+        :param save_path: where to save
+    '''
+
+    fig, ax = plt.subplots()
+    
+    ax.imshow(data_matrix)
+
+    ax.set_xticks(np.arange(len(x_label)))
+    ax.set_yticks(np.arange(len(y_label)))
+
+    ax.set_xticklabels(x_label)
+    ax.set_yticklabels(y_label)
+
+    plt.setp(ax.get_xticklabels(), rotation=45, ha="right",
+            rotation_mode="anchor")
+
+    for i in range(len(y_label)):
+        for j in range(len(x_label)):
+            ax.text(j, i, data_matrix[i, j], ha="center", va="center", color="w")
+
+    ax.set_title(title)
+    fig.tight_layout()
 
     if save_flag:
         assert save_path != None and type(save_path) == str

@@ -1,3 +1,5 @@
+import numpy as np
+
 from graphs.wu_graph_sampler import WUGraphSampler
 from graphs.wu_simulation_graph import WUSimulationGraph
 
@@ -14,6 +16,7 @@ from analysis.metrics import *
 from visualization.graph_visualization import draw_graph_graphviz as draw
 from visualization.metric_vis import boxplot_metric_pd as boxplot
 from visualization.metric_vis import bar_metric_pd as barplot
+from visualization.metric_vis import heatmap
 
 # If you want to try this graph, it is recommended to put this script in the top directory 
 
@@ -109,3 +112,5 @@ barplot(judgments, 'Barplot of all data from Random Sampling', 'Performance',
     purity=metric_result_rs.get_values('purity'), 
     accuracy=metric_result_rs.get_values('accuracy'), 
     inverse_jensen_shannon_distance=metric_result_rs.get_values('inverse_jensen_shannon_distance'))
+
+heatmap(np.round(metric_result_rs.get_values('all').T, 1), 'Heatmap of Random Sampling', metrics_used, judgments)
