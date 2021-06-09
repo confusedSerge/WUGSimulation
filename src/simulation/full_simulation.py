@@ -25,14 +25,14 @@ def full_simulation(trueGraph: BaseGraph, simulationGraph: BaseGraph, max_iter: 
         :param analyzing_critertion: function to determine when to analyze 
         :param analyzing_critertion_params: params as list of dict for analyzing criterion, for each point
 
-        :param anal_clustering_strategy: function to use for clustering befor analyzing (only if no normal clustering is done)
+        :param anal_clustering_strategy: function to use for clustering before analyzing (only if no normal clustering is done)
         :param anal_clustering_params: params as dict for clustering function
 
         :param analyzing_func: function used for analyzing 
         :param analyzing_params: params as dict for analyzing function
         :param return_graph_flag: if analyzed graph should be returned
 
-        :return tuple: returns a tuple containing the simulation graph, if maximal iteration was hit, list of metrics collected at diff points and corresponding graph
+        :return tuple: returns a tuple containing the simulation graph, if sc was hit, list of metrics collected at diff points and corresponding graph
     """
     if verbose: print('Started Guard-Phase')
 
@@ -131,15 +131,15 @@ def full_simulation(trueGraph: BaseGraph, simulationGraph: BaseGraph, max_iter: 
             else:
                 current_acp_counter = None
 
-        # break if all acp hit and sim doesnt break on sc
-        if current_acp_counter == None and not break_on_sc:
-            break
-
         # stopping criterion
         if not sc_hit_flag and stopping_criterion(simulationGraph, stopping_params):
             sc_sim_graph = deepcopy(simulationGraph)
             sc_hit_flag = True
             if break_on_sc: break
+
+        # break if all acp hit and sc was hit but sim doesnt break on sc
+        if current_acp_counter == None and not break_on_sc and sc_hit_flag:
+            break
     
     # Make sure, if sc was not hit to return the latest graph
     if not sc_hit_flag:
