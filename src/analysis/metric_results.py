@@ -117,10 +117,10 @@ if __name__ == "__main__":
 
     res.update_value('randInd', [1, 2, 2], 0)
 
-    # print(res.get_values('randInd').flatten())
-    # print(res.std('randInd', slice(0, 1), 0))
-    # print(res.max('randInd', 0, 0))
-    # print(res.min('randInd', 0, 0))
+    print(res.get_values('randInd').flatten())
+    print(res.std('randInd', slice(0, 1), 0))
+    print(res.max('randInd', 0, 0))
+    print(res.min('randInd', 0, 0))
 
-    # res.update_value('randInd', 1)
+    res.update_value('randInd', 1)
     print(res.get_values('randInd'))
