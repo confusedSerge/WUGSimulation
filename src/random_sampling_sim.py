@@ -20,18 +20,18 @@ from analysis.metrics import *
 from visualization.graph_visualization import draw_graph_graphviz as draw
 
 """
-This is a special script for running random walk sims.
+This is a special script for running random sampling sims.
 """
 # === Setup Phase ===
 # Note: Change these accordingly
-sim_short_name, sim_property_name = 'RandomWalk', 'first_sim_diffk_logsofthard'
+sim_short_name, sim_property_name = 'RandomSampling', 'first_sim_diffk_logsofthard'
 
 # vars for simulation
 # Note: settings of sim also check/change function
 sort_func = lambda x: x.get_number_communities()
 
 # drawer and pickle vars 
-plot_title, plot_name = 'Random Walk Simulation', 'randomwalk_sim'
+plot_title, plot_name = 'Random Sampling Simulation', 'randomsampling_sim'
 
 # other vars
 save_intermediate, draw_intermediate = True, True
@@ -43,7 +43,7 @@ judgments_points = [10, 20, 30, 40, 50, 100, 200, 300, 400, 500, 1000, 2000, 300
 
 max_iter, break_on_sc, verbose = 5000, False, verbose,
 
-sampling_strategy, sampling_params = page_rank, {'sample_size': 10, 'start': 'simulation_wug.get_last_added_node', 'tp_coef': 0.0}
+sampling_strategy, sampling_params = page_rank, {'sample_size': 10, 'start': 'simulation_wug.get_last_added_node', 'tp_coef': 1.0}
 stopping_criterion, stopping_params = number_edges_found, {'number_edges': 4000}
 clustering_strategy, clustering_params = None, 'None'
 
@@ -168,7 +168,7 @@ for i, graph in enumerate(graphs):
         = full_simulation(trueGraph=graph, simulationGraph=simulation_wug, 
                     max_iter=max_iter, break_on_sc=break_on_sc, verbose=verbose,
                     
-                    sampling_strategy=sampling_strategy, sampling_params={'sample_size': 10, 'start': simulation_wug.get_last_added_node, 'tp_coef': 0.0},
+                    sampling_strategy=sampling_strategy, sampling_params={'sample_size': 10, 'start': simulation_wug.get_last_added_node, 'tp_coef': 1.0},
                     stopping_criterion=stopping_criterion,  stopping_params=stopping_params,
                     
                     analyzing_critertion=analyzing_critertion, analyzing_critertion_params=analyzing_critertion_params,

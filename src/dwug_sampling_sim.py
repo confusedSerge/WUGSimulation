@@ -8,10 +8,10 @@ from graphs.wu_graph import WUGraph
 from graphs.wu_simulation_graph import WUSimulationGraph
 
 from simulation.full_simulation import full_simulation
-from simulation.sampling.sampling_strategy import page_rank
+from simulation.sampling.sampling_strategy import dwug_sampling
 from simulation.clustering.clustering_strategy import new_correlation_clustering
+from simulation.stopping.stopping_criterion import cluster_connected
 from simulation.stopping.stopping_criterion import edges_added
-from simulation.stopping.stopping_criterion import number_edges_found
 
 from analysis.metric_results import MetricResults
 from analysis.analyzer import analyze
@@ -20,18 +20,18 @@ from analysis.metrics import *
 from visualization.graph_visualization import draw_graph_graphviz as draw
 
 """
-This is a special script for running random walk sims.
+This is a special script for running dwug sims.
 """
 # === Setup Phase ===
 # Note: Change these accordingly
-sim_short_name, sim_property_name = 'RandomWalk', 'first_sim_diffk_logsofthard'
+sim_short_name, sim_property_name = 'DWUG', 'first_sim_diffk_logsofthard'
 
 # vars for simulation
 # Note: settings of sim also check/change function
 sort_func = lambda x: x.get_number_communities()
 
 # drawer and pickle vars 
-plot_title, plot_name = 'Random Walk Simulation', 'randomwalk_sim'
+plot_title, plot_name = 'DWUG Simulation', 'dwug_sim'
 
 # other vars
 save_intermediate, draw_intermediate = True, True
@@ -43,9 +43,9 @@ judgments_points = [10, 20, 30, 40, 50, 100, 200, 300, 400, 500, 1000, 2000, 300
 
 max_iter, break_on_sc, verbose = 5000, False, verbose,
 
-sampling_strategy, sampling_params = page_rank, {'sample_size': 10, 'start': 'simulation_wug.get_last_added_node', 'tp_coef': 0.0}
-stopping_criterion, stopping_params = number_edges_found, {'number_edges': 4000}
-clustering_strategy, clustering_params = None, 'None'
+sampling_strategy, sampling_params = dwug_sampling, {'simulationGraph': 'simulation_wug', 'percentage_nodes': 0.1, 'percentage_edges': 0.3, 'min_size_mc': 2}
+clustering_strategy, clustering_params = new_correlation_clustering, {'weights': 'edge_soft_weight', 'max_attempts': 10, 'max_iters': 10, 'split_flag': False}
+stopping_criterion, stopping_params = cluster_connected, {'cluster_min_size': 1, 'min_num_edges': 5}
 
 analyzing_critertion, analyzing_critertion_params = edges_added, [{'number_edges': x} for x in judgments_points]
 anal_clustering_strategy, anal_clustering_params = new_correlation_clustering, {'weights': 'edge_soft_weight', 'max_attempts': 10, 'max_iters': 10, 'split_flag': False}
@@ -168,7 +168,8 @@ for i, graph in enumerate(graphs):
         = full_simulation(trueGraph=graph, simulationGraph=simulation_wug, 
                     max_iter=max_iter, break_on_sc=break_on_sc, verbose=verbose,
                     
-                    sampling_strategy=sampling_strategy, sampling_params={'sample_size': 10, 'start': simulation_wug.get_last_added_node, 'tp_coef': 0.0},
+                    sampling_strategy=sampling_strategy, sampling_params={'simulationGraph': simulation_wug, 'percentage_nodes': 0.1, 'percentage_edges': 0.3, 'min_size_mc': 2},
+                    clustering_strategy=clustering_strategy, clustering_params=clustering_params,
                     stopping_criterion=stopping_criterion,  stopping_params=stopping_params,
                     
                     analyzing_critertion=analyzing_critertion, analyzing_critertion_params=analyzing_critertion_params,
