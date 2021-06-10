@@ -28,9 +28,10 @@ class WUGraphSampler:
                             v = ['binomial', 3, (0.5, 0.9)]
                             v = ['binomial', (1, 3), 0.9]
         """
-        self.distr_flags = {'binomial': self._build_binomila_distr}
+        self.distr_flags = {'binomial': self._build_binomial_distr}
         self.dispensation_flags = {'random': self._random_dispensation_communities,
-                          'log': self._log_dispensation_communities}
+                          'log': self._log_dispensation_communities,
+                          'log_iter': self._log_dispensation_communities_iter}
 
         self.num_nodes = num_nodes
         self.num_communities = num_communities
@@ -172,7 +173,7 @@ class WUGraphSampler:
         return nodes, rand_node_flag, distribution_method, communities, community_dispensation, community_dispensation_method_flag, community_dispensation_method, params
     # functions for building correct distribution
 
-    def _build_binomila_distr(self, number_communities, tries, probability) -> Binomial:
+    def _build_binomial_distr(self, number_communities, tries, probability) -> Binomial:
         _tries = tries
         if (type(tries) == tuple):
             _tries = random.randint(*tries)
@@ -228,6 +229,33 @@ class WUGraphSampler:
         community_split[0] += num_nodes - sum(community_split)
 
         return community_split
+
+    def _log_dispensation_communities_iter(self, num_nodes: int, num_communities: int, params: dict):
+        """
+        Uses a lognorm probability density to calculate the sizes of each community
+
+        Args:
+            :params num_nodes: number of nodes to dispensate
+            :params num_communities: number of communities (buckets) to dispensate to
+            :params std_dev: standard deviation of the log_norm distribution
+            :params threshold: when rest nodes are below threshold, they will be added to the first bucket 
+            :return list: dispensated nodes 
+        """
+        assert type(params) == dict
+        std_dev = params.get('std_dev', 0.5)
+        threshold = params.get('threshold', 5)
+
+        r_nodes = num_nodes
+        community_split_nodes = 0
+        community_split_probability = lognorm.pdf(np.linspace(1, num_communities, num_communities), std_dev)
+
+        while r_nodes > threshold:
+                community_split_nodes += community_split_probability * r_nodes
+                r_nodes = num_nodes - sum(community_split_nodes)
+
+        community_split_nodes = np.array([int(x) if int(x) > 0 else 1 for x in community_split_nodes])
+        community_split_nodes[0] += num_nodes - sum(community_split_nodes)
+        return community_split_nodes
 
     def _random_dispensation_communities(self, num_nodes: int, num_communities: int, params: dict) -> list:
         """
