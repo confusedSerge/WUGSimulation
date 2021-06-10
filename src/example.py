@@ -47,7 +47,10 @@ metric_result_rs = MetricResults(name='Random Sampling Metrics')
 
 '''
 We provide multiple simulation functions, but recommend the full_simulation function.
-For the simulation we provide the functions and parameters used for each step (sampling, clustering, stopping)
+In every iteration of the simulation 4 steps are performed: Sampling, Clustering (optional), Analysing (optional), checking Stopping Criterion.
+The analysis step also contains an optional clustering, which is only performed if the Clustering step is skipped and a clustering algorithm is provided. 
+Also it is important to note, that the analysis step is only performed for the given analysis points.  
+For the simulation we provide the functions and parameters used for each step (sampling, clustering, analysing, stopping)
 as well as a true graph (on which to sample) and a simulation graph.
 The reason for providing a simulation graph is that it can either be a customized graph, or a graph from previous simulations.
 We can also provide different analysing criterions as well as points at which we want to analyse the current simulation graph.
@@ -64,6 +67,11 @@ simulation_wug_rs, max_iter_reached, metrics_rs, metrics_rs_graphs \
                 analyzing_func=analyze, 
                 analyzing_params={'adjusted_randIndex': (adjusted_randIndex, {}), 'purity':(purity, {}), 'accuracy':(accuracy, {}), 'inverse_jensen_shannon_distance':(inverse_jensen_shannon_distance, {})}, 
                 return_graph_flag=True)
+
+'''
+If no clustering is performed (due to not providing any clustering strategies), it is recommended to do a clustering of the graph after the simulation
+'''
+# simulation_wug_rs.update_community_nodes_membership(new_correlation_clustering(simulation_wug_rs, {'weights': 'edge_soft_weight', 'max_attempts': 10, 'max_iters': 10, 'split_flag': True}))
 
 draw(simulation_wug_rs, 'Final Simulation Graph')
 

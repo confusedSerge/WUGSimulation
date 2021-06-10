@@ -22,7 +22,7 @@ def full_simulation(trueGraph: BaseGraph, simulationGraph: BaseGraph, max_iter: 
         :param stopping_criterion: function to use as stopping criterion
         :param stopping_params: params as dict for stopping criterion
 
-        :param analyzing_critertion: function to determine when to analyze 
+        :param analyzing_critertion: function to determine if & when to analyze (If this function is not provided, analysing will not be done)
         :param analyzing_critertion_params: params as list of dict for analyzing criterion, for each point
 
         :param anal_clustering_strategy: function to use for clustering before analyzing (only if no normal clustering is done)
@@ -51,12 +51,13 @@ def full_simulation(trueGraph: BaseGraph, simulationGraph: BaseGraph, max_iter: 
 
     # Get Clustering
     clustering_flag = False
+
     clustering_strategy = params.get('clustering_strategy', None)
+    clustering_params = params.get('clustering_params', None)
 
     if clustering_strategy != None:
         clustering_flag = True
 
-        clustering_params = params.get('clustering_params', None)
         assert type(clustering_params) == dict
     
     # Get Stopping
@@ -66,35 +67,39 @@ def full_simulation(trueGraph: BaseGraph, simulationGraph: BaseGraph, max_iter: 
     stopping_params = params.get('stopping_params', None)
     assert type(stopping_params) == dict
 
-    # Get Analyzing criterion
-    analyzing_critertion = params.get('analyzing_critertion', None)
-    assert analyzing_critertion != None
-    
-    analyzing_critertion_params = params.get('analyzing_critertion_params', None)
-    assert type(analyzing_critertion_params) == list
+    # Get & check Analyzing criterion
+    acp_flag = False
+    current_acp = None
+    current_acp_counter = None
 
-    current_acp = analyzing_critertion_params[0]
-    current_acp_counter = 0
+    analyzing_critertion = params.get('analyzing_critertion', None)
+    analyzing_critertion_params = params.get('analyzing_critertion_params', None)
+    
+    if analyzing_critertion != None:
+        assert type(analyzing_critertion_params) == list
+
+        acp_flag = True
+        current_acp = analyzing_critertion_params[0]
+        current_acp_counter = 0
     acp_list = []
 
-    # Get Analyzing Clustering
-    if not clustering_flag:
-        anal_clustering_strategy = params.get('anal_clustering_strategy', None)
-        assert anal_clustering_strategy != None
-        
-        anal_clustering_params = params.get('anal_clustering_params', None)
+    # Get & check Analyzing Clustering
+    anal_clustering_strategy = params.get('anal_clustering_strategy', None)
+    anal_clustering_params = params.get('anal_clustering_params', None)
+
+    if anal_clustering_strategy != None:
         assert type(anal_clustering_params) == dict
 
-    # Get Analyzing 
+    # Get & check Analyzing 
     analyzing_func = params.get('analyzing_func', None)
-    assert analyzing_func != None
-    
     analyzing_params = params.get('analyzing_params', None)
-    assert type(analyzing_params) == dict
-
     return_graph_flag = params.get('return_graph_flag', None)
-    assert type(return_graph_flag) == bool
+    
+    if analyzing_func != None:
+        assert type(analyzing_params) == dict
+        assert type(return_graph_flag) == bool
 
+    # Other vars
     return_graph = []
     sc_hit_flag = False
     sc_sim_graph = None
@@ -114,7 +119,7 @@ def full_simulation(trueGraph: BaseGraph, simulationGraph: BaseGraph, max_iter: 
         # analyzing phase
         if current_acp_counter != None and analyzing_critertion(simulationGraph, current_acp):
             # clustering
-            if not clustering_flag:
+            if not clustering_flag and anal_clustering_strategy != None:
                 clusters = anal_clustering_strategy(simulationGraph, anal_clustering_params)
                 simulationGraph.update_community_nodes_membership(clusters)
             # analyzing
@@ -146,7 +151,7 @@ def full_simulation(trueGraph: BaseGraph, simulationGraph: BaseGraph, max_iter: 
         sc_sim_graph = simulationGraph
 
     # Make sure, that acp is the correct length
-    if len(acp_list) < len(analyzing_critertion_params):
+    if acp_flag and len(acp_list) < len(analyzing_critertion_params):
         acp_list.extend([acp_list[-1]] * (len(analyzing_critertion_params) - len(acp_list)))
 
     if verbose: print('Finished')
