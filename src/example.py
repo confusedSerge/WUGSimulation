@@ -70,8 +70,9 @@ simulation_wug_rs, max_iter_reached, metrics_rs, metrics_rs_graphs \
 
 '''
 If no clustering is performed (due to not providing any clustering strategies), it is recommended to do a clustering of the graph after the simulation
+If clustering is only performed during the analysis step, it is also recommended to cluster the final simulation graph, as the final graph may not be clustered!
 '''
-# simulation_wug_rs.update_community_nodes_membership(new_correlation_clustering(simulation_wug_rs, {'weights': 'edge_soft_weight', 'max_attempts': 10, 'max_iters': 10, 'split_flag': True}))
+simulation_wug_rs.update_community_nodes_membership(new_correlation_clustering(simulation_wug_rs, {'weights': 'edge_soft_weight', 'max_attempts': 10, 'max_iters': 10, 'split_flag': True}))
 
 draw(simulation_wug_rs, 'Final Simulation Graph')
 

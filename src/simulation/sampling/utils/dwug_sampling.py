@@ -52,14 +52,12 @@ def _n_sampling_round(trueGraph: BaseGraph, simulationGraph: BaseGraph, min_size
             exploration_nodes.append(node)
     
     # add new nodes to combination phase
-    sim_graph_labels = simulationGraph.get_labels()
-    # TODO: this could be a problem, as we asume this graph is a simgraph, not basegraph (labels == -1 iff not yet added + clustered)!!
-    not_added_nodes = [i for i in range(len(sim_graph_labels)) if sim_graph_labels[i] == -1]
+    not_added_nodes = list(set(trueGraph.G.nodes()) - set(simulationGraph.G.nodes())) 
     num_new_nodes_add = percentage_nodes if num_flag else round(trueGraph.get_number_nodes() * percentage_nodes)
 
     try:
         new_nodes = np.random.choice(not_added_nodes, num_new_nodes_add, replace=False)
-    except ValueError as identifier:
+    except ValueError:
         new_nodes = not_added_nodes
 
 
@@ -69,7 +67,7 @@ def _n_sampling_round(trueGraph: BaseGraph, simulationGraph: BaseGraph, min_size
     # execute both phases
     sampled_edge_list = []
     sampled_edge_list.extend(_combination_phase(trueGraph, simulationGraph, combination_nodes, multi_clusters))
-    sampled_edge_list.extend(_exploration_phase(trueGraph, exploration_nodes, percentage_edges))
+    sampled_edge_list.extend(_exploration_phase(trueGraph, exploration_nodes, max_edges))
 
     return sampled_edge_list            
 
