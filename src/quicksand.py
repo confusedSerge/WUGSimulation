@@ -18,13 +18,13 @@ def log_dist_iter(coms, nodes, std_dev, threshold):
         
 
 for i in np.arange(0.1, 1.1, 0.1):
-        # community_split = lognorm.pdf(np.linspace(1, 4, 4), i) * 500
+        # community_split = lognorm.pdf(np.linspace(1, 10, 4), i) * 500
         # print(round(i, 1), community_split, 500 - sum(community_split))
         # plt.plot(np.linspace(1, 4, 4), community_split/sum(community_split), label=round(i, 1))
 
-        community_split = log_dist_iter(4, 500, i, 5)
+        community_split = log_dist_iter(10, 500, i, 5)
         print(round(i, 1), community_split, 500 - sum(community_split))
-        plt.plot(np.linspace(1, 4, 4), community_split/sum(community_split), label=round(i, 1))
+        plt.plot(np.linspace(1, 10, 10), community_split/sum(community_split), label=round(i, 1))
 
 plt.legend(title='Legend')
 plt.show()
