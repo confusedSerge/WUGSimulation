@@ -94,6 +94,7 @@ def boxplot_metric_pd(title: str, y_label: str, save_flag: bool = False, save_pa
 
     ax.set_ylabel(y_label)
     ax.set_title(title)
+    ax.set_ylim((0.0, 1.0))
 
     if save_flag:
         assert save_path != None and type(save_path) == str
@@ -118,7 +119,7 @@ def heatmap(data_matrix, title: str, x_label: str, y_label: str, save_flag: bool
 
     fig, ax = plt.subplots()
     
-    ax.imshow(data_matrix)
+    ax.imshow(data_matrix, aspect='auto')
 
     ax.set_xticks(np.arange(len(x_label)))
     ax.set_yticks(np.arange(len(y_label)))

@@ -43,7 +43,7 @@ judgments_points = [10, 20, 30, 40, 50, 100, 200, 300, 400, 500, 1000, 2000, 300
 
 max_iter, break_on_sc, verbose = 5000, False, verbose,
 
-sampling_strategy, sampling_params = dwug_sampling, {'simulationGraph': 'simulation_wug', 'percentage_nodes': 0.1, 'percentage_edges': 0.3, 'min_size_mc': 2}
+sampling_strategy, sampling_params = dwug_sampling, {'simulationGraph': 'simulation_wug', 'percentage_nodes': 0.02, 'percentage_edges': 0.1, 'min_size_mc': 2}
 clustering_strategy, clustering_params = new_correlation_clustering, {'weights': 'edge_soft_weight', 'max_attempts': 10, 'max_iters': 10, 'split_flag': False}
 stopping_criterion, stopping_params = cluster_connected, {'cluster_min_size': 1, 'min_num_edges': 5}
 
@@ -168,7 +168,7 @@ for i, graph in enumerate(graphs):
         = full_simulation(trueGraph=graph, simulationGraph=simulation_wug, 
                     max_iter=max_iter, break_on_sc=break_on_sc, verbose=verbose,
                     
-                    sampling_strategy=sampling_strategy, sampling_params={'simulationGraph': simulation_wug, 'percentage_nodes': 0.1, 'percentage_edges': 0.3, 'min_size_mc': 2},
+                    sampling_strategy=sampling_strategy, sampling_params={'simulationGraph': simulation_wug, 'percentage_nodes': 0.02, 'percentage_edges': 0.1, 'min_size_mc': 2},
                     clustering_strategy=clustering_strategy, clustering_params=clustering_params,
                     stopping_criterion=stopping_criterion,  stopping_params=stopping_params,
                     

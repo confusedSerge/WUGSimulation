@@ -6,16 +6,20 @@ from datetime import datetime
 
 from analysis.metric_results import MetricResults
 
+'''
+Important, this is just a sandbox script for merging data 
+'''
+
 now = datetime.now()
 current_time = now.strftime("%Y_%m_%d_%H_%M")
 
 # Change var here
-metric_name = 'RandomWalk k[1, 3, 5, 10] log[hard, soft]'
-metric_short = 'randomwalk_comb'
+metric_name = 'DWUG k[1, 3, 5, 10] log[hard, soft]'
+metric_short = 'dwug_comb'
 
-path_hard = 'data/graphs/sim_graphs/randomwalk/sim_ks_loghard/2021_06_11_11_12/metric/RandomWalk.data'
-path_soft = 'data/graphs/sim_graphs/randomwalk/sim_ks_logsoft/2021_06_11_10_55/metric/RandomWalk.data'
-path_out = 'data/graphs/sim_graphs/randomwalk/sim_ks_logsofthard/{}'.format(current_time)
+path_hard = 'data/graphs/sim_graphs/dwug/sim_ks_loghard/2021_06_11_14_55/metric/DWUG.data'
+path_soft = 'data/graphs/sim_graphs/dwug/sim_ks_logsoft/2021_06_11_14_55/metric/DWUG.data'
+path_out = 'data/graphs/sim_graphs/dwug/sim_ks_logsofthard/{}'.format(current_time)
 
 metrics = ['adjusted_randIndex', 'purity', 'accuracy', 'inverse_jensen_shannon_distance']
 
@@ -34,6 +38,7 @@ except FileExistsError as identifier:
     logging.error(identifier)
     exit()
 
+# logging.basicConfig(format='%(asctime)s:%(levelname)s:%(message)s', level=logging.INFO)
 logging.basicConfig(filename='{}/sim.log'.format(path_out),format='%(asctime)s:%(levelname)s:%(message)s', level=logging.INFO)
 
 logging.info('Loading Metrics')

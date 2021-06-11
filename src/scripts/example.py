@@ -122,4 +122,4 @@ barplot(judgments, 'Barplot of all data from Random Sampling', 'Performance',
     accuracy=metric_result_rs.get_values('accuracy'), 
     inverse_jensen_shannon_distance=metric_result_rs.get_values('inverse_jensen_shannon_distance'))
 
-heatmap(np.round(metric_result_rs.get_values('all').T, 1), 'Heatmap of Random Sampling', metrics_used, judgments)
+heatmap(np.round(metric_result_rs.get_values('all').T, 2), 'Heatmap of Random Sampling', metrics_used, judgments)

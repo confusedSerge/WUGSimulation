@@ -70,19 +70,19 @@ class MetricResults():
         self.metric_info_dict[name_metric] = axes_info
 
     # ===Eval Functions===
-    def mean(self, name_metric: str, *axes):
-        return np.nanmean(self.get_values(name_metric, *axes))
+    def mean(self, name_metric: str, axes_value: tuple, axis_mean: int):
+        return np.nanmean(self.get_values(name_metric, axes_value), axis=axis_mean)
     
-    def median(self, name_metric: str, *axes):
-        return np.nanmedian(self.get_values(name_metric, *axes))
+    def median(self, name_metric: str, axes_value: tuple, axis_mean: tuple):
+        return np.nanmedian(self.get_values(name_metric, axes_value), axis=axis_mean)
 
-    def std(self, name_metric: str, *axes):
-        return np.nanstd(self.get_values(name_metric, *axes))
+    def std(self, name_metric: str, axes_value: tuple, axis_mean: tuple):
+        return np.nanstd(self.get_values(name_metric, axes_value), axis=axis_mean)
     
-    def var(self, name_metric: str, *axes):
-        return np.nanvar(self.get_values(name_metric, *axes))
+    def var(self, name_metric: str, axes_value: tuple, axis_mean: tuple):
+        return np.nanvar(self.get_values(name_metric, axes_value), axis=axis_mean)
     
-    def max(self, name_metric: str, *axes):
+    def max(self, name_metric: str, axes_value: tuple, *axes):
         """
         Note, argmax only works, if no NaNs in the given array
         """

@@ -25,7 +25,7 @@ def _z_sampling_round(trueGraph: BaseGraph, percentage_nodes: float, percentage_
     
     try:
         nodes = np.random.choice(trueGraph.G.nodes(), number_nodes, replace=False)
-    except ValueError as identifier:
+    except ValueError:
         nodes = trueGraph.G.nodes()
 
     max_edges = percentage_edges if num_flag else len(nodes) * (len(nodes) - 1) * 0.5 * percentage_edges

@@ -7,7 +7,7 @@ from graphs.wu_graph_sampler import WUGraphSampler
 from datetime import datetime
 
 """
-This is a special script for running some sims.
+This is a special script for generating some true graphs
 """
 
 # pre init
