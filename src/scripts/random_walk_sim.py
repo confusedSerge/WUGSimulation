@@ -24,7 +24,7 @@ This is a special script for running random walk sims.
 """
 # === Setup Phase ===
 # Note: Change these accordingly
-sim_short_name, sim_property_name = 'RandomWalk', 'first_sim_diffk_logsofthard'
+sim_short_name, sim_property_name = 'RandomWalk', 'sim_ks_loghard'
 
 # vars for simulation
 # Note: settings of sim also check/change function
@@ -36,7 +36,7 @@ plot_title, plot_name = 'Random Walk Simulation', 'randomwalk_sim'
 # other vars
 save_intermediate, draw_intermediate = True, True
 verbose = True
-path_true_wugs = 'data/graphs/true_graphs/2021_06_10_14_52'
+path_true_wugs = 'data/graphs/true_graphs/k_c_var/2021_06_11_10_36'
 
 #sim param (some can only be init in sim loop, but for completness add here as string, so it can be logged)
 judgments_points = [10, 20, 30, 40, 50, 100, 200, 300, 400, 500, 1000, 2000, 3000, 4000, 5000]
@@ -95,7 +95,7 @@ logging.log(21, 'End Logging Parameters')
 
 # === True Graph Phase === 
 # Load true_graph/s
-if verbose: logging.info('Loading graphs')
+if verbose: logging.info('Loading graphs from: {}'.format(path_true_wugs))
 graphs = []
 for _, _, files in os.walk(path_true_wugs):
     for file in files:

@@ -8,10 +8,10 @@ from graphs.wu_graph import WUGraph
 from graphs.wu_simulation_graph import WUSimulationGraph
 
 from simulation.full_simulation import full_simulation
-from simulation.sampling.sampling_strategy import dwug_sampling
+from simulation.sampling.sampling_strategy import page_rank
 from simulation.clustering.clustering_strategy import new_correlation_clustering
-from simulation.stopping.stopping_criterion import cluster_connected
 from simulation.stopping.stopping_criterion import edges_added
+from simulation.stopping.stopping_criterion import number_edges_found
 
 from analysis.metric_results import MetricResults
 from analysis.analyzer import analyze
@@ -20,32 +20,32 @@ from analysis.metrics import *
 from visualization.graph_visualization import draw_graph_graphviz as draw
 
 """
-This is a special script for running dwug sims.
+This is a special script for running page rank sims.
 """
 # === Setup Phase ===
 # Note: Change these accordingly
-sim_short_name, sim_property_name = 'DWUG', 'first_sim_diffk_logsofthard'
+sim_short_name, sim_property_name = 'PageRank', 'sim_ks_loghard'
 
 # vars for simulation
 # Note: settings of sim also check/change function
 sort_func = lambda x: x.get_number_communities()
 
 # drawer and pickle vars 
-plot_title, plot_name = 'DWUG Simulation', 'dwug_sim'
+plot_title, plot_name = 'Page Rank Simulation', 'pagerank_sim'
 
 # other vars
 save_intermediate, draw_intermediate = True, True
 verbose = True
-path_true_wugs = 'data/graphs/true_graphs/2021_06_10_14_52'
+path_true_wugs = 'data/graphs/true_graphs/k_c_var/2021_06_11_10_36'
 
 #sim param (some can only be init in sim loop, but for completness add here as string, so it can be logged)
 judgments_points = [10, 20, 30, 40, 50, 100, 200, 300, 400, 500, 1000, 2000, 3000, 4000, 5000]
 
 max_iter, break_on_sc, verbose = 5000, False, verbose,
 
-sampling_strategy, sampling_params = dwug_sampling, {'simulationGraph': 'simulation_wug', 'percentage_nodes': 0.1, 'percentage_edges': 0.3, 'min_size_mc': 2}
-clustering_strategy, clustering_params = new_correlation_clustering, {'weights': 'edge_soft_weight', 'max_attempts': 10, 'max_iters': 10, 'split_flag': False}
-stopping_criterion, stopping_params = cluster_connected, {'cluster_min_size': 1, 'min_num_edges': 5}
+sampling_strategy, sampling_params = page_rank, {'sample_size': 10, 'start': 'simulation_wug.get_last_added_node', 'tp_coef': 0.1}
+stopping_criterion, stopping_params = number_edges_found, {'number_edges': 4000}
+clustering_strategy, clustering_params = None, 'None'
 
 analyzing_critertion, analyzing_critertion_params = edges_added, [{'number_edges': x} for x in judgments_points]
 anal_clustering_strategy, anal_clustering_params = new_correlation_clustering, {'weights': 'edge_soft_weight', 'max_attempts': 10, 'max_iters': 10, 'split_flag': False}
@@ -95,7 +95,7 @@ logging.log(21, 'End Logging Parameters')
 
 # === True Graph Phase === 
 # Load true_graph/s
-if verbose: logging.info('Loading graphs')
+if verbose: logging.info('Loading graphs from: {}'.format(path_true_wugs))
 graphs = []
 for _, _, files in os.walk(path_true_wugs):
     for file in files:
@@ -168,8 +168,7 @@ for i, graph in enumerate(graphs):
         = full_simulation(trueGraph=graph, simulationGraph=simulation_wug, 
                     max_iter=max_iter, break_on_sc=break_on_sc, verbose=verbose,
                     
-                    sampling_strategy=sampling_strategy, sampling_params={'simulationGraph': simulation_wug, 'percentage_nodes': 0.1, 'percentage_edges': 0.3, 'min_size_mc': 2},
-                    clustering_strategy=clustering_strategy, clustering_params=clustering_params,
+                    sampling_strategy=sampling_strategy, sampling_params={'sample_size': 10, 'start': simulation_wug.get_last_added_node, 'tp_coef': 0.1},
                     stopping_criterion=stopping_criterion,  stopping_params=stopping_params,
                     
                     analyzing_critertion=analyzing_critertion, analyzing_critertion_params=analyzing_critertion_params,
