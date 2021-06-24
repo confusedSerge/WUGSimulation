@@ -1,21 +1,42 @@
-# just a script to play around, test some functionalities, find bugs
 import numpy as np
 from scipy.stats import lognorm
 import matplotlib.pyplot as plt
 
-from visualization.graph_visualization import draw_graph_graphviz as draw
-import pickle
-import os
+def log_dist_iter(coms, nodes, std_dev, threshold):
+        r_nodes = nodes
+        community_split_nodes = 0
+        community_split_probability = lognorm.pdf(np.linspace(1, coms, coms), std_dev)
 
-path_true_wugs = 'data/graphs/true_graphs/2021_06_10_14_53'
+        while r_nodes > threshold:
+                community_split_nodes += community_split_probability * r_nodes
+                r_nodes = nodes - sum(community_split_nodes)
 
-graphs = []
-for _, _, files in os.walk(path_true_wugs):
-    for file in files:
-        if file.endswith('.graph'):
-            with open('{}/{}'.format(path_true_wugs, file), 'rb') as fg:
-                graphs.append(pickle.load(fg))
-            fg.close()
+        community_split_nodes = np.array([int(x) if int(x) > 0 else 1 for x in community_split_nodes])
+        community_split_nodes[0] += nodes - sum(community_split_nodes)
+        return community_split_nodes
+        
 
-for i, graph in enumerate(graphs):
-        draw(graph, plot_title='True Graph', save_flag=True, path='data/figs/{}.png'.format(i))
+# for i in np.arange(0.1, 1.1, 0.1):
+community_split = lognorm.pdf(np.linspace(1, 4, 4), 0.1) * 500
+community_split[0] += 500 - sum(community_split)
+print(round(0.1, 1), community_split, 500 - sum(community_split))
+plt.plot(np.linspace(1, 4, 4), community_split/sum(community_split), label='0.1, old')
+
+community_split = lognorm.pdf(np.linspace(1, 4, 4), 0.9) * 500
+community_split[0] += 500 - sum(community_split)
+print(round(0.9, 1), community_split, 500 - sum(community_split))
+plt.plot(np.linspace(1, 4, 4), community_split/sum(community_split), label='0.9, old')
+
+community_split = log_dist_iter(4, 500, 0.1, 5)
+print(round(0.1, 1), community_split, 500 - sum(community_split))
+plt.plot(np.linspace(1, 4, 4), community_split/sum(community_split), label='0.1, new')
+
+community_split = log_dist_iter(4, 500, 0.9, 5)
+print(round(0.9, 1), community_split, 500 - sum(community_split))
+plt.plot(np.linspace(1, 4, 4), community_split/sum(community_split), label='0.9, new')
+
+
+
+
+plt.legend(title='Legend')
+plt.show()
