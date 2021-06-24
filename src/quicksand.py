@@ -1,42 +1,25 @@
-import numpy as np
-from scipy.stats import lognorm
-import matplotlib.pyplot as plt
+import os
+import pickle
+from analysis.metrics import invers_entropy_distance
 
-def log_dist_iter(coms, nodes, std_dev, threshold):
-        r_nodes = nodes
-        community_split_nodes = 0
-        community_split_probability = lognorm.pdf(np.linspace(1, coms, coms), std_dev)
+path_true = 'data/graphs/true_graphs/k_c_var/2021_06_11_10_35/true_graph_wug_n500_k3_clog_iter_0.9_5_dbinomial_3_0.99_anone.graph'
+with open(path_true, 'rb') as file:
+    true_graph = pickle.load(file)
+file.close()
 
-        while r_nodes > threshold:
-                community_split_nodes += community_split_probability * r_nodes
-                r_nodes = nodes - sum(community_split_nodes)
-
-        community_split_nodes = np.array([int(x) if int(x) > 0 else 1 for x in community_split_nodes])
-        community_split_nodes[0] += nodes - sum(community_split_nodes)
-        return community_split_nodes
-        
-
-# for i in np.arange(0.1, 1.1, 0.1):
-community_split = lognorm.pdf(np.linspace(1, 4, 4), 0.1) * 500
-community_split[0] += 500 - sum(community_split)
-print(round(0.1, 1), community_split, 500 - sum(community_split))
-plt.plot(np.linspace(1, 4, 4), community_split/sum(community_split), label='0.1, old')
-
-community_split = lognorm.pdf(np.linspace(1, 4, 4), 0.9) * 500
-community_split[0] += 500 - sum(community_split)
-print(round(0.9, 1), community_split, 500 - sum(community_split))
-plt.plot(np.linspace(1, 4, 4), community_split/sum(community_split), label='0.9, old')
-
-community_split = log_dist_iter(4, 500, 0.1, 5)
-print(round(0.1, 1), community_split, 500 - sum(community_split))
-plt.plot(np.linspace(1, 4, 4), community_split/sum(community_split), label='0.1, new')
-
-community_split = log_dist_iter(4, 500, 0.9, 5)
-print(round(0.9, 1), community_split, 500 - sum(community_split))
-plt.plot(np.linspace(1, 4, 4), community_split/sum(community_split), label='0.9, new')
+path_graph = 'data/graphs/sim_graphs/pagerank/sim_ks_logsoft/2021_06_11_10_54/intermediate/k3'
+graphs = []
+for _, _, files in os.walk(path_graph):
+    for file in files:
+        if file.endswith('.graph'):
+            with open('{}/{}'.format(path_graph, file), 'rb') as fg:
+                graphs.append(pickle.load(fg))
+            fg.close()
 
 
+# def sort_func(x): return x.get_num_added_edges()
+# graphs.sort(key=sort_func)
 
-
-plt.legend(title='Legend')
-plt.show()
+for graph in graphs:
+    print(graph.get_num_added_edges(),
+          invers_entropy_distance(true_graph, graph, params={'threshold': 2.5}))

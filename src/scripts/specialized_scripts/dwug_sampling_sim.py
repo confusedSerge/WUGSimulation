@@ -217,7 +217,7 @@ for i, graph in enumerate(graphs):
                 pass
 
             with open('{}.graph'.format(path_graph_intermediate_sims[j]), 'wb') as file:
-                pickle.dump(simulation_wug, file)
+                pickle.dump(_graph, file)
             file.close()
             if verbose: logging.info('Intermediate {}-SIM saved at: {}.graph'.format(sim_short_name, path_graph_intermediate_sims[j]))
 
