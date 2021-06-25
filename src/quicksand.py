@@ -1,5 +1,3 @@
-import os
-import pickle
-from analysis.metrics import invers_entropy_distance
+from import_scripts.input_generator import input_json_generator
 
-# path = 
+input_json_generator('next', 'dev.wu_1', 'ADJ', 'data/nicolay_data/test_data/dev.wu_1.txt', 'data/nicolay_data/test_data/dev.wu_1')
