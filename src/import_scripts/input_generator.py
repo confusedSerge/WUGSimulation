@@ -25,9 +25,9 @@ def _gen_wu_pairs_from_file(path_file: str):
             yield wu[i].strip(), wu[j].strip()
 
 def _gen_nicolay_dict_object(id: str, lemma: str, pos: str, sentence1: str, sentence2: str):
-    start1 = sentence1.find(lemma)
+    start1 = sentence1.lower().find(lemma)
     end1 = start1 + len(lemma)
-    start2 = sentence2.find(lemma)
+    start2 = sentence2.lower().find(lemma)
     end2 = start2 + len(lemma)
     
     return {"id": id, "lemma": lemma, "pos": pos, "sentence1": sentence1, "sentence2": sentence2, "start1": str(start1), "end1": str(end1), "start2": str(start2), "end2": str(end2)}

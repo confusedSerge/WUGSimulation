@@ -87,6 +87,7 @@ class WUSimulationGraph(BaseGraph):
         return self.last_edge
 
     def get_last_added_node(self):
+        # TODO This is not correct?!
         return self.last_edge[1] if self.last_edge != None else None 
 
     def get_num_added_edges(self) -> int:

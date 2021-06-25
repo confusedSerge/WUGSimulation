@@ -35,7 +35,7 @@ class WUGraph(BaseGraph):
     def _build_nx_graph_rep(self) -> None:
         """
         """
-        # ===Caclulation Phase===
+        # ===Calculation Phase===
         # Builds weighted edge list, edge-weight dict, and weight-edges dict
         edge_list = []
         edge_weight = {}
@@ -56,7 +56,7 @@ class WUGraph(BaseGraph):
             if community_nodes.get(label, None) == None:
                 community_nodes[label] = []
             community_nodes[label].append(node_id)
-        # ===Caclulation Phase END===
+        # ===Calculation Phase END===
 
         # ===Build Phase===
         self.G.add_weighted_edges_from(edge_list)

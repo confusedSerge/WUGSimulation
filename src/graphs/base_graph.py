@@ -17,7 +17,7 @@ class BaseGraph():
         # community/node dict
         self.G.graph['community_nodes'] = {}
 
-        # edge/weight dicts
+        # edge/weight dicts (should be base weights)
         self.G.graph['edge_weight'] = {}
         self.G.graph['weight_edge'] = {}
 
@@ -58,6 +58,9 @@ class BaseGraph():
     def get_community_sizes(self) -> list:
         return [len(v) for k, v in self.G.graph['community_nodes'].items()]
 
+    def get_dictionary_of_graph(self, name: str) -> list:
+        return self.G.graph[name]
+
     def get_edge_weight(self) -> dict: 
         return self.G.graph['edge_weight']
 
@@ -79,6 +82,11 @@ class BaseGraph():
 
     def get_nx_graph_copy(self, weight: str) -> nx.Graph:
         raise NotImplementedError
+
+    def add_new_weight_dict(self, name: str, weight_modifier: lambda x: x) -> None:
+        self.G.graph[name] = {}
+        for k, v in self.G.graph['edge_weight'].items():
+            self.G.graph[name][k] = weight_modifier(v)
 
     def save_graph(self, path: str):
         with open(path, "xb") as file:
