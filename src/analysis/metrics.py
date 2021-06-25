@@ -86,9 +86,13 @@ def inverse_jensen_shannon_distance(trueGraph: BaseGraph, simulatedGraph: BaseGr
 
     return 1 - jensenshannon(tG_cluster_prob, sG_cluster_prob, base=2)
 
+@DeprecationWarning
 def cluster_diff(true_graph: BaseGraph, simulation_graph: BaseGraph, params: dict) -> float:
     """
     Calculates the inverse normalized sum of the difference between each graphs cluster sizes.
+    
+    Should not be used, as results, especially for #cluster == 1, do not make sense.
+    Please use :cluster_diff_stripped():, as it strips down the ref clusters to the same number of nodes
 
     Args:
         :true_graph: first graph, which should model the reference graph
@@ -105,11 +109,15 @@ def cluster_diff(true_graph: BaseGraph, simulation_graph: BaseGraph, params: dic
     else:
         sg_clusters_sizes.extend([0] * abs_diff)
 
+    num_clusters = len(tg_cluster_sizes)
     c_sum = 0
-    for i in range(len(tg_cluster_sizes)):
+    for i in range(num_clusters):
         c_sum += abs(sg_clusters_sizes[i] - tg_cluster_sizes[i])
+
+    norm_factor = true_graph.get_number_nodes() + ((num_clusters - 2)/ num_clusters) * simulation_graph.get_number_nodes()
+    norm_factor = norm_factor if norm_factor != 0 else 1
     
-    return 1 - c_sum / true_graph.get_number_nodes()
+    return 1 - c_sum / norm_factor
 
 
 def cluster_diff_stripped(true_graph: BaseGraph, simulation_graph: BaseGraph, params: dict) -> float:
@@ -127,7 +135,7 @@ def cluster_diff_stripped(true_graph: BaseGraph, simulation_graph: BaseGraph, pa
 
     not_added_nodes = set(true_graph.G.nodes()) - set(simulation_graph.G.nodes())
 
-    for k, v in true_graph.get_community_nodes():
+    for k, v in true_graph.get_community_nodes().items():
         tg_cluster_sizes.append(len(v) - len(set(v).intersection(not_added_nodes)))
 
     # check lengths
@@ -137,11 +145,15 @@ def cluster_diff_stripped(true_graph: BaseGraph, simulation_graph: BaseGraph, pa
     else:
         sg_clusters_sizes.extend([0] * abs_diff)
 
+    num_clusters = len(tg_cluster_sizes)
     c_sum = 0
-    for i in range(len(tg_cluster_sizes)):
+    for i in range(num_clusters):
         c_sum += abs(sg_clusters_sizes[i] - tg_cluster_sizes[i])
+
+    norm_factor = simulation_graph.get_number_nodes() * (1 + (num_clusters - 2)/ num_clusters)
+    norm_factor = norm_factor if norm_factor != 0 else 1
     
-    return 1 - c_sum / simulation_graph.get_number_nodes()
+    return 1 - c_sum / norm_factor
 
 
 def invers_entropy_distance(true_graph: BaseGraph, simulation_graph: BaseGraph, params: dict) -> float:

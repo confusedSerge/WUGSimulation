@@ -24,7 +24,7 @@ This is a special script for running page rank sims.
 """
 # === Setup Phase ===
 # Note: Change these accordingly
-sim_short_name, sim_property_name = 'PageRank', 'sim_ks_loghard'
+sim_short_name, sim_property_name = 'PageRank', 'sim_ks_logsoft'
 
 # vars for simulation
 # Note: settings of sim also check/change function
@@ -36,7 +36,7 @@ plot_title, plot_name = 'Page Rank Simulation', 'pagerank_sim'
 # other vars
 save_intermediate, draw_intermediate = True, True
 verbose = True
-path_true_wugs = 'data/graphs/true_graphs/k_c_var/2021_06_11_10_36'
+path_true_wugs = 'data/graphs/true_graphs/k_c_var/2021_06_11_10_35'
 
 #sim param (some can only be init in sim loop, but for completness add here as string, so it can be logged)
 judgments_points = [10, 20, 30, 40, 50, 100, 200, 300, 400, 500, 1000, 2000, 3000, 4000, 5000]
@@ -50,7 +50,7 @@ clustering_strategy, clustering_params = None, 'None'
 analyzing_critertion, analyzing_critertion_params = edges_added, [{'number_edges': x} for x in judgments_points]
 anal_clustering_strategy, anal_clustering_params = new_correlation_clustering, {'weights': 'edge_soft_weight', 'max_attempts': 10, 'max_iters': 10, 'split_flag': False}
 analyzing_func=analyze 
-analyzing_params={'adjusted_randIndex': (adjusted_randIndex, {}), 'purity':(purity, {}), 'accuracy':(accuracy, {}), 'inverse_jensen_shannon_distance':(inverse_jensen_shannon_distance, {})}
+analyzing_params={'adjusted_randIndex': (adjusted_randIndex, {}), 'purity':(purity, {}), 'accuracy':(accuracy, {}), 'inverse_jensen_shannon_distance':(inverse_jensen_shannon_distance, {}), 'invers_entropy_distance':(invers_entropy_distance, {}), 'invers_entropy_distance_clustered':(invers_entropy_distance_clustered, {}), 'cluster_diff':(cluster_diff, {}), 'cluster_diff_stripped':(cluster_diff_stripped, {})}
 
 return_graph_flag=True
 
@@ -153,7 +153,7 @@ except FileExistsError as identifier:
 # create Metric Result object 
 # Note: need to be adjusted for sims
 _metric_result = MetricResults(sim_short_name, 'Created at: {}'.format(current_time))
-for _metric in ['adjusted_randIndex', 'purity', 'accuracy', 'inverse_jensen_shannon_distance']:
+for _metric in ['adjusted_randIndex', 'purity', 'accuracy', 'inverse_jensen_shannon_distance', 'invers_entropy_distance', 'invers_entropy_distance_clustered', 'cluster_diff', 'cluster_diff_stripped']:
     _metric_result.add_metric(_metric, (len(graphs), len(judgments_points)), ('ks = {}'.format([graph.get_number_communities() for graph in graphs]), 'judgement points'))
 
 
@@ -228,8 +228,8 @@ for i, graph in enumerate(graphs):
             if tmp_metric.get(k, None) == None:
                 tmp_metric[k] = []
             tmp_metric[k].append(v)
-    if verbose: logging.info(tmp_metric)
     for k, v in tmp_metric.items():
+        if verbose: logging.info('{}: {}'.format(k, v))
         _metric_result.update_value(k, v, i)
 
 # === Saving metrics ===
