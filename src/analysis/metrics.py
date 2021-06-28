@@ -1,4 +1,5 @@
 import numpy as np
+import random
 
 from collections import Counter
 from graphs.base_graph import BaseGraph
@@ -87,7 +88,7 @@ def inverse_jensen_shannon_distance(trueGraph: BaseGraph, simulatedGraph: BaseGr
     return 1 - jensenshannon(tG_cluster_prob, sG_cluster_prob, base=2)
 
 @DeprecationWarning
-def cluster_diff(true_graph: BaseGraph, simulation_graph: BaseGraph, params: dict) -> float:
+def cluster_size_diff(true_graph: BaseGraph, simulation_graph: BaseGraph, params: dict) -> float:
     """
     Calculates the inverse normalized sum of the difference between each graphs cluster sizes.
     
@@ -120,7 +121,7 @@ def cluster_diff(true_graph: BaseGraph, simulation_graph: BaseGraph, params: dic
     return 1 - c_sum / norm_factor
 
 
-def cluster_diff_stripped(true_graph: BaseGraph, simulation_graph: BaseGraph, params: dict) -> float:
+def cluster_size_diff_stripped(true_graph: BaseGraph, simulation_graph: BaseGraph, params: dict) -> float:
     """
     Same as the cluster_diff function, but nodes not contained in the :simulation_graph: are removed/stripped
     from the reference for this calculation.
@@ -167,7 +168,7 @@ def invers_entropy_distance(true_graph: BaseGraph, simulation_graph: BaseGraph, 
         :returns float: value of the metric
     """
     threshold = params.get('threshold', 2.5)
-    return 1 - abs(entropy_clustered(true_graph) / np.log2(true_graph.get_number_nodes()) - entropy_unclustered(simulation_graph, threshold) / np.log2(simulation_graph.get_number_nodes()))
+    return 1 - abs(entropy_clustered(true_graph) / np.log2(true_graph.get_number_communities()) - entropy_unclustered(simulation_graph, threshold) / np.log2(simulation_graph.get_number_nodes()))
 
 def invers_entropy_distance_clustered(true_graph: BaseGraph, simulation_graph: BaseGraph, params: dict) -> float:
     """
@@ -178,7 +179,7 @@ def invers_entropy_distance_clustered(true_graph: BaseGraph, simulation_graph: B
         :simulation_graph: second graph
         :returns float: value of the metric
     """
-    return 1 - abs(entropy_clustered(true_graph) / np.log2(true_graph.get_number_nodes()) - entropy_clustered(simulation_graph) / np.log2(simulation_graph.get_number_nodes()))
+    return 1 - abs(entropy_clustered(true_graph) / np.log2(true_graph.get_number_communities()) - entropy_clustered(simulation_graph) / np.log2(simulation_graph.get_number_communities()))
 
 
 def entropy_unclustered(graph: BaseGraph, threshold: float) -> float:
@@ -201,9 +202,73 @@ def entropy_clustered(graph: BaseGraph) -> float:
     """
     Calculates the entropy of an clustered graph.
     Args:
-        :graph: on which to performe the evaluation
+        :param graph: on which to performe the evaluation
         :returns float: value of the metric
     """
     return entropy(graph.get_community_sizes(), base=2)
 
+def cluster_num_diff(true_graph: BaseGraph, simulation_graph: BaseGraph, params: dict) -> float:
+    """
+    Returns the difference of numbers of clusters between two graphs (both have to be clustered).
+
+    Args:
+        :param true_graph: first clustered graph
+        :param simulation_graph: second clustered graph
+        :return float: diff
+    """
+    return abs(true_graph.get_number_communities() - simulation_graph.get_number_communities())
+
+def apd(graph: BaseGraph, sample_size: int) -> float:
+    """
+    Calculates the APD (Average Pointwise Distance) of a graph (edge weights describing the distance).
+
+    Args:
+        :param graph: graph on which to calculate
+        :param sample_size: the sample size to take from the graph
+        :return float: apd of the sample
+    """
+    sampled_edge_list = []
+
+    for _ in range(sample_size):
+        u, v = sorted(random.sample(graph.G.nodes(), 2))
+        sampled_edge_list.append(graph.get_edge(u, v))
+
+    return sum(sampled_edge_list) / sample_size
     
+def hpd(graph: BaseGraph, sample_size: int) -> float:
+    """
+    Calculates the entropy of the sampled pointwise distribution of edge weights.
+
+    Args:
+        :param graph: graph on which to calculate
+        :param sample_size: the sample size to take from the graph
+        :return float: hpd of the sample
+    """
+    sampled_edge_list = []
+
+    for _ in range(sample_size):
+        u, v = sorted(random.sample(graph.G.nodes(), 2))
+        sampled_edge_list.append(graph.get_edge(u, v))
+
+    count_edges = [v for k, v in Counter(sampled_edge_list).items()]
+
+    return entropy(count_edges, base=2)
+
+def hpd_normalized(graph: BaseGraph, sample_size: int) -> float:
+    """
+    Calculates the normalized entropy of the sampled pointwise distribution of edge weights.
+
+    Args:
+        :param graph: graph on which to calculate
+        :param sample_size: the sample size to take from the graph
+        :return float: hpd of the sample
+    """
+    sampled_edge_list = []
+
+    for _ in range(sample_size):
+        u, v = sorted(random.sample(graph.G.nodes(), 2))
+        sampled_edge_list.append(graph.get_edge(u, v))
+
+    count_edges = [v for k, v in Counter(sampled_edge_list).items()]
+
+    return entropy(count_edges, base=2) / len(count_edges)
