@@ -1,14 +1,6 @@
-import numpy as np
-from collections import Counter
+from import_scripts.input_from_norm import input_json_generator
 
-from scipy.stats import entropy
+path_in = 'data/test/abbauen.csv'
+path_out = 'data/test/dev.abbauen.input'
 
-# sample = np.round(np.random.rand(100) * 3 + 1)
-sample = [1] * 100 + [0]
-print(Counter(sample))
-print([v for k, v in Counter(sample).items()])
-print(sum([v for k, v in Counter(sample).items()]))
-print(entropy([v for k, v in Counter(sample).items()], base=2) / np.log2(len([v for k, v in Counter(sample).items()])))
-
-print(entropy([25, 25, 25, 25], base=2)/ np.log2(4))
-print(entropy([25, 25, 25, 25], base=2)/ np.log2(4))
+input_json_generator('abbauen', 'abbauen', 'VERB', path_in, path_out)

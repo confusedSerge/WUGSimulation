@@ -3,6 +3,8 @@ from copy import deepcopy
 
 def full_simulation(trueGraph: BaseGraph, simulationGraph: BaseGraph, max_iter: int = 50000, break_on_sc: bool = True, verbose: bool = False, **params) -> (BaseGraph, bool, list, list):
     """
+    Important note: This is a simulation for one use case. It can be, that this simulation is not suitable for your
+        case and you should build a different one.
     Runs a full simulation for the given parameters, (with a limit).
     Every iteration consists of a sampling phase, clustering (optional) phase, analyzing phase (based on some points), and checking the stopping criterion.
 
