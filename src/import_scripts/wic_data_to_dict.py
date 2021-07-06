@@ -1,10 +1,6 @@
 import json
 
 def gen_node_edge_dictionaries(input_file: str, score_file: str, tag_file: str):
-    input_file = 'data/nicolay_data/test_data/dev.wu_1.input'
-    score_file = 'data/nicolay_data/test_data/dev.wu_1.scores'
-    tag_file = 'data/nicolay_data/test_data/dev.wu_1'
-
     # load and build dict
     edge_info = _load_files_as_dict(input_file)
     score_info = _load_files_as_dict(score_file)
