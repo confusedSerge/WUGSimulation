@@ -22,7 +22,5 @@ class Simulation(RunnableStep):
                 step.run(graph, annotated_graph)
 
     def clean_up(self):
-        """
-        Currently not needed
-        """
-        pass
+        for step in self.steps:
+            step.clean_up()

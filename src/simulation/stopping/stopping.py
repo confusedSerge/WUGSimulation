@@ -12,15 +12,16 @@ class Stopping(RunnableStep):
         self.sc_hit_flag: bool = False
         self.sc_annotated_graph: BaseGraph = None
 
-    def add_stopping_criterion(self, function, params: dict) -> None:
+    def add_stopping_criterion(self, function, params: dict):
         """
         Add Stopping Strategies
         """
         self.complexity = 'simple'
         self.function = function
         self.params = params
+        return self
 
-    def add_adv_stopping_criterion(self, function, params: dict, clean_up_func) -> None:
+    def add_adv_stopping_criterion(self, function, params: dict, clean_up_func):
         """
         Add Stopping Strategies from the advanced module
         """
@@ -28,6 +29,7 @@ class Stopping(RunnableStep):
         self.function = function
         self.params = params
         self.clean_up_func = clean_up_func
+        return self
 
     def run(self, graph: BaseGraph, annotated_graph: BaseGraph) -> None:
         """

@@ -25,15 +25,16 @@ class Sampling(RunnableStep):
                                        'across': self._run_across_annotators,
                                        'random': self._run_random_annotators}
 
-    def add_sampling_strategie(self, function, params: dict) -> None:
+    def add_sampling_strategie(self, function, params: dict):
         """
         Add Sampling Strategies
         """
         self.complexity = 'simple'
         self.function = function
         self.params = params
+        return self
 
-    def add_adv_sampling_strategie(self, function, params: dict, clean_up_func) -> None:
+    def add_adv_sampling_strategie(self, function, params: dict, clean_up_func):
         """
         Add Sampling Strategies from the advanced module
         """
@@ -41,13 +42,16 @@ class Sampling(RunnableStep):
         self.function = function
         self.params = params
         self.clean_up_func = clean_up_func
+        return self
 
-    def add_annotator(self, annotator: Annotator) -> None:
+    def add_annotator(self, annotator: Annotator):
         self.annotators.append(annotator)
+        return self
 
-    def set_annotator_dist(self, annotator_dist) -> None:
+    def set_annotator_dist(self, annotator_dist):
         assert annotator_dist in self.current_annotator_dist
         self.annotator_dist = annotator_dist
+        return self
 
     def run(self, graph: BaseGraph, annotated_graph: BaseGraph) -> None:
         """

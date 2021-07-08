@@ -9,15 +9,16 @@ class Clustering(RunnableStep):
         super().__init__()
 
 
-    def add_clustering_strategy(self, function, params: dict) -> None:
+    def add_clustering_strategy(self, function, params: dict):
         """
         Add Clustering Strategies
         """
         self.complexity = 'simple'
         self.function = function
         self.params = params
+        return self
 
-    def add_adv_clustering_strategy(self, function, params: dict, clean_up_func) -> None:
+    def add_adv_clustering_strategy(self, function, params: dict, clean_up_func):
         """
         Add Clustering Strategies from the advanced module
         """
@@ -25,6 +26,7 @@ class Clustering(RunnableStep):
         self.function = function
         self.params = params
         self.clean_up_func = clean_up_func
+        return self
 
     def run(self, graph: BaseGraph, annotated_graph: BaseGraph) -> None:
         """
