@@ -4,7 +4,7 @@ import pickle
 from graphs.base_graph import BaseGraph
 
 
-class WUSimulationGraph(BaseGraph):
+class AnnotatedGraph(BaseGraph):
 
     def __init__(self, max_nodes: int):
         """
@@ -102,7 +102,7 @@ class WUSimulationGraph(BaseGraph):
             :param weight: which weight dict to use to populate the nx.Graphs edges
         """
         weights = self.G.graph.get(weight, None)
-        assert type(weights) != None and type(weights) == dict
+        assert type(weights) == dict
 
         graph = nx.Graph()
         graph.add_weighted_edges_from(list(map(lambda k: (*k[0], k[1]), weights.items())))

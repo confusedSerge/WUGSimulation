@@ -40,9 +40,6 @@ def cluster_correlation_search(G, s=10, max_attempts=200, max_iters=5000):
     edges_negative = set([(n2i[i], n2i[j], G[i][j]['weight'])
                          for (i, j) in G.edges() if G[i][j]['weight'] < 0.0])
 
-    # print(edges_positive)
-    # print(edges_negative)
-
     def conflict_loss(state):
         loss_pos = np.sum(
             [w for (i, j, w) in edges_positive if state[i] != state[j]])
@@ -91,8 +88,8 @@ def cluster_correlation_search(G, s=10, max_attempts=200, max_iters=5000):
 
         l2s[best_fitness].append((best_state, max_val))
 
-    id = np.random.choice(range(len(l2s[min(l2s.keys())])))
-    best_state, best_fitness = l2s[min(l2s.keys())][id], min(l2s.keys())
+    _id = np.random.choice(range(len(l2s[min(l2s.keys())])))
+    best_state, best_fitness = l2s[min(l2s.keys())][_id], min(l2s.keys())
 
     best_state = best_state[0]
 

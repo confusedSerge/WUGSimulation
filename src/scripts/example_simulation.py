@@ -20,6 +20,8 @@ from visualization.metric_vis import heatmap
 
 # If you want to try this graph, it is recommended to put this script in the top directory 
 
+# WARNING: This does not work anymore, as the simulation logic has changed drastically!!
+
 '''
 Generating a new Graph can be done through the Graph Class itself, or through a sampler,
 from which multiple graphs can be generated. 

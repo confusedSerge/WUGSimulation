@@ -11,51 +11,48 @@ from scipy.stats import entropy
 
 """
 This module contains different metric function and can be extended to new ones.
-All method signatures should look like this:
-    def name(tG: BaseGraph, sG: BaseGraph, params: dict) -> float:
-Each sampling function should return a list of sampled edges
 """
 
 
-def adjusted_randIndex(trueGraph: BaseGraph, simulatedGraph: BaseGraph, params: dict) -> float:
+def adjusted_rand_index(reference_graph: BaseGraph, graph: BaseGraph, params: dict) -> float:
     """
     Calculates the adjusted RandIndex of two clustered graphs, 
-        where only nodes of the simulated graph are considered.
+        where only nodes of the second graph are considered.
 
     Args:
-        :param tG: first graph
-        :param sG: second graph
+        :param reference_graph: reference graph
+        :param graph: graph to check against reference
         :returns float: adjusted randIndex value
     """
-    return metrics.adjusted_rand_score(*clean_labels(trueGraph.labels, simulatedGraph.labels))
+    return metrics.adjusted_rand_score(*clean_labels(reference_graph.labels, graph.labels))
 
 
-def purity(trueGraph: BaseGraph, simulatedGraph: BaseGraph, params: dict) -> float:
+def purity(reference_graph: BaseGraph, graph: BaseGraph, params: dict) -> float:
     """
     Calculates the purity of two clustered graphs, 
-        where only nodes of the simulated graph are considered.
+        where only nodes of the second graph are considered.
 
     Args:
-        :param tG: first graph
-        :param sG: second graph
+        :param reference_graph: reference graph
+        :param graph: graph to check against reference
         :returns float: purity value
     """
-    contingency_matrix = metrics.cluster.contingency_matrix(*clean_labels(trueGraph.labels, simulatedGraph.labels))
+    contingency_matrix = metrics.cluster.contingency_matrix(*clean_labels(reference_graph.labels, graph.labels))
     return np.sum(np.amax(contingency_matrix, axis=0)) / np.sum(contingency_matrix)
 
 
-def accuracy(trueGraph: BaseGraph, simulatedGraph: BaseGraph, params: dict) -> float:
+def accuracy(reference_graph: BaseGraph, graph: BaseGraph, params: dict) -> float:
     """
     Calculates the accuracy with optimal mapping of two clustered graphs,
-        where only nodes of the simulated graph are considered.
+        where only nodes of the second graph are considered.
 
     Args:
-        :param tG: first graph
-        :param sG: second graph
+        :param reference_graph: reference graph
+        :param graph: graph to check against reference
         :returns float: accuracy value
     """
     # compute contingency matrix (also called confusion matrix)
-    contingency_matrix = metrics.cluster.contingency_matrix(*clean_labels(trueGraph.labels, simulatedGraph.labels))
+    contingency_matrix = metrics.cluster.contingency_matrix(*clean_labels(reference_graph.labels, graph.labels))
 
     # Find optimal one-to-one mapping between cluster labels and true labels
     row_ind, col_ind = linear_sum_assignment(-contingency_matrix)
@@ -64,89 +61,89 @@ def accuracy(trueGraph: BaseGraph, simulatedGraph: BaseGraph, params: dict) -> f
     return contingency_matrix[row_ind, col_ind].sum() / np.sum(contingency_matrix)
 
 
-def inverse_jensen_shannon_distance(trueGraph: BaseGraph, simulatedGraph: BaseGraph, params: dict) -> float:
+def inverse_jensen_shannon_distance(reference_graph: BaseGraph, graph: BaseGraph, params: dict) -> float:
     """
     Calculates the Jensen Shannon Distance between two clustered graphs
 
     Args:
-        :param tG: first graph
-        :param sG: second graph
+        :param reference_graph: reference graph
+        :param graph: graph to check against reference
         :returns float: Jensen Shannon Distance value
     """
     # get community probability vec
-    tg_cluster_prob = [com / trueGraph.get_number_nodes() for com in trueGraph.get_community_sizes()]
-    sg_cluster_prob = [com / simulatedGraph.get_number_nodes() for com in simulatedGraph.get_community_sizes()]
+    ref_cluster_prob = [com / reference_graph.get_number_nodes() for com in reference_graph.get_community_sizes()]
+    g_cluster_prob = [com / graph.get_number_nodes() for com in graph.get_community_sizes()]
 
     # size them to same size
-    for _ in range(len(sg_cluster_prob), len(tg_cluster_prob)):
-        sg_cluster_prob.append(0.0)
-    for _ in range(len(tg_cluster_prob), len(sg_cluster_prob)):
-        tg_cluster_prob.append(0.0)
+    for _ in range(len(g_cluster_prob), len(ref_cluster_prob)):
+        g_cluster_prob.append(0.0)
+    for _ in range(len(ref_cluster_prob), len(g_cluster_prob)):
+        ref_cluster_prob.append(0.0)
 
-    return 1 - jensenshannon(tg_cluster_prob, sg_cluster_prob, base=2)
+    return 1 - jensenshannon(ref_cluster_prob, g_cluster_prob, base=2)
 
-def cluster_size_diff_stripped(true_graph: BaseGraph, simulation_graph: BaseGraph, params: dict) -> float:
+def cluster_size_diff_stripped(reference_graph: BaseGraph, graph: BaseGraph, params: dict) -> float:
     """
     Calculates the inverse normalized sum of the difference between each graphs cluster sizes.
-    Nodes not contained in the :simulation_graph: are removed/stripped from the reference for this calculation.
+    Nodes not contained in the :reference_graph: are removed/stripped from the reference for this calculation.
 
     Args:
-        :true_graph: first graph, which should model the reference graph
-        :simulation_graph: second graph
+        :param reference_graph: reference graph
+        :param graph: graph to check against reference
         :returns float: value of the metric
     """
-    tg_cluster_sizes = []
-    sg_clusters_sizes = sorted(simulation_graph.get_community_sizes(), reverse=True)
+    ref_cluster_sizes = []
+    g_clusters_sizes = sorted(graph.get_community_sizes(), reverse=True)
 
-    not_added_nodes = set(true_graph.G.nodes()) - set(simulation_graph.G.nodes())
+    not_added_nodes = set(reference_graph.G.nodes()) - set(graph.G.nodes())
 
-    for k, v in true_graph.get_community_nodes().items():
-        tg_cluster_sizes.append(len(v) - len(set(v).intersection(not_added_nodes)))
+    for k, v in reference_graph.get_community_nodes().items():
+        ref_cluster_sizes.append(len(v) - len(set(v).intersection(not_added_nodes)))
 
     # check lengths
-    abs_diff = abs(len(tg_cluster_sizes) - len(sg_clusters_sizes))
-    if len(tg_cluster_sizes) < len(sg_clusters_sizes):
-        tg_cluster_sizes.extend([0] * abs_diff)
+    abs_diff = abs(len(ref_cluster_sizes) - len(g_clusters_sizes))
+    if len(ref_cluster_sizes) < len(g_clusters_sizes):
+        ref_cluster_sizes.extend([0] * abs_diff)
     else:
-        sg_clusters_sizes.extend([0] * abs_diff)
+        g_clusters_sizes.extend([0] * abs_diff)
 
-    num_clusters = len(tg_cluster_sizes)
+    num_clusters = len(ref_cluster_sizes)
     c_sum = 0
     for i in range(num_clusters):
-        c_sum += abs(sg_clusters_sizes[i] - tg_cluster_sizes[i])
+        c_sum += abs(g_clusters_sizes[i] - ref_cluster_sizes[i])
 
-    norm_factor = simulation_graph.get_number_nodes() * (1 + (num_clusters - 2)/ num_clusters)
+    norm_factor = graph.get_number_nodes() * (1 + (num_clusters - 2)/ num_clusters)
     norm_factor = norm_factor if norm_factor != 0 else 1
     
     return 1 - c_sum / norm_factor
 
 
-def invers_entropy_distance(true_graph: BaseGraph, simulation_graph: BaseGraph, params: dict) -> float:
+def invers_entropy_distance(reference_graph: BaseGraph, graph: BaseGraph, params: dict) -> float:
     """
     Calculates the inverse entropy distance between a reference graph, where the clustering is known, 
         and an unclustered graph, thus only the approximate entropy is used.
 
-    Args:
-        :true_graph: first graph, which should model the reference graph
-        :simulation_graph: second graph
+    Args:        
+        :param reference_graph: reference graph
+        :param graph: graph to check against reference
         :threshold: which edge value should be regarded
         :returns float: value of the metric
     """
     threshold = params.get('threshold', 2.5)
-    return 1 - abs(entropy_clustered(true_graph) / np.log2(true_graph.get_number_communities()) - entropy_approximation(simulation_graph, threshold) / np.log2(simulation_graph.get_number_nodes()))
+    return 1 - abs(entropy_clustered(reference_graph) / np.log2(reference_graph.get_number_communities()) - entropy_approximation(graph, threshold) / np.log2(graph.get_number_nodes()))
 
-def invers_entropy_distance_clustered(true_graph: BaseGraph, simulation_graph: BaseGraph, params: dict) -> float:
+def invers_entropy_distance_clustered(reference_graph: BaseGraph, graph: BaseGraph, params: dict) -> float:
     """
     Calculates the inverse entropy distance between two graphs, where the clustering is known.
 
     Args:
-        :true_graph: first graph, which should model the reference graph
-        :simulation_graph: second graph
+        :param reference_graph: reference graph
+        :param graph: graph to check against reference
         :returns float: value of the metric
     """
-    return 1 - abs(entropy_clustered(true_graph) / np.log2(true_graph.get_number_communities()) - entropy_clustered(simulation_graph) / np.log2(simulation_graph.get_number_communities()))
+    return 1 - abs(entropy_clustered(reference_graph) / np.log2(reference_graph.get_number_communities()) - entropy_clustered(graph) / np.log2(graph.get_number_communities()))
 
-def jensen_shannon_distance_entropy(graph_one_entropy: float, graph_two_entropy: float, combined_graph_entropy: float) -> float:
+def jensen_shannon_distance_approximation(graph_one_approximation: float, graph_two_approximation: float, combined_graph_approximation: float) -> float:
     """
     Calculates the Jensen-Shanon-Distance based on entropy.
     To calculate the entropy of a graph, use either :func entropy_approximation: or :func entropy_clustered:
@@ -157,13 +154,14 @@ def jensen_shannon_distance_entropy(graph_one_entropy: float, graph_two_entropy:
         :param combined_graph_entropy: entropy of the combined graph
         :return float: jsd based on entropy
     """
-    return combined_graph_entropy - (graph_one_entropy + graph_two_entropy) / 2
+    return combined_graph_approximation - (graph_one_approximation + graph_two_approximation) / 2
 
 def entropy_approximation(graph: BaseGraph, threshold: float) -> float:
     """
     Calculates the approximate entropy of an unclustered graph.
     Args:
-        :graph: on which to performe the evaluation
+        :param graph: on which to performe the evaluation
+        :param threshold: which edges to consider
         :returns float: value of the metric
     """
     num_nodes = graph.get_number_nodes()
@@ -184,16 +182,16 @@ def entropy_clustered(graph: BaseGraph) -> float:
     """
     return entropy(graph.get_community_sizes(), base=2)
 
-def cluster_num_diff(true_graph: BaseGraph, simulation_graph: BaseGraph, params: dict) -> float:
+def cluster_num_diff(reference_graph: BaseGraph, graph: BaseGraph, params: dict) -> float:
     """
     Returns the difference of numbers of clusters between two graphs (both have to be clustered).
 
     Args:
-        :param true_graph: first clustered graph
-        :param simulation_graph: second clustered graph
+        :param reference_graph: reference graph
+        :param graph: graph to check against reference
         :return float: diff
     """
-    return abs(true_graph.get_number_communities() - simulation_graph.get_number_communities())
+    return abs(reference_graph.get_number_communities() - graph.get_number_communities())
 
 def apd(graph: BaseGraph, sample_size: int) -> float:
     """

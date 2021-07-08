@@ -48,9 +48,6 @@ def cluster_correlation_search(G, s = 10, max_attempts = 200, max_iters = 5000, 
     edges_positive = set([(n2i[i],n2i[j],G[i][j]['weight']) for (i,j) in G.edges() if G[i][j]['weight'] >= 0.0])
     edges_negative = set([(n2i[i],n2i[j],G[i][j]['weight']) for (i,j) in G.edges() if G[i][j]['weight'] < 0.0])
 
-    #print(edges_positive)
-    #print(edges_negative)
-
     def conflict_loss(state):        
         loss_pos = np.sum([w for (i,j,w) in edges_positive if state[i] != state[j]])
         loss_neg = np.sum([abs(w) for (i,j,w) in edges_negative if state[i] == state[j]])        
@@ -98,8 +95,8 @@ def cluster_correlation_search(G, s = 10, max_attempts = 200, max_iters = 5000, 
         l2s[best_fitness].append((best_state,max_val))
 
     #print(l2s)
-    id = np.random.choice(range(len(l2s[min(l2s.keys())])))
-    best_state, best_fitness = l2s[min(l2s.keys())][id], min(l2s.keys())
+    _id = np.random.choice(range(len(l2s[min(l2s.keys())])))
+    best_state, best_fitness = l2s[min(l2s.keys())][_id], min(l2s.keys())
     # print('loss: ', best_fitness)
 
     best_state = best_state[0]
@@ -109,7 +106,6 @@ def cluster_correlation_search(G, s = 10, max_attempts = 200, max_iters = 5000, 
         c2n[c].append(i2n[i])
 
     classes = [set(c2n[c]) for c in c2n]
-    #classes = get_clusters(G) # only for testing
 
     # Split collapsed clusters without evidence
     if split_flag: classes = split_non_evidence_clusters(G, classes)
@@ -158,11 +154,7 @@ def split_non_evidence_clusters(G, clusters, is_non_value=lambda x: np.isnan(x))
     for cluster in clusters:
         subgraph = G.subgraph(cluster)
         components = cluster_connected_components(subgraph)
-        #if len(cluster)==2:
-        #    print(components)
-        #    print(subgraph.edges())
-        #    for (i,j) in subgraph.edges():
-        #        print(subgraph[i][j])
+
         for class_ in components:
             classes_out.append(set(class_))
      

@@ -2,9 +2,6 @@ import numpy as np
 
 class Distribution:
 
-    def __init__(self):
-        pass
-
     def get_distribution(self):
         raise NotImplementedError
 

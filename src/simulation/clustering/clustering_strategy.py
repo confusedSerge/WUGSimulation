@@ -5,18 +5,18 @@ from simulation.clustering.utils.new_cluster_correlation_search import cluster_c
 """
 This module contains different clustering functions and can be extended to new ones.
 All method signatures should look like this:
-    def name(sG: SimulationGraph, params: dict) -> dict:
+    def name(graph: BaseGraph, params: dict) -> dict:
 Each clustering function should only return a dictionary with label-node key-value pairs   
 """
 
 
-def correlation_clustering(simulationGraph: BaseGraph, params: dict) -> dict:
+def correlation_clustering(graph: BaseGraph, params: dict) -> dict:
     """
     This clustering implementation uses the clustering algorithm mentioned in:
         'Word Usage Graphs (WUGs):Measuring Changes in Patterns of Contextual Word Meaning'
 
     Args:
-        :param simulationGraph: SimulationGraph where to find clusters
+        :param graph: graph to cluster
         :param weights: weights to be used for clustering
         :param s: maximal number of senses a word can have
         :param max_attempts: number of restarts for optimization
@@ -37,10 +37,8 @@ def correlation_clustering(simulationGraph: BaseGraph, params: dict) -> dict:
     assert type(max_iters) == int
     # ===Guard Phase===
 
-    clusters = old_cluster_correlation_search(G=simulationGraph.get_nx_graph_copy(
+    clusters = old_cluster_correlation_search(G=graph.get_nx_graph_copy(
         weights), s=s, max_attempts=max_attempts, max_iters=max_iters)
-    # clusters = cluster_correlation_search(G=sG.get_nx_graph_with_hard_pos_neg_edges(), s=s, max_attempts=max_attempts, max_iters=max_iters)
-    # clusters = cluster_correlation_search(G=sG.G, s=s, max_attempts=max_attempts, max_iters=max_iters)
 
     community_node = {}
     for cluster_id, cluster in enumerate(clusters):
@@ -49,13 +47,13 @@ def correlation_clustering(simulationGraph: BaseGraph, params: dict) -> dict:
     return community_node
 
 
-def new_correlation_clustering(simulationGraph: BaseGraph, params: dict) -> dict:
+def new_correlation_clustering(graph: BaseGraph, params: dict) -> dict:
     """
     This clustering implementation uses the clustering algorithm mentioned in:
         'Word Usage Graphs (WUGs):Measuring Changes in Patterns of Contextual Word Meaning'
 
     Args:
-        :param simulationGraph: SimulationGraph where to find clusters
+        :param graph: graph to clusters
         :param weights: weights to be used for clustering
         :param s: maximal number of senses a word can have
         :param max_attempts: number of restarts for optimization
@@ -84,9 +82,9 @@ def new_correlation_clustering(simulationGraph: BaseGraph, params: dict) -> dict
     assert type(ru_old_cluster) == bool
     # ===Guard Phase===
 
-    initial = simulationGraph.get_labels() if ru_old_cluster else []
+    initial = [set(v) for k, v in sorted(graph.get_community_nodes().items())] if ru_old_cluster else []
 
-    clusters, stats = new_cluster_correlation_search(G=simulationGraph.get_nx_graph_copy(
+    clusters, stats = new_cluster_correlation_search(G=graph.get_nx_graph_copy(
         weights), s=s, max_attempts=max_attempts, max_iters=max_iters, initial=initial, split_flag=split_flag)
 
     community_node = {}

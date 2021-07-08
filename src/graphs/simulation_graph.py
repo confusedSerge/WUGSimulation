@@ -3,15 +3,15 @@ import numpy as np
 import networkx as nx
 
 from graphs.base_graph import BaseGraph
-from graphs.utils.distribution import *
+from graphs.utils.distribution import Distribution
 from graspologic.simulations import sbm
 
 
-class WUGraph(BaseGraph):
+class SimulationGraph(BaseGraph):
 
     def __init__(self, communities: int, communities_probability: list = None, distribution: Distribution = None):
         """
-        WUG class.
+        Simulation graph class.
 
         Args:
             :param communities: number of communities/word usages

@@ -5,18 +5,15 @@ from typing import List
 
 from scipy.stats import lognorm
 
-from graphs.utils.distribution import *
-from graphs.utils.annotator import Annotator
-
-from graphs.wu_graph import WUGraph
-from graphs.wu_annotator_graph import WUAnnotatorGraph
+from graphs.utils.distribution import Binomial
+from graphs.simulation_graph import SimulationGraph
 
 
-class WUGraphSampler:
+class SimulationGraphSampler:
 
     def __init__(self, num_nodes, num_communities, size_communities, distribution, annotators: list = None):
         """
-        Creates a WUG sampler, from witch new WUGs can be sampled.
+        Creates a simulation graph sampler, from witch new simulation graphs can be sampled.
 
         Args:
             num_nodes :          n, number of nodes. Can be int (static size) or tuple (rand choose)
@@ -40,24 +37,17 @@ class WUGraphSampler:
         self.distribution_data = distribution[1:]
         self.annotators = annotators if annotators != None else []
 
-    def sample_wug(self):
+    def sample_simulation_graph(self):
         """
-        Samples a new WUG
-        """
-        community_dispensation, distribution = self._build_parameters()
-        return WUGraph(community_dispensation, distribution=distribution)
-
-    def sample_annotator_wug(self):
-        """
-        Samples a new annotator WUG
+        Samples a new simulation graph
         """
         community_dispensation, distribution = self._build_parameters()
-        return WUAnnotatorGraph(community_dispensation, distribution=distribution, annotators=self.annotators)
+        return SimulationGraph(community_dispensation, distribution=distribution)
 
 
     def _build_parameters(self):
         """
-        Builds a new (annotator) WUG
+        Builds a new simulation graph
         """
         # ===Guard & Parameter Build Phase===
         # setup number nodes
@@ -96,31 +86,9 @@ class WUGraphSampler:
 
         return community_dispensation, distribution
 
-    def sample_wug_generator(self):
+    def sample_simulation_graph_generator(self):
         """
-        Returns a WUG generator for the given k parameter.
-        """
-
-        nodes, rand_node_flag, distribution_method, communities, community_dispensation, community_dispensation_method_flag, community_dispensation_method, params = self._build_yield_parameters()
-
-        for k in communities:
-            # gen nodes
-            if rand_node_flag:
-                nodes = random.randint(*self.num_nodes)
-
-            # gen community sizes
-            if community_dispensation_method_flag:
-                community_dispensation = community_dispensation_method(
-                    nodes, k, params)
-
-            # gen distribution
-            distribution = distribution_method(k, *self.distribution_data)
-
-            yield WUGraph(community_dispensation, distribution=distribution)
-
-    def sample_wug_annotator_generator(self):
-        """
-        Returns a WUG Annotator generator for the given k parameter.
+        Returns a simulation graph generator for the given k parameter.
         """
 
         nodes, rand_node_flag, distribution_method, communities, community_dispensation, community_dispensation_method_flag, community_dispensation_method, params = self._build_yield_parameters()
@@ -138,7 +106,7 @@ class WUGraphSampler:
             # gen distribution
             distribution = distribution_method(k, *self.distribution_data)
 
-            yield WUAnnotatorGraph(community_dispensation, distribution=distribution, annotators=self.annotators)
+            yield SimulationGraph(community_dispensation, distribution=distribution)
 
     def _build_yield_parameters(self):
         # ===Guard & Parameter Build Phase===
@@ -185,23 +153,6 @@ class WUGraphSampler:
         return Binomial(_tries, _probability, number_communities)
 
     # util functions
-
-    def add_annotator(self, annotator: Annotator):
-        """
-        Adds another annotator to the current list
-
-        Args:
-            :params annotator: Annotator to add
-            :returns: self
-        """
-        self.annotators.append(annotator)
-        return self
-
-    def remove_all_annotator(self) -> None:
-        """
-        Removes all Annotatos
-        """
-        self.annotators = []
 
     """
     Functions to dispensate nodes across communities

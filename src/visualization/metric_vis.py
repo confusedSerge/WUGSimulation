@@ -193,7 +193,7 @@ def line_ploter(steps, title: str, x_label: str, y_label: str, save_flag: bool =
 def threed_line_ploter(x_labels: list, x_label: str, y_labels: list, y_label: str, z_label:str, title: str, legend_flag: bool = False, save_flag: bool = False, save_path: str = None, **data) -> None:
     """
     Creates a 3d line plot based on data. 
-    The line is fixed on the y achsis!
+    The line is fixed on the y axis!
 
     Expected input for data:
         metric1 = {y1: [z1=f(x1), z2=f(x2), ...], y2: [...], ...}, metric2 = 
