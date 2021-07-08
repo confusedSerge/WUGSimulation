@@ -1,3 +1,4 @@
+import numpy as np
 import random
 from collections import Counter
 from graphs.base_graph import BaseGraph

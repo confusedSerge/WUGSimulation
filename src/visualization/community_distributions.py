@@ -28,19 +28,19 @@ def community_distribution(graph: BaseGraph, name: str, directory: str, combine:
     bins = set()
 
     for v in in_communities.values():
-        num_nodes, num_egdes, observed_values = v
+        num_nodes, num_edges, observed_values = v
         bins = bins.union(set(observed_values.keys()))
 
 
     for v in between_communities.values():
-        num_nodes, num_egdes, observed_values = v
+        num_nodes, num_edges, observed_values = v
         bins = bins.union(set(observed_values.keys()))
 
     # ===Plot community distribution=== 
     img_names = []
     for k, v in in_communities.items():
-        num_nodes, num_egdes, observed_values = v
-        title = "Community {} - Nodes: {} - Edges: {}".format(k, num_nodes, num_egdes)
+        num_nodes, num_edges, observed_values = v
+        title = "Community {} - Nodes: {} - Edges: {}".format(k, num_nodes, num_edges)
 
         for _bin in bins:
             if observed_values.get(_bin, None) == None:
@@ -50,8 +50,8 @@ def community_distribution(graph: BaseGraph, name: str, directory: str, combine:
         img_names.append(("{}_{}".format(name, k), "{}".format(k)))
 
     for k, v in between_communities.items():
-        num_nodes, num_egdes, observed_values = v
-        title = "Community '{}-{}' - Edges: {}".format(*k, num_egdes)
+        num_nodes, num_edges, observed_values = v
+        title = "Community '{}-{}' - Edges: {}".format(*k, num_edges)
 
         for _bin in bins:
             if observed_values.get(_bin, None) == None:
@@ -68,13 +68,13 @@ def community_distribution(graph: BaseGraph, name: str, directory: str, combine:
 def _calc_distribution_in_communities(communities: dict, edges: list, edge_weight: dict) -> dict:
     in_communities = {}
     for community, nodes in communities.items():
-        num_egdes = 0
+        num_edges = 0
         weight_num_edge = {}
         for u in range(len(nodes)):
             for v in range(u + 1, len(nodes)):
                 node_u, node_v = sorted([nodes[u], nodes[v]])
                 if (node_u, node_v) in edges:
-                    num_egdes += 1
+                    num_edges += 1
 
                     if weight_num_edge.get(edge_weight[(node_u, node_v)], None) == None:
                         weight_num_edge[edge_weight[(node_u, node_v)]] = 0
@@ -82,8 +82,8 @@ def _calc_distribution_in_communities(communities: dict, edges: list, edge_weigh
                     weight_num_edge[edge_weight[(node_u, node_v)]] = weight_num_edge[edge_weight[(node_u, node_v)]] + 1
 
         for k, v in weight_num_edge.items():
-            weight_num_edge[k] = v / num_egdes
-        in_communities[community] = (len(nodes), num_egdes, weight_num_edge)
+            weight_num_edge[k] = v / num_edges
+        in_communities[community] = (len(nodes), num_edges, weight_num_edge)
     return in_communities
 
 
@@ -97,14 +97,14 @@ def _calc_distribution_between_communities(communities: dict, edges: list, edge_
 
 
 def _calc_distribution_between_two_communities(first_community: list, second_community: list, edges: list, edge_weight: dict) -> (int, int, dict):
-    num_egdes = 0
+    num_edges = 0
     weight_num_edge = {}
 
     for node_u in first_community:
         for node_v in second_community:
             node_u, node_v = sorted([node_u, node_v])
             if (node_u, node_v) in edges:
-                num_egdes += 1
+                num_edges += 1
 
                 if weight_num_edge.get(edge_weight[(node_u, node_v)], None) == None:
                     weight_num_edge[edge_weight[(node_u, node_v)]] = 0
@@ -113,18 +113,14 @@ def _calc_distribution_between_two_communities(first_community: list, second_com
                     node_u, node_v)]] = weight_num_edge[edge_weight[(node_u, node_v)]] + 1
 
     for k, v in weight_num_edge.items():
-        weight_num_edge[k] = v / num_egdes
-    return (len(first_community) + len(second_community), num_egdes, weight_num_edge)
+        weight_num_edge[k] = v / num_edges
+    return (len(first_community) + len(second_community), num_edges, weight_num_edge)
 
 
 def _plot_values_oneside(observed_values: dict, in_community: bool, title: str, path: str) -> None:
     fig, ax = plt.subplots(figsize=(14, 7))
     color_inside_observed = (0.411, 0.674, 0.909, 0.9)
     color_outside_observed = (0.933, 0.588, 0.623, 0.8)
-    color_inside_inferred = (0.027, 0.419, 0.772)
-    color_outside_inferred = (0.866, 0.031, 0.117)
-
-    prelabel = title
 
     plt.bar(
         list(observed_values.keys()),
