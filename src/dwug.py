@@ -21,8 +21,8 @@ from simulation.utils.intermediate_save_listener import IntermediateSaveListener
 now = datetime.now()
 current_time = now.strftime("%Y_%m_%d_%H_%M")
 
-path_sim_graphs = 'data/graphs/true_graphs/k_c_var/2021_07_09_13_14'
-out_path = 'data/graphs/sim_graphs/dwug/sim_ks_logsoft'
+path_sim_graphs = 'data/graphs/true_graphs/k_c_var/2021_07_09_13_13'
+out_path = 'data/graphs/sim_graphs/dwug/sim_ks_loghard'
 sort_func = lambda x: x.get_number_communities()
 
 # Load Graphs
@@ -48,7 +48,7 @@ for graph in graphs:
     graph : BaseGraph = graph
     annotated_graph = AnnotatedGraph(graph.get_number_nodes())
     
-    sampling_step = Sampling().add_adv_sampling_strategie(dwug_sampling, {'percentage_nodes': 0.02, 'percentage_edges': 0.1, 'min_size_mc': 2}, None)\
+    sampling_step = Sampling().add_adv_sampling_strategie(dwug_sampling, {'percentage_nodes': 0.1, 'percentage_edges': 0.1, 'min_size_mc': 2}, None)\
         .add_annotator(Annotator(np.random.poisson, [0.2], 1, 4, 0.5))\
         .add_annotator(Annotator(np.random.poisson, [0.2], 1, 4, 0.5))\
         .add_annotator(Annotator(np.random.poisson, [0.2], 1, 4, 0.5))\
