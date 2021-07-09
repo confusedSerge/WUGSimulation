@@ -9,13 +9,13 @@ All method signatures should look like this:
 Each sampling function should return a list of sampled edges
 """
 
-def dwug_sampling(graph: BaseGraph, annotated_graph: Base, params: dict) -> list:
+def dwug_sampling(graph: BaseGraph, annotated_graph: BaseGraph, params: dict) -> list:
     """
     Uses the DWUG sampling strategy, as described in the paper.
 
     Args:
-        :param trueGraph: graph on which to sample edge weight
-        :param simulationGraph: simulation graph
+        :param graph: graph on which to sample edge weight
+        :param annotated_graph: simulation graph
         :param percentage_nodes: percentage of nodes to add this round
         :param percentage_edges: percentage of edges to add this round
         :param min_size_mc: minimum size of cluster to be considered as multi-cluster

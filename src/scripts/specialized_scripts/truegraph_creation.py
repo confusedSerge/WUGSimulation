@@ -3,7 +3,7 @@ import pickle
 import csv
 import logging
 
-from graphs.wu_graph_sampler import WUGraphSampler
+from graphs.simulation_graph_sampler import SimulationGraphSampler
 from datetime import datetime
 
 """
@@ -25,24 +25,20 @@ except FileExistsError as identifier:
 logging.basicConfig(filename='{}/graph_gen.log'.format(path),format='%(asctime)s:%(levelname)s:%(message)s', level=logging.INFO)
 
 # Graph params
-nodes = 500
+nodes = 100
 com = [1, 3, 5, 10]
 
-size_communities = ('log_iter', {'std_dev': 0.1, 'threshold': 5})
-# size_communities = ('log_iter', {'std_dev': 0.9, 'threshold': 5})
-name_c = 'log_iter_0.1_5'
+# size_communities = ('log_iter', {'std_dev': 0.1, 'threshold': 5})
+size_communities = ('log_iter', {'std_dev': 0.9, 'threshold': 5})
+name_c = 'log_iter_0.9_5'
 
 distribution = ['binomial', 3, 0.99]
 name_d = 'binomial_3_0.99'
 
-annotators = None
-name_a = 'none'
-
-true_wug_names = ['true_graph_wug_n{}_k{}_c{}_d{}_a{}.graph'.format(nodes, k, name_c, name_d, name_a) for k in com]
+true_wug_names = ['true_graph_wug_n{}_k{}_c{}_d{}.graph'.format(nodes, k, name_c, name_d) for k in com]
 
 logging.log(21, 'Logging various Parameters')
 logging.log(21, 'n, k, c, v = {}, {}, {}, {}'.format(nodes, com, name_c, name_d))
-logging.log(21, 'Annotators used: {}'.format(name_a))
 logging.log(21, 'Parameter logging End')
 
 
@@ -52,7 +48,7 @@ multiple_flag = type(com) == list
 
 # save graph/s
 if multiple_flag:
-    true_wug_gen = WUGraphSampler(nodes, com, size_communities, distribution, annotators).sample_wug_generator()
+    true_wug_gen = SimulationGraphSampler(nodes, com, size_communities, distribution).sample_simulation_graph_generator()
 
     for i, tg in enumerate(true_wug_gen):
         with open('{}/{}'.format(path, true_wug_names[i]), 'wb') as file:
@@ -61,7 +57,7 @@ if multiple_flag:
         if verbose_flag: logging.info('True Graph saved: {}/{}'.format(path, true_wug_names[i]))
 
 else:
-    true_wug_gen = WUGraphSampler(nodes, com, size_communities, distribution, annotators).sample_wug()
+    true_wug_gen = SimulationGraphSampler(nodes, com, size_communities, distribution).sample_simulation_graph()
     with open('{}/{}'.format(path, true_wug_names[0]), 'wb') as file:
             pickle.dump(tg, file)
     file.close()

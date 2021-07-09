@@ -10,9 +10,10 @@ class Simulation(RunnableStep):
         self.steps: list = []
         self.max_iter: int = max_iter
         
+        # Currently does nothing
         self.break_on_sc: bool = break_on_sc
 
-    def add_step(self, step: RunnableStep) -> self:
+    def add_step(self, step: RunnableStep):
         self.steps.append(step)
         return self
 

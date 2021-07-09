@@ -32,7 +32,7 @@ class Clustering(RunnableStep):
         """
         Run clustering
         """
-        assert self.complexity and self.function and self.params
+        assert callable(self.function) and self.params != None
 
         if self.complexity == 'simple' or self.complexity == 'adv': clusters = self.function(annotated_graph, self.params)
 

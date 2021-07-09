@@ -1,6 +1,6 @@
 from graphs.base_graph import BaseGraph
-from simulation.stopping.utils.stopping_utils import apd
-from simulation.stopping.utils.stopping_utils import entropy_approximation
+from simulation.stopping.utils.stopping_utils import apd as _apd
+from simulation.stopping.utils.stopping_utils import entropy_approximation as _ea
 
 """
 This module provides a more advance use of stopping criterions, like using time step information.
@@ -37,7 +37,7 @@ def apd_convergence(graph: BaseGraph, params: dict) -> bool:
     global _apd_time_steps
     # ===End Guard Phase===
 
-    _apd_time_steps.append((len(_apd_time_steps), apd(graph, sample_size)))
+    _apd_time_steps.append((len(_apd_time_steps), _apd(graph, sample_size)))
 
     if len(_apd_time_steps) < timesteps: return False
 
@@ -77,7 +77,9 @@ def entropy_approx_convergence(graph: BaseGraph, params: dict) -> bool:
     global _entropy_time_steps
     # ===End Guard Phase===
 
-    _entropy_time_steps.append((len(_entropy_time_steps), entropy_approximation(graph, threshold_entropy)))
+    _entropy_time_steps.append((len(_entropy_time_steps), _ea(graph, threshold_entropy)))
+
+    if len(_entropy_time_steps) < timesteps: return False
 
     w_slope = 0
     for i in range(1, timesteps):

@@ -35,7 +35,7 @@ class Stopping(RunnableStep):
         """
         Run Stopping criterion
         """
-        assert self.complexity and self.function and self.params
+        assert callable(self.function) and self.params != None
 
         if self.complexity == 'simple' or self.complexity == 'adv': sc_flag = self.function(annotated_graph, self.params)
         

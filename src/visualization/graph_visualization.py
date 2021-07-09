@@ -2,9 +2,9 @@ import networkx as nx
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 
-from graphs.base_graph import graph
+from graphs.base_graph import BaseGraph
 
-def draw_graph_graphviz(graph: graph, plot_title: str, edge_label_flag: bool = False, save_flag: bool = False, path: str = None) -> None:
+def draw_graph_graphviz(graph: BaseGraph, plot_title: str, edge_label_flag: bool = False, save_flag: bool = False, path: str = None) -> None:
     """
     Draws the Graph using graphviz as layout position information.
 
@@ -18,7 +18,7 @@ def draw_graph_graphviz(graph: graph, plot_title: str, edge_label_flag: bool = F
     pos = nx.drawing.nx_agraph.graphviz_layout(graph.G)
     _draw_graph(graph, pos, plot_title, edge_label_flag, save_flag, path)
 
-def draw_graph_spring(graph: graph, plot_title: str, edge_label_flag: bool = False, save_flag: bool = False, path: str = None) -> None:
+def draw_graph_spring(graph: BaseGraph, plot_title: str, edge_label_flag: bool = False, save_flag: bool = False, path: str = None) -> None:
     """
     Draws the Graph using spring as layout position information.
 
@@ -32,7 +32,7 @@ def draw_graph_spring(graph: graph, plot_title: str, edge_label_flag: bool = Fal
     pos = nx.spring_layout(graph.G, scale=50)
     _draw_graph(graph, pos, plot_title, edge_label_flag, save_flag, path)
 
-def _draw_graph(graph: graph, pos, plot_title: str, edge_label_flag: bool = False, save_flag: bool = False, path: str = None) -> None:
+def _draw_graph(graph: BaseGraph, pos, plot_title: str, edge_label_flag: bool = False, save_flag: bool = False, path: str = None) -> None:
     px = 1/plt.rcParams['figure.dpi'] 
     plt.figure(figsize=(800*px, 800*px))
 

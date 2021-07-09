@@ -57,7 +57,7 @@ class Sampling(RunnableStep):
         """
         Rung given sampling
         """
-        assert self.complexity and self.function and self.params
+        assert callable(self.function) and self.params != None
         self.current_annotator_dist[self.annotator_dist](
             graph, annotated_graph)
 

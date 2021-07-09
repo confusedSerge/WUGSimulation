@@ -1,5 +1,6 @@
 from graphs.base_graph import BaseGraph
 from simulation.clustering.utils.new_cluster_correlation_search import cluster_correlation_search
+from simulation.clustering.utils.utils import cluster_unclustered_nodes
 
 """
 This module provides a more advance use of clustering, like using time step information.
@@ -51,6 +52,10 @@ def time_degrading_clustering(graph: BaseGraph, params: dict) -> dict:
     # ===Guard Phase===
 
     initial = [set(v) for k, v in sorted(graph.get_community_nodes().items())] if _current_run else []
+
+    unknown_cluster = cluster_unclustered_nodes(graph) if _current_run else set()
+    if len(unknown_cluster) > 0:
+        initial.append(unknown_cluster) 
 
     clusters, stats = cluster_correlation_search(G=graph.get_nx_graph_copy(weights), s=s, max_attempts=int(max_attempts/2**_current_run), max_iters=int(max_iters/2**_current_run), initial=initial, split_flag=split_flag)
 

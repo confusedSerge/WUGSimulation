@@ -11,7 +11,7 @@ from graphs.simulation_graph import SimulationGraph
 
 class SimulationGraphSampler:
 
-    def __init__(self, num_nodes, num_communities, size_communities, distribution, annotators: list = None):
+    def __init__(self, num_nodes, num_communities, size_communities, distribution):
         """
         Creates a simulation graph sampler, from witch new simulation graphs can be sampled.
 
@@ -35,7 +35,6 @@ class SimulationGraphSampler:
         self.size_communities = size_communities
         self.distribution_flag = distribution[0]
         self.distribution_data = distribution[1:]
-        self.annotators = annotators if annotators != None else []
 
     def sample_simulation_graph(self):
         """
