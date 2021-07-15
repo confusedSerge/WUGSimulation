@@ -1,6 +1,12 @@
 from graphs.base_graph import BaseGraph
 from simulation.stopping.utils.stopping_utils import apd as _apd
 from simulation.stopping.utils.stopping_utils import entropy_approximation as _ea
+from simulation.stopping.utils.stopping_utils import rmse_mean as _rmse
+from simulation.stopping.utils.stopping_utils import clean_labels as _cl
+from simulation.stopping.utils.stopping_utils import length_padding as _lp
+
+from sklearn.metrics import adjusted_rand_score
+from scipy.spatial.distance import jensenshannon as _js_distance
 
 """
 This module provides a more advance use of stopping criterions, like using time step information.
@@ -41,11 +47,9 @@ def apd_convergence(graph: BaseGraph, params: dict) -> bool:
 
     if len(_apd_time_steps) < timesteps: return False
 
-    w_slope = 0
-    for i in range(1, timesteps):
-        w_slope += abs((_apd_time_steps[-1][1] - _apd_time_steps[-1 - i][1]) / (_apd_time_steps[-1][0] - _apd_time_steps[-1 - i][0])) / i
+    _rmse_value = _rmse(_apd_time_steps[-timesteps:])
 
-    return w_slope < threshold
+    return _rmse_value < threshold
 
 def apd_convergence_reset():
     global _apd_time_steps
@@ -81,12 +85,106 @@ def entropy_approx_convergence(graph: BaseGraph, params: dict) -> bool:
 
     if len(_entropy_time_steps) < timesteps: return False
 
-    w_slope = 0
-    for i in range(1, timesteps):
-        w_slope += abs((_entropy_time_steps[-1][1] - _entropy_time_steps[-1 - i][1]) / (_entropy_time_steps[-1][0] - _entropy_time_steps[-1 - i][0])) / i
+    _rmse_value = _rmse(_entropy_time_steps[-timesteps:])
 
-    return w_slope < threshold_conv
+    return _rmse_value < threshold_conv
 
 def entropy_approx_convergence_reset():
     global _entropy_time_steps
     _entropy_time_steps.clear()
+
+_num_clusters = []
+
+def cluster_size_change_conv(graph: BaseGraph, params: dict) -> bool:
+    """
+
+    """
+    # ===End Guard Phase===
+    timesteps = params.get('timesteps', 5)
+    assert type(timesteps) == int
+
+    threshold = params.get('threshold', .1)
+    assert type(threshold) == float
+    
+    global _num_clusters
+    # ===End Guard Phase===
+    _num_clusters.append(graph.get_number_communities)
+    
+    if len(_num_clusters) < timesteps: return False
+
+    _rmse_value = _rmse(_num_clusters[-timesteps:])
+
+    return _rmse_value < threshold
+
+def cluster_size_change_conv_reset():
+    global _num_clusters
+    _num_clusters.clear()
+
+_rand_index = []
+_last_label = None
+
+def _rand_index_conv(graph: BaseGraph, params: dict) -> bool:
+    """
+
+    """
+    # ===End Guard Phase===
+    timesteps = params.get('timesteps', 5)
+    assert type(timesteps) == int
+
+    threshold = params.get('threshold', .1)
+    assert type(threshold) == float
+    
+    global _rand_index
+    global _last_label
+    # ===End Guard Phase===
+    _rand_index.append(adjusted_rand_score(*_cl(_last_label, graph.labels)))
+    _last_label = graph.labels.copy()
+
+    if len(_rand_index) < timesteps: return False
+
+    _rmse_value = _rmse(_rand_index[-timesteps:])
+
+    return _rmse_value < threshold
+
+def _rand_index_conv_reset():
+    global _rand_index
+    global _last_label
+
+    _rand_index.clear()
+    _last_label = None
+
+
+_jsd = []
+_last_cluster = None
+
+def _jsd_conv(graph: BaseGraph, params: dict) -> bool:
+    """
+
+    """
+    # ===End Guard Phase===
+    timesteps = params.get('timesteps', 5)
+    assert type(timesteps) == int
+
+    threshold = params.get('threshold', .1)
+    assert type(threshold) == float
+    
+    global _jsd
+    global _last_cluster
+    # ===End Guard Phase===
+    cl1, cl2 = _lp(_last_cluster, graph.get_community_sizes())
+    _jsd.append(_js_distance(cl1, cl2, base=2))
+    _last_cluster = graph.get_community_sizes()
+
+    if len(_jsd) < timesteps: return False
+
+    _rmse_value = _rmse(_jsd[-timesteps:])
+
+    return _rmse_value < threshold
+
+def _jsd_conv_reset():
+    global _jsd
+    global _last_cluster
+
+    _jsd.clear()
+    _last_cluster = None
+

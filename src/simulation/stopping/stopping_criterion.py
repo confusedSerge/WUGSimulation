@@ -1,5 +1,8 @@
 from graphs.base_graph import BaseGraph
 from simulation.stopping.utils.stopping_utils import check_connectivity_two_clusters
+from simulation.stopping.utils.stopping_utils import random_sample as _rs
+
+import numpy as np
 
 """
 This module contains different stopping criterion functions and can be extended to new ones.
@@ -107,3 +110,47 @@ def edges_added(graph: BaseGraph, params: dict) -> bool:
     assert type(number_edges) == int
 
     return graph.get_num_added_edges() >= number_edges
+
+def bootstraping(graph: BaseGraph, params: dict) -> bool:
+    """
+    Checks if for a given statistic the confidence interval bounds 
+        is higher than the target interval bounds.
+
+    Args:
+        :param graph: to check on
+        :param rounds: rounds to perform sampling
+        :param sample_size: samples per round
+        :param alpha: percentile
+        :param bound: (target lower, target upper) bound
+        :param stat_func: statistical function to be used 
+        :param stat_params: statistical params
+    """
+    rounds = params.get('rounds', None)
+    assert type(rounds) == int    
+    
+    sample_size = params.get('sample_size', None)
+    assert type(sample_size) == int
+
+    alpha = params.get('alpha', None)
+    assert type(alpha) == float
+
+    bound = params.get('bound', None)
+    assert type(bound) == tuple and len(bound) == 2
+
+    stat_func = params.get('stat_func', None)
+    assert callable(stat_func)
+
+    stat_params = params.get('stat_params', None)
+    assert type(stat_params) == dict
+
+    stats = []
+    for _ in rounds:
+        g = BaseGraph()
+        g.add_edges(_rs(graph, sample_size))
+        stats.append(stat_func(g, params))
+
+    stats.sort()
+    percentile = np.percentile(stats, [((1.0 - alpha) / 2.0) * 100, (alpha + ((1.0 - alpha) / 2.0)) * 100])
+    return bound[0] <= percentile[0] and bound[1] <= percentile[1]
+
+    

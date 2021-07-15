@@ -27,16 +27,17 @@ class BaseGraph():
 
     # Edge functionality
     def get_edge(self, u_node: int, v_node: int, **params) -> float:
-        raise NotImplementedError
+        return self.G.get_edge_data(u_node, v_node)['weight']
 
     def get_last_added_edge(self):
         raise NotImplementedError
 
     def add_edge(self, node_u: int, node_v: int, weight: float, **params) -> None:
-        raise NotImplementedError
+        self.G.add_weighted_edges_from([(node_u, node_v, weight)])
 
     def add_edges(self, edge_list: list, **params) -> None:
-        raise NotImplementedError
+        for edge in edge_list:
+            self.add_edge(*edge)
 
     # Node functionality
     def get_last_added_node(self) -> tuple:
