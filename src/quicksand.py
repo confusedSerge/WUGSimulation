@@ -1,5 +1,15 @@
-import networkx
+import numpy as np
+from graphs.base_graph import BaseGraph
 
-G = networkx.Graph()
-G.add_weighted_edges_from([(0, 1, 10)])
-print(G.get_edge_data(0, 1)['weight'])
+a = np.array([[BaseGraph(), BaseGraph()], [BaseGraph(), BaseGraph()]])
+c = a.copy()
+it = np.nditer(np.zeros(c.shape), flags=['multi_index'])
+
+print(a)
+print(c)
+for x in it:
+    c[it.multi_index] = c[it.multi_index].get_number_nodes()
+
+    print(c)
+print(a)
+print(c)

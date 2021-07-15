@@ -18,6 +18,9 @@ class MetricResults():
         self.metric_dict[name_metric] = new_metric_matrix
         self.metric_info_dict[name_metric] = axes_info
 
+    def add_metric_and_values(self, name_metric: str, new_values):
+        self.metric_dict[name_metric] = new_values
+
     def remove_metric(self, name_metric: str):
         return self.metric_dict.pop(name_metric, None)
 
