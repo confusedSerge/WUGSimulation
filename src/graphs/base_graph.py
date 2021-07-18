@@ -20,6 +20,7 @@ class BaseGraph():
         # edge/weight dicts (should be base weights)
         self.G.graph['edge_weight'] = {}
         self.G.graph['weight_edge'] = {}
+        self.G.graph['edge_soft_weight'] = {}
 
         # metric dict
         self.G.graph['metrics'] = {}
@@ -34,6 +35,14 @@ class BaseGraph():
 
     def add_edge(self, node_u: int, node_v: int, weight: float, **params) -> None:
         self.G.add_weighted_edges_from([(node_u, node_v, weight)])
+
+        u, v = sorted([node_u, node_v])
+        self.G.graph['edge_weight'][(u, v)] = weight
+        self.G.graph['edge_soft_weight'][(u, v)] = weight - 2.5
+
+        if self.G.graph['weight_edge'].get(weight, None) == None:
+            self.G.graph['weight_edge'][weight] = []
+        self.G.graph['weight_edge'][weight].append((u, v))
 
     def add_edges(self, edge_list: list, **params) -> None:
         for edge in edge_list:
@@ -79,10 +88,17 @@ class BaseGraph():
 
     # util functions
     def update_community_nodes_membership(self, new_community_nodes: dict) -> None:
-        raise NotImplementedError
+        assert type(new_community_nodes) == dict
+        self.G.graph['community_nodes'] = new_community_nodes
 
     def get_nx_graph_copy(self, weight: str) -> nx.Graph:
-        raise NotImplementedError
+        weights = self.G.graph.get(weight, None)
+        assert type(weights) == dict
+
+        graph = nx.Graph()
+        graph.add_weighted_edges_from(list(map(lambda k: (*k[0], k[1]), weights.items())))
+
+        return graph
 
     def add_new_weight_dict(self, name: str, weight_modifier: lambda x: x) -> None:
         self.G.graph[name] = {}

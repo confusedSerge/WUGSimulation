@@ -4,6 +4,8 @@ import random
 from collections import Counter
 from scipy.stats import entropy
 
+from graphs.base_graph import BaseGraph
+
 def entropy_approximation(graph: BaseGraph, params: dict) -> float:
     """
     Calculates the approximate entropy of an unclustered graph.

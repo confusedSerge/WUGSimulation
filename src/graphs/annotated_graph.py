@@ -45,6 +45,7 @@ class AnnotatedGraph(BaseGraph):
         """
         Adds an edge to the graph.
         # TODO Add possibility to add edges to specific weight dict
+        # TODO Change to BaseGraph implementation
 
         Args:
             :param u_node: first node

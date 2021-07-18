@@ -12,13 +12,15 @@ class MetricRunner():
         self.steps = []
         self.metric_result = MetricResults()
 
-    def add_simple_metric(self, function, params: dict) -> None:
+    def add_simple_metric(self, function, params: dict) -> MetricRunner:
         assert callable(function) and type(params) == dict 
         self.steps.append(('simple', function, params))
+        return self
 
-    def add_comparison_metric(self, function, params: dict) -> None:
+    def add_comparison_metric(self, function, params: dict) -> MetricRunner:
         assert callable(function) and type(params) == dict 
         self.steps.append(('comparison', function, params))
+        return self
 
     def run(self, graphs: list, reference_graph: BaseGraph) -> None:
         _mg = np.array(graphs)
