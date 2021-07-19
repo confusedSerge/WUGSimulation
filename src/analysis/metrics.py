@@ -59,9 +59,10 @@ def apd(graph: BaseGraph, params: dict) -> float:
 
     for _ in range(sample_size):
         u, v = sorted(random.sample(graph.G.nodes(), 2))
-        sampled_edge_list.append(graph.get_edge(u, v))
+        if graph.get_edge(u, v) != None:
+            sampled_edge_list.append(graph.get_edge(u, v))
 
-    return sum(sampled_edge_list) / sample_size
+    return sum(sampled_edge_list) / len(sampled_edge_list)
 
 def hpd(graph: BaseGraph, params: dict) -> float:
     """
@@ -77,7 +78,8 @@ def hpd(graph: BaseGraph, params: dict) -> float:
 
     for _ in range(sample_size):
         u, v = sorted(random.sample(graph.G.nodes(), 2))
-        sampled_edge_list.append(graph.get_edge(u, v))
+        if graph.get_edge(u, v) != None:
+            sampled_edge_list.append(graph.get_edge(u, v))
 
     count_edges = [v for k, v in Counter(sampled_edge_list).items()]
 
@@ -97,7 +99,8 @@ def hpd_normalized(graph: BaseGraph, params: dict) -> float:
 
     for _ in range(sample_size):
         u, v = sorted(random.sample(graph.G.nodes(), 2))
-        sampled_edge_list.append(graph.get_edge(u, v))
+        if graph.get_edge(u, v) != None:
+            sampled_edge_list.append(graph.get_edge(u, v))
 
     count_edges = [v for k, v in Counter(sampled_edge_list).items()]
 

@@ -78,7 +78,7 @@ def bar_metric_pd(index, title: str, y_label: str, save_flag: bool = False, save
     plt.clf()
     plt.close()
 
-def boxplot_metric_pd(title: str, y_label: str, save_flag: bool = False, save_path: str = None, **data) -> None:
+def boxplot_metric_pd(title: str, y_label: str, y_lim: tuple = None, save_flag: bool = False, save_path: str = None, **data) -> None:
     """
     Creates a box plot containing len(labels) boxplots. nth index of data relates to nth label.
     Args:
@@ -90,11 +90,13 @@ def boxplot_metric_pd(title: str, y_label: str, save_flag: bool = False, save_pa
         :param data: the different data points
     """
     df = pd.DataFrame(data=data)
-    ax = df.boxplot(meanline=True, showmeans=True)
+    ax = df.boxplot(meanline=True, showmeans=True, return_type='axes')
 
     ax.set_ylabel(y_label)
     ax.set_title(title)
-    ax.set_ylim((0.0, 1.0))
+
+    if y_lim != None:
+        ax.set_ylim(y_lim)
 
     if save_flag:
         assert save_path != None and type(save_path) == str
@@ -146,7 +148,7 @@ def heatmap(data_matrix, title: str, x_label: str, y_label: str, save_flag: bool
     plt.clf()
     plt.close()
 
-def line_ploter(steps, title: str, x_label: str, y_label: str, save_flag: bool = False, save_path: str = None, **data) -> None:
+def line_ploter(steps, title: str, x_label: str, y_label: str, y_lim: tuple = None, save_flag: bool = False, save_path: str = None, **data) -> None:
     """
     Creates a line plot of the data 
     Args:
@@ -174,7 +176,9 @@ def line_ploter(steps, title: str, x_label: str, y_label: str, save_flag: bool =
     ax.set_title(title)
     
     ax.set_xlim(min(x_point), max(x_point))
-    ax.set_ylim((0.0, 1.0))
+
+    if y_lim != None:
+        ax.set_ylim(y_lim)
 
     ax.set_xticks(x_point)
     ax.set_xticklabels(steps)

@@ -36,7 +36,7 @@ class MetricResults():
             raise KeyError
 
         assert len(axes) <= len(self.metric_dict[name_metric].shape)
-        if len(axes) == 0:
+        if len(axes) == 0 or axes == None:
             return self.metric_dict[name_metric]
 
         axes = self._gen_slice_tuple(name_metric, axes)
