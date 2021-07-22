@@ -145,3 +145,6 @@ def kld(p: BaseGraph, q: BaseGraph, threshold: float) -> float:
         s_sum += np.log2(p_si / q_si)
 
     return s_sum / num_nodes_p 
+
+def kld_normalized(p: BaseGraph, q: BaseGraph, threshold: float) -> float:
+    return 1 - np.exp(-kld(p, q, threshold))
