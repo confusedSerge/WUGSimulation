@@ -27,8 +27,9 @@ class BaseGraph():
 
 
     # Edge functionality
-    def get_edge(self, u_node: int, v_node: int, **params) -> float:
-        return self.G.get_edge_data(u_node, v_node)['weight']
+    def get_edge(self, u_node: int, v_node: int, **params) -> float or None:
+        edge = self.G.get_edge_data(u_node, v_node)
+        return None if edge == None else edge['weight']
 
     def get_last_added_edge(self):
         raise NotImplementedError

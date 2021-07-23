@@ -22,7 +22,9 @@ def entropy_clustered_normalized(graph: BaseGraph, params: dict) -> float:
         :param graph: on which to performe the evaluation
         :returns float: value of the metric
     """
-    return entropy(graph.get_community_sizes(), base=2) / np.log2(graph.get_number_communities())
+    if graph.get_number_communities() > 1:
+        return entropy(graph.get_community_sizes(), base=2) / np.log2(graph.get_number_communities())
+    return entropy(graph.get_community_sizes(), base=2)
 
 def entropy_approximation(graph: BaseGraph, params: dict) -> float:
     """
@@ -60,7 +62,8 @@ def entropy_approximation_normalized(graph: BaseGraph, params: dict) -> float:
     for i in graph.G.nodes():
         s_sum += np.log2((1 + node_num_edges_over_threshold.get(i, 0)) / num_nodes)
 
-    return -(s_sum / num_nodes) / np.log2(graph.get_number_nodes())
+    h = -(s_sum / num_nodes)
+    return h / np.log2(graph.get_number_nodes()) if graph.get_number_nodes() > 1 else h
 
 def invers_entropy_distance(graph: BaseGraph, params: dict) -> float:
     """

@@ -30,7 +30,7 @@ class AnnotatedGraph(BaseGraph):
 
         self.G.graph['distribution'] = 'simulated'  # only important for wug
 
-    def get_edge(self, u_node: int, v_node: int, **params) -> float:
+    def get_edge(self, u_node: int, v_node: int, **params) -> float or None:
         """
         Returns the weight of an edge between two nodes, if it is present.
 
