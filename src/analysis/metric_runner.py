@@ -44,15 +44,18 @@ class MetricRunner():
 
     def _calc(self, step: tuple, graph: BaseGraph, ref_graph: BaseGraph) -> float:
         if len(step) != 4 or not callable(step[1]) or type(step[2]) != dict: return 0.0 
-        if step[0] == 'simple':
-            return step[1](graph, step[2])
+        try:
+            if step[0] == 'simple':
+                return step[1](graph, step[2])
 
-        if step[0] == 'comparison_self':
-            return step[1](graph, graph, step[2])
+            if step[0] == 'comparison_self':
+                return step[1](graph, graph, step[2])
 
-        if step[0] == 'comparison':
-            return step[1](ref_graph, graph, step[2])
-
+            if step[0] == 'comparison':
+                return step[1](ref_graph, graph, step[2])
+        except Exception as identifier:
+            print('Error with: {}'.format(identifier))
+            return np.NAN
         return 0.0
 
     def reset(self):

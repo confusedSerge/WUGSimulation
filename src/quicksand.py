@@ -1,4 +1,5 @@
 import pickle
+import numpy as np
 from simulation.clustering.clustering_strategy import new_correlation_clustering 
 
 from graphs.base_graph import BaseGraph

@@ -37,6 +37,7 @@ def entropy_approximation(graph: BaseGraph, params: dict) -> float:
     threshold = params.get('threshold', 2.5)
 
     num_nodes = graph.get_number_nodes()
+    if num_nodes == 0: return 0
     node_num_edges_over_threshold = Counter([node for k, v in graph.get_weight_edge().items() if k >= threshold for t in v for node in t])
 
     s_sum = 0
@@ -56,6 +57,7 @@ def entropy_approximation_normalized(graph: BaseGraph, params: dict) -> float:
     threshold = params.get('threshold', 2.5)
 
     num_nodes = graph.get_number_nodes()
+    if num_nodes == 0: return 0
     node_num_edges_over_threshold = Counter([node for k, v in graph.get_weight_edge().items() if k >= threshold for t in v for node in t])
 
     s_sum = 0
@@ -93,6 +95,7 @@ def apd(graph: BaseGraph, params: dict) -> float:
         if graph.get_edge(u, v) != None:
             sampled_edge_list.append(graph.get_edge(u, v))
 
+    if len(sampled_edge_list) == 0: return 0
     return sum(sampled_edge_list) / len(sampled_edge_list)
 
 def apd_normalized(graph: BaseGraph, params: dict) -> float:
@@ -127,7 +130,8 @@ def hpd(graph: BaseGraph, params: dict) -> float:
             sampled_edge_list.append(graph.get_edge(u, v))
 
     count_edges = [v for k, v in Counter(sampled_edge_list).items()]
-
+    
+    if len(count_edges) == 0: return 0
     return entropy(count_edges, base=2)
 
 def hpd_normalized(graph: BaseGraph, params: dict) -> float:

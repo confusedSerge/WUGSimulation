@@ -51,7 +51,7 @@ class IntermediateSaveListener(RunnableStep):
         if not self.checker(self.function_to_listen(), self.checkpoints[self.checkpoint_index]):
             return
 
-        with open('{}/{}_{}.graph'.format(self.path, self.id_prefix, self.checkpoints[self.checkpoint_index]), 'wb') as file:
+        with open('{}/{}{}.graph'.format(self.path, self.id_prefix, self.checkpoints[self.checkpoint_index]), 'wb') as file:
             pickle.dump(annotated_graph, file)
         file.close()
 

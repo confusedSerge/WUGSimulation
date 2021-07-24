@@ -85,6 +85,7 @@ class SimulationGraphSampler:
 
         return community_dispensation, distribution
 
+    @DeprecationWarning
     def sample_simulation_graph_generator(self):
         """
         Returns a simulation graph generator for the given k parameter.
