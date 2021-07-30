@@ -24,7 +24,7 @@ method signature expected:
 
 def adjusted_rand_index(reference_graph: BaseGraph, graph: BaseGraph, params: dict) -> float:
     """
-    Calculates the adjusted RandIndex of two clustered graphs, 
+    Calculates the adjusted RandIndex of two clustered graphs,
         where only nodes of the second graph are considered.
 
     Args:
@@ -34,9 +34,10 @@ def adjusted_rand_index(reference_graph: BaseGraph, graph: BaseGraph, params: di
     """
     return metrics.adjusted_rand_score(*clean_labels(reference_graph.labels, graph.labels))
 
+
 def purity(reference_graph: BaseGraph, graph: BaseGraph, params: dict) -> float:
     """
-    Calculates the purity of two clustered graphs, 
+    Calculates the purity of two clustered graphs,
         where only nodes of the second graph are considered.
 
     Args:
@@ -46,6 +47,7 @@ def purity(reference_graph: BaseGraph, graph: BaseGraph, params: dict) -> float:
     """
     contingency_matrix = metrics.cluster.contingency_matrix(*clean_labels(reference_graph.labels, graph.labels))
     return np.sum(np.amax(contingency_matrix, axis=0)) / np.sum(contingency_matrix)
+
 
 def accuracy(reference_graph: BaseGraph, graph: BaseGraph, params: dict) -> float:
     """
@@ -65,6 +67,7 @@ def accuracy(reference_graph: BaseGraph, graph: BaseGraph, params: dict) -> floa
 
     # Return cluster accuracy
     return contingency_matrix[row_ind, col_ind].sum() / np.sum(contingency_matrix)
+
 
 def inverse_jensen_shannon_distance(reference_graph: BaseGraph, graph: BaseGraph, params: dict) -> float:
     """
@@ -87,6 +90,7 @@ def inverse_jensen_shannon_distance(reference_graph: BaseGraph, graph: BaseGraph
 
     return 1 - jensenshannon(ref_cluster_prob, g_cluster_prob, base=2)
 
+
 def jensen_shannon_divergence(reference_graph: BaseGraph, graph: BaseGraph, params: dict) -> float:
     """
     Calculates the Jensen Shannon Divergence between two clustered graphs
@@ -97,6 +101,7 @@ def jensen_shannon_divergence(reference_graph: BaseGraph, graph: BaseGraph, para
         :returns float: Jensen Shannon Distance value
     """
     return (1 - inverse_jensen_shannon_distance(reference_graph, graph, params))**2
+
 
 def cluster_size_diff_stripped(reference_graph: BaseGraph, graph: BaseGraph, params: dict) -> float:
     """
@@ -128,10 +133,11 @@ def cluster_size_diff_stripped(reference_graph: BaseGraph, graph: BaseGraph, par
     for i in range(num_clusters):
         c_sum += abs(g_clusters_sizes[i] - ref_cluster_sizes[i])
 
-    norm_factor = graph.get_number_nodes() * (1 + (num_clusters - 2)/ num_clusters)
+    norm_factor = graph.get_number_nodes() * (1 + (num_clusters - 2) / num_clusters)
     norm_factor = norm_factor if norm_factor != 0 else 1
-    
+
     return 1 - c_sum / norm_factor
+
 
 def cluster_num_diff(reference_graph: BaseGraph, graph: BaseGraph, params: dict) -> float:
     """
@@ -143,6 +149,32 @@ def cluster_num_diff(reference_graph: BaseGraph, graph: BaseGraph, params: dict)
         :return float: diff
     """
     return abs(reference_graph.get_number_communities() - graph.get_number_communities())
+
+
+def cluster_size_difference(reference_graph: BaseGraph, graph: BaseGraph, params: dict) -> float:
+    """
+    Returns the sum of difference between clusteres of two graphs
+
+    Args:
+        :param reference_graph: reference graph
+        :param graph: graph to check against reference
+        :return float: diff
+    """
+    ref_cluster_sizes = reference_graph.get_community_sizes()
+    g_clusters_sizes = graph.get_community_sizes()
+
+    abs_diff = abs(len(ref_cluster_sizes) - len(g_clusters_sizes))
+    if len(ref_cluster_sizes) < len(g_clusters_sizes):
+        ref_cluster_sizes.extend([0] * abs_diff)
+    else:
+        g_clusters_sizes.extend([0] * abs_diff)
+
+    _sum = 0
+    for i in range(len(ref_cluster_sizes)):
+        _sum += abs(ref_cluster_sizes[i] - g_clusters_sizes[i])
+
+    return _sum
+
 
 def jsd_approximation_entropy(reference_graph: BaseGraph, graph: BaseGraph, params: dict) -> float:
     """
@@ -156,6 +188,7 @@ def jsd_approximation_entropy(reference_graph: BaseGraph, graph: BaseGraph, para
     """
     return _metric.entropy_approximation(build_m(reference_graph, graph), params) - (_metric.entropy_approximation(reference_graph, params) + _metric.entropy_approximation(graph, params)) / 2
 
+
 def jsd_approximation_entropy_normalized(reference_graph: BaseGraph, graph: BaseGraph, params: dict) -> float:
     """
     Calculates the JSD based on normalized entropy.
@@ -167,6 +200,7 @@ def jsd_approximation_entropy_normalized(reference_graph: BaseGraph, graph: Base
         :return float: jsd based on entropy
     """
     return _metric.entropy_approximation_normalized(build_m(reference_graph, graph), params) - (_metric.entropy_approximation_normalized(reference_graph, params) + _metric.entropy_approximation_normalized(graph, params)) / 2
+
 
 def jsd_approximation_kld(reference_graph: BaseGraph, graph: BaseGraph, params: dict) -> float:
     """
@@ -183,6 +217,7 @@ def jsd_approximation_kld(reference_graph: BaseGraph, graph: BaseGraph, params: 
     m, rf = build_m_modified_ref(reference_graph, graph)
     return (kld(rf, m, threshold) + kld(graph, m, threshold)) / 2
 
+
 def jsd_approximation_kld_normalized(reference_graph: BaseGraph, graph: BaseGraph, params: dict) -> float:
     """
     Calculates the JSD based on normalized KLD.
@@ -198,6 +233,7 @@ def jsd_approximation_kld_normalized(reference_graph: BaseGraph, graph: BaseGrap
     m, rf = build_m_modified_ref(reference_graph, graph)
     return (kld_normalized(rf, m, threshold) + kld_normalized(graph, m, threshold)) / 2
 
+
 def jsd_approximation_apd(reference_graph: BaseGraph, graph: BaseGraph, params: dict) -> float:
     """
     Calculates the JSD based on APD.
@@ -210,6 +246,7 @@ def jsd_approximation_apd(reference_graph: BaseGraph, graph: BaseGraph, params: 
     """
     return _metric.apd(build_m(reference_graph, graph), params) - (_metric.apd(reference_graph, params) + _metric.apd(graph, params)) / 2
 
+
 def jsd_approximation_apd_normalized(reference_graph: BaseGraph, graph: BaseGraph, params: dict) -> float:
     """
     Calculates the JSD based on normalized APD.
@@ -217,11 +254,12 @@ def jsd_approximation_apd_normalized(reference_graph: BaseGraph, graph: BaseGrap
     Args:
         :param reference_graph: first graph
         :param graph: second graph
-        :param params k=sample_size: sample size to take from the graphs and 
-        :param params k=norm_factor: normalization factor 
+        :param params k=sample_size: sample size to take from the graphs and
+        :param params k=norm_factor: normalization factor
         :return float: jsd based on entropy
     """
     return _metric.apd_normalized(build_m(reference_graph, graph), params) - (_metric.apd(reference_graph, params) + _metric.apd(graph, params)) / 2
+
 
 def jsd_approximation_hpd(reference_graph: BaseGraph, graph: BaseGraph, params: dict) -> float:
     """
@@ -235,6 +273,7 @@ def jsd_approximation_hpd(reference_graph: BaseGraph, graph: BaseGraph, params: 
     """
     return _metric.hpd(build_m(reference_graph, graph), params) - (_metric.hpd(reference_graph, params) + _metric.hpd(graph, params)) / 2
 
+
 def jsd_approximation_hpd_normalized(reference_graph: BaseGraph, graph: BaseGraph, params: dict) -> float:
     """
     Calculates the JSD based on normalized HPD.
@@ -247,6 +286,7 @@ def jsd_approximation_hpd_normalized(reference_graph: BaseGraph, graph: BaseGrap
         :return float: jsd based on entropy
     """
     return _metric.hpd_normalized(build_m(reference_graph, graph), params) - (_metric.hpd_normalized(reference_graph, params) + _metric.hpd_normalized(graph, params)) / 2
+
 
 def stripped_entropy(reference_graph: BaseGraph, graph: BaseGraph, params: dict) -> float:
     """
@@ -265,6 +305,7 @@ def stripped_entropy(reference_graph: BaseGraph, graph: BaseGraph, params: dict)
 
     return entropy(ref_cluster_sizes, base=2)
 
+
 def stripped_entropy_normalized(reference_graph: BaseGraph, graph: BaseGraph, params: dict) -> float:
     """
     Calculates the entropy of the reference graph with nodes removed, which are not present in graph
@@ -282,6 +323,7 @@ def stripped_entropy_normalized(reference_graph: BaseGraph, graph: BaseGraph, pa
 
     return entropy(ref_cluster_sizes, base=2) / np.log2(len(ref_cluster_sizes))
 
+
 def distance_h_h(reference_graph: BaseGraph, graph: BaseGraph, params: dict) -> float:
     """
     Calculates the entropy distance between two graphs, where the clustering is known.
@@ -292,6 +334,7 @@ def distance_h_h(reference_graph: BaseGraph, graph: BaseGraph, params: dict) -> 
         :returns float: value of the metric
     """
     return abs(entropy(graph.get_community_sizes(), base=2) - entropy(graph.get_community_sizes(), base=2))
+
 
 def distance_h_hn(reference_graph: BaseGraph, graph: BaseGraph, params: dict) -> float:
     """
@@ -305,6 +348,7 @@ def distance_h_hn(reference_graph: BaseGraph, graph: BaseGraph, params: dict) ->
     """
     return abs(entropy(graph.get_community_sizes(), base=2) - _metric.entropy_approximation(graph, params))
 
+
 def distance_h_apd(reference_graph: BaseGraph, graph: BaseGraph, params: dict) -> float:
     """
     Calculates the entropy-apd distance between two graphs.
@@ -316,6 +360,7 @@ def distance_h_apd(reference_graph: BaseGraph, graph: BaseGraph, params: dict) -
         :returns float: value of the metric
     """
     return abs(entropy(graph.get_community_sizes(), base=2) - _metric.apd(graph, params))
+
 
 def distance_h_hpd(reference_graph: BaseGraph, graph: BaseGraph, params: dict) -> float:
     """
@@ -329,6 +374,7 @@ def distance_h_hpd(reference_graph: BaseGraph, graph: BaseGraph, params: dict) -
     """
     return abs(entropy(graph.get_community_sizes(), base=2) - _metric.hpd(graph, params))
 
+
 def distance_stripped_h_h(reference_graph: BaseGraph, graph: BaseGraph, params: dict) -> float:
     """
     Calculates the entropy distance between two graphs, where the clustering is known and the
@@ -340,6 +386,7 @@ def distance_stripped_h_h(reference_graph: BaseGraph, graph: BaseGraph, params: 
         :returns float: value of the metric
     """
     return abs(stripped_entropy(reference_graph, graph, {}) - entropy(graph.get_community_sizes(), base=2))
+
 
 def distance_stripped_h_hn(reference_graph: BaseGraph, graph: BaseGraph, params: dict) -> float:
     """
@@ -353,6 +400,7 @@ def distance_stripped_h_hn(reference_graph: BaseGraph, graph: BaseGraph, params:
     """
     return abs(stripped_entropy(reference_graph, graph, {}) - _metric.entropy_approximation(graph, params))
 
+
 def distance_stripped_h_apd(reference_graph: BaseGraph, graph: BaseGraph, params: dict) -> float:
     """
     Calculates the stripped entropy-apd distance between two graphs.
@@ -364,6 +412,7 @@ def distance_stripped_h_apd(reference_graph: BaseGraph, graph: BaseGraph, params
         :returns float: value of the metric
     """
     return abs(stripped_entropy(reference_graph, graph, {}) - _metric.apd(graph, params))
+
 
 def distance_stripped_h_hpd(reference_graph: BaseGraph, graph: BaseGraph, params: dict) -> float:
     """

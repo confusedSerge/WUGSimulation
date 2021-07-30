@@ -6,6 +6,7 @@ from scipy.stats import entropy
 
 from graphs.base_graph import BaseGraph
 
+
 def entropy_clustered(graph: BaseGraph, params: dict) -> float:
     """
     Calculates the entropy of an clustered graph.
@@ -14,6 +15,7 @@ def entropy_clustered(graph: BaseGraph, params: dict) -> float:
         :returns float: value of the metric
     """
     return entropy(graph.get_community_sizes(), base=2)
+
 
 def entropy_clustered_normalized(graph: BaseGraph, params: dict) -> float:
     """
@@ -26,6 +28,7 @@ def entropy_clustered_normalized(graph: BaseGraph, params: dict) -> float:
         return entropy(graph.get_community_sizes(), base=2) / np.log2(graph.get_number_communities())
     return entropy(graph.get_community_sizes(), base=2)
 
+
 def entropy_approximation(graph: BaseGraph, params: dict) -> float:
     """
     Calculates the approximate entropy of an unclustered graph.
@@ -37,14 +40,16 @@ def entropy_approximation(graph: BaseGraph, params: dict) -> float:
     threshold = params.get('threshold', 2.5)
 
     num_nodes = graph.get_number_nodes()
-    if num_nodes == 0: return 0
+    if num_nodes == 0:
+        return 0
     node_num_edges_over_threshold = Counter([node for k, v in graph.get_weight_edge().items() if k >= threshold for t in v for node in t])
 
     s_sum = 0
     for i in graph.G.nodes():
         s_sum += np.log2((1 + node_num_edges_over_threshold.get(i, 0)) / num_nodes)
 
-    return -(s_sum / num_nodes) 
+    return -(s_sum / num_nodes)
+
 
 def entropy_approximation_normalized(graph: BaseGraph, params: dict) -> float:
     """
@@ -57,7 +62,8 @@ def entropy_approximation_normalized(graph: BaseGraph, params: dict) -> float:
     threshold = params.get('threshold', 2.5)
 
     num_nodes = graph.get_number_nodes()
-    if num_nodes == 0: return 0
+    if num_nodes == 0:
+        return 0
     node_num_edges_over_threshold = Counter([node for k, v in graph.get_weight_edge().items() if k >= threshold for t in v for node in t])
 
     s_sum = 0
@@ -66,6 +72,7 @@ def entropy_approximation_normalized(graph: BaseGraph, params: dict) -> float:
 
     h = -(s_sum / num_nodes)
     return h / np.log2(graph.get_number_nodes()) if graph.get_number_nodes() > 1 else h
+
 
 def invers_entropy_distance(graph: BaseGraph, params: dict) -> float:
     """
@@ -77,6 +84,7 @@ def invers_entropy_distance(graph: BaseGraph, params: dict) -> float:
         :returns float: value of the metric
     """
     return 1 - abs(entropy_clustered(graph, params) / np.log2(graph.get_number_communities()) - entropy_approximation(graph, params) / np.log2(graph.get_number_nodes()))
+
 
 def apd(graph: BaseGraph, params: dict) -> float:
     """
@@ -95,8 +103,10 @@ def apd(graph: BaseGraph, params: dict) -> float:
         if graph.get_edge(u, v) != None:
             sampled_edge_list.append(graph.get_edge(u, v))
 
-    if len(sampled_edge_list) == 0: return 0
+    if len(sampled_edge_list) == 0:
+        return 0
     return sum(sampled_edge_list) / len(sampled_edge_list)
+
 
 def apd_normalized(graph: BaseGraph, params: dict) -> float:
     """
@@ -111,6 +121,7 @@ def apd_normalized(graph: BaseGraph, params: dict) -> float:
     norm_factor = params.get('norm_factor', 4)
 
     return apd(graph, params) / norm_factor
+
 
 def hpd(graph: BaseGraph, params: dict) -> float:
     """
@@ -130,9 +141,11 @@ def hpd(graph: BaseGraph, params: dict) -> float:
             sampled_edge_list.append(graph.get_edge(u, v))
 
     count_edges = [v for k, v in Counter(sampled_edge_list).items()]
-    
-    if len(count_edges) == 0: return 0
+
+    if len(count_edges) == 0:
+        return 0
     return entropy(count_edges, base=2)
+
 
 def hpd_normalized(graph: BaseGraph, params: dict) -> float:
     """

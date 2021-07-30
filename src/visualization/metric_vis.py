@@ -6,6 +6,7 @@ import pandas as pd
 This module contains various visualizations for metrics
 """
 
+
 def bar_metric(labels, title: str, y_label: str, save_flag: bool = False, save_path: str = None, **metrics) -> None:
     """
     Creates a bar plot containing len(labels) seperated bargraph-groups, 
@@ -60,7 +61,7 @@ def bar_metric_pd(index, title: str, y_label: str, save_flag: bool = False, save
     """
     for k, v in data.items():
         assert len(index) == len(v)
-    
+
     df = pd.DataFrame(data, index=index)
     ax = df.plot.bar(rot=0)
 
@@ -77,6 +78,7 @@ def bar_metric_pd(index, title: str, y_label: str, save_flag: bool = False, save
 
     plt.clf()
     plt.close()
+
 
 def boxplot_metric_pd(title: str, y_label: str, y_lim: tuple = None, save_flag: bool = False, save_path: str = None, **data) -> None:
     """
@@ -107,6 +109,7 @@ def boxplot_metric_pd(title: str, y_label: str, y_lim: tuple = None, save_flag: 
     plt.clf()
     plt.close()
 
+
 def heatmap(data_matrix, title: str, x_label: str, y_label: str, save_flag: bool = False, save_path: str = None):
     '''
     Creates a heatmap.
@@ -120,7 +123,7 @@ def heatmap(data_matrix, title: str, x_label: str, y_label: str, save_flag: bool
     '''
 
     fig, ax = plt.subplots()
-    
+
     ax.imshow(data_matrix, aspect='auto')
 
     ax.set_xticks(np.arange(len(x_label)))
@@ -130,7 +133,7 @@ def heatmap(data_matrix, title: str, x_label: str, y_label: str, save_flag: bool
     ax.set_yticklabels(y_label)
 
     plt.setp(ax.get_xticklabels(), rotation=45, ha="right",
-            rotation_mode="anchor")
+             rotation_mode="anchor")
 
     for i in range(len(y_label)):
         for j in range(len(x_label)):
@@ -148,6 +151,7 @@ def heatmap(data_matrix, title: str, x_label: str, y_label: str, save_flag: bool
     plt.clf()
     plt.close()
 
+
 def line_ploter(steps, title: str, x_label: str, y_label: str, y_lim: tuple = None, save_flag: bool = False, save_path: str = None, **data) -> None:
     """
     Creates a line plot of the data 
@@ -163,7 +167,6 @@ def line_ploter(steps, title: str, x_label: str, y_label: str, y_lim: tuple = No
     for k, v in data.items():
         assert len(steps) == len(v)
 
-    
     x_point = np.arange(len(steps))
 
     fig, ax = plt.subplots()
@@ -174,10 +177,10 @@ def line_ploter(steps, title: str, x_label: str, y_label: str, y_lim: tuple = No
     ax.set_ylabel(y_label)
     ax.set_xlabel(x_label)
     ax.set_title(title)
-    
+
     ax.set_xlim(min(x_point), max(x_point))
 
-    if y_lim != None:
+    if y_lim is not None:
         ax.set_ylim(y_lim)
 
     ax.set_xticks(x_point)
@@ -185,16 +188,16 @@ def line_ploter(steps, title: str, x_label: str, y_label: str, y_lim: tuple = No
     ax.legend()
 
     if save_flag:
-        assert save_path != None and type(save_path) == str
+        assert save_path is not None and type(save_path) == str
         plt.savefig(save_path)
     else:
         plt.show()
 
     plt.clf()
     plt.close()
-    
 
-def threed_line_ploter(x_labels: list, x_label: str, y_labels: list, y_label: str, z_label:str, title: str, legend_flag: bool = False, save_flag: bool = False, save_path: str = None, **data) -> None:
+
+def threed_line_ploter(x_labels: list, x_label: str, y_labels: list, y_label: str, z_label: str, title: str, legend_flag: bool = False, save_flag: bool = False, save_path: str = None, **data) -> None:
     """
     Creates a 3d line plot based on data. 
     The line is fixed on the y axis!
@@ -222,18 +225,18 @@ def threed_line_ploter(x_labels: list, x_label: str, y_labels: list, y_label: st
 
     for y_point, _y_label in enumerate(y_labels):
         for i, (k, v) in enumerate(data.items()):
-            ax.plot(x_points, [y_point]*len(x_points), v[_y_label], label='(Metric: {}, k: {})'.format(k, _y_label), color=colors[i % len(colors)])
+            ax.plot(x_points, [y_point] * len(x_points), v[_y_label], label='(Metric: {}, k: {})'.format(k, _y_label), color=colors[i % len(colors)])
 
     ax.set_ylabel(y_label)
     ax.set_xlabel(x_label)
     ax.set_zlabel(z_label)
     ax.set_title(title)
-    
+
     ax.set_xlim(min(x_points), max(x_points))
     ax.set_ylim(min(_y_points), max(_y_points))
 
     ax.set_xticks(x_points)
-    ax.set_xticklabels(x_labels)    
+    ax.set_xticklabels(x_labels)
     ax.set_yticks(_y_points)
     ax.set_yticklabels(y_labels)
 
@@ -248,4 +251,3 @@ def threed_line_ploter(x_labels: list, x_label: str, y_labels: list, y_label: st
 
     plt.clf()
     plt.close()
-

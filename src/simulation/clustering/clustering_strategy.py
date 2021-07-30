@@ -1,16 +1,22 @@
+import numpy as np
+
 from graphs.base_graph import BaseGraph
 from simulation.clustering.utils.cluster_correlation_search import cluster_correlation_search as _old_cluster_correlation_search
 from simulation.clustering.utils.new_cluster_correlation_search import cluster_correlation_search as _new_cluster_correlation_search
 from chinese_whispers import chinese_whispers as _chinese_whispers
 from chinese_whispers import aggregate_clusters as _aggregate_clusters
 from community.community_louvain import best_partition as _louvain_partition
+from networkx import connected_components
+from simulation.clustering.utils.utils import sort_len_nodes as _clsort
+from simulation.clustering.utils.utils import louvain_cluster_sort as _lvsort
 
 """
 This module contains different clustering functions and can be extended to new ones.
 All method signatures should look like this:
     def name(graph: BaseGraph, params: dict) -> dict:
-Each clustering function should only return a dictionary with label-node key-value pairs   
+Each clustering function should only return a dictionary with label-node key-value pairs
 """
+
 
 @DeprecationWarning
 def correlation_clustering(graph: BaseGraph, params: dict) -> dict:
@@ -24,7 +30,7 @@ def correlation_clustering(graph: BaseGraph, params: dict) -> dict:
         :param s: maximal number of senses a word can have
         :param max_attempts: number of restarts for optimization
         :param max_iters: number of iterations for optimization
-        :return labels: dict with label-node key-value pairs  
+        :return labels: dict with label-node key-value pairs
     """
     # ===Guard Phase===
     s = params.get('s', 10)
@@ -63,7 +69,7 @@ def new_correlation_clustering(graph: BaseGraph, params: dict) -> dict:
         :param max_iters: number of iterations for optimization
         :param split_flag: optional flag, if non evidence cluster should be splitted
         :param ru_old_cluster: optional flag, if old cluster should be reused
-        :return labels: dict with label-node key-value pairs  
+        :return labels: dict with label-node key-value pairs
     """
     # ===Guard Phase===
     s = params.get('s', 10)
@@ -94,7 +100,7 @@ def new_correlation_clustering(graph: BaseGraph, params: dict) -> dict:
     for cluster_id, cluster in enumerate(clusters):
         community_node[cluster_id] = list(cluster)
 
-    return community_node
+    return _clsort(community_node)
 
 
 def connected_components_clustering(graph: BaseGraph, params: dict) -> dict:
@@ -110,21 +116,20 @@ def connected_components_clustering(graph: BaseGraph, params: dict) -> dict:
     assert type(weights) == str
 
     G = graph.get_nx_graph_copy(weights)
-    is_non_value=lambda x: np.isnan(x)
+
+    def is_non_value(x):
+        return np.isnan(x)
 
     edges_negative = [(i, j) for (i, j) in G.edges() if G[i]
                       [j]['weight'] < 0.0 or is_non_value(G[i][j]['weight'])]
     G.remove_edges_from(edges_negative)
-    components = nx.connected_components(G)
-    classes = [set(component) for component in components]
-    classes.sort(key=lambda x: list(x)[0])
+    return _clsort({i: list(component) for i, component in enumerate(connected_components(G))})
 
-    return classes
 
 def chinese_whisper_clustering(graph: BaseGraph, params: dict) -> dict:
     """
     Perform 'chinese whispers' clustering.
-    
+
     Args:
         :param graph: graph to clusters
         :param weights: weights to be used for clustering
@@ -134,12 +139,14 @@ def chinese_whisper_clustering(graph: BaseGraph, params: dict) -> dict:
     assert type(weights) == str
 
     G = graph.get_nx_graph_copy(weights)
-    return _aggregate_clusters(_chinese_whispers(G, weighting='top', iterations=20))
+    _cw = _aggregate_clusters(_chinese_whispers(G, weighting='top', iterations=20))
+    return _clsort({k: list(v) for k, v in _cw.items()})
+
 
 def louvain_method_clustering(graph: BaseGraph, params: dict) -> dict:
     """
     Perform 'louvain method' clustering.
-    
+
     Args:
         :param graph: graph to clusters
         :param weights: weights to be used for clustering
@@ -149,4 +156,5 @@ def louvain_method_clustering(graph: BaseGraph, params: dict) -> dict:
     assert type(weights) == str
 
     G = graph.get_nx_graph_copy(weights)
-    return _louvain_partition(G)
+    # partition: list = sorted(_louvain_partition(G).items(), key=lambda x: x[0])
+    return _lvsort(_louvain_partition(G))

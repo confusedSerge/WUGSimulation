@@ -2,10 +2,6 @@
 # Assumes that edges with nan have been removed
 # Assumes that weights are stored under edge attribute G[i][j]['weight']
 
-from scipy.optimize import linear_sum_assignment
-from sklearn import metrics
-import time
-import mlrose
 import sys
 from itertools import combinations, product, chain
 from collections import defaultdict
@@ -17,6 +13,10 @@ from scipy.stats import spearmanr
 from networkx.algorithms.dag import transitive_closure
 import six
 sys.modules['sklearn.externals.six'] = six
+import mlrose
+import time
+from sklearn import metrics
+from scipy.optimize import linear_sum_assignment
 
 
 def cluster_correlation_search(G, s=10, max_attempts=200, max_iters=5000, initial=[], split_flag=True):
