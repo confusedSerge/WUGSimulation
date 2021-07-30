@@ -1,6 +1,9 @@
 from graphs.base_graph import BaseGraph
-from simulation.clustering.utils.cluster_correlation_search import cluster_correlation_search as old_cluster_correlation_search
-from simulation.clustering.utils.new_cluster_correlation_search import cluster_correlation_search as new_cluster_correlation_search
+from simulation.clustering.utils.cluster_correlation_search import cluster_correlation_search as _old_cluster_correlation_search
+from simulation.clustering.utils.new_cluster_correlation_search import cluster_correlation_search as _new_cluster_correlation_search
+from chinese_whispers import chinese_whispers as _chinese_whispers
+from chinese_whispers import aggregate_clusters as _aggregate_clusters
+from community.community_louvain import best_partition as _louvain_partition
 
 """
 This module contains different clustering functions and can be extended to new ones.
@@ -9,7 +12,7 @@ All method signatures should look like this:
 Each clustering function should only return a dictionary with label-node key-value pairs   
 """
 
-
+@DeprecationWarning
 def correlation_clustering(graph: BaseGraph, params: dict) -> dict:
     """
     This clustering implementation uses the clustering algorithm mentioned in:
@@ -37,7 +40,7 @@ def correlation_clustering(graph: BaseGraph, params: dict) -> dict:
     assert type(max_iters) == int
     # ===Guard Phase===
 
-    clusters = old_cluster_correlation_search(G=graph.get_nx_graph_copy(
+    clusters = _old_cluster_correlation_search(G=graph.get_nx_graph_copy(
         weights), s=s, max_attempts=max_attempts, max_iters=max_iters)
 
     community_node = {}
@@ -84,7 +87,7 @@ def new_correlation_clustering(graph: BaseGraph, params: dict) -> dict:
 
     initial = [set(v) for k, v in sorted(graph.get_community_nodes().items())] if ru_old_cluster else []
 
-    clusters, stats = new_cluster_correlation_search(G=graph.get_nx_graph_copy(
+    clusters, stats = _new_cluster_correlation_search(G=graph.get_nx_graph_copy(
         weights), s=s, max_attempts=max_attempts, max_iters=max_iters, initial=initial, split_flag=split_flag)
 
     community_node = {}
@@ -92,3 +95,58 @@ def new_correlation_clustering(graph: BaseGraph, params: dict) -> dict:
         community_node[cluster_id] = list(cluster)
 
     return community_node
+
+
+def connected_components_clustering(graph: BaseGraph, params: dict) -> dict:
+    """
+    Apply connected_component clustering.
+
+    Args"
+        :param graph: graph to clusters
+        :param weights: weights to be used for clustering
+        :return labels: dict with label-node key-value pairs
+    """
+    weights = params.get('weights', 'edge_weight')
+    assert type(weights) == str
+
+    G = graph.get_nx_graph_copy(weights)
+    is_non_value=lambda x: np.isnan(x)
+
+    edges_negative = [(i, j) for (i, j) in G.edges() if G[i]
+                      [j]['weight'] < 0.0 or is_non_value(G[i][j]['weight'])]
+    G.remove_edges_from(edges_negative)
+    components = nx.connected_components(G)
+    classes = [set(component) for component in components]
+    classes.sort(key=lambda x: list(x)[0])
+
+    return classes
+
+def chinese_whisper_clustering(graph: BaseGraph, params: dict) -> dict:
+    """
+    Perform 'chinese whispers' clustering.
+    
+    Args:
+        :param graph: graph to clusters
+        :param weights: weights to be used for clustering
+        :return labels: dict with label-node key-value pairs
+    """
+    weights = params.get('weights', 'edge_weight')
+    assert type(weights) == str
+
+    G = graph.get_nx_graph_copy(weights)
+    return _aggregate_clusters(_chinese_whispers(G, weighting='top', iterations=20))
+
+def louvain_method_clustering(graph: BaseGraph, params: dict) -> dict:
+    """
+    Perform 'louvain method' clustering.
+    
+    Args:
+        :param graph: graph to clusters
+        :param weights: weights to be used for clustering
+        :return labels: dict with label-node key-value pairs
+    """
+    weights = params.get('weights', 'edge_weight')
+    assert type(weights) == str
+
+    G = graph.get_nx_graph_copy(weights)
+    return _louvain_partition(G)

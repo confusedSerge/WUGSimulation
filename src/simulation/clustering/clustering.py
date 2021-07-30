@@ -1,13 +1,14 @@
 from graphs.base_graph import BaseGraph
 from simulation.runnable_step import RunnableStep
 
+
 class Clustering(RunnableStep):
     """
     docstring
     """
+
     def __init__(self):
         super().__init__()
-
 
     def add_clustering_strategy(self, function, params: dict):
         """
@@ -32,9 +33,10 @@ class Clustering(RunnableStep):
         """
         Run clustering
         """
-        assert callable(self.function) and self.params != None
+        assert callable(self.function) and self.params is not None
 
-        if self.complexity == 'simple' or self.complexity == 'adv': clusters = self.function(annotated_graph, self.params)
+        if self.complexity == 'simple' or self.complexity == 'adv':
+            clusters = self.function(annotated_graph, self.params)
 
         annotated_graph.update_community_nodes_membership(clusters)
 
@@ -44,4 +46,3 @@ class Clustering(RunnableStep):
         """
         if callable(self.clean_up_func):
             self.clean_up_func()
-

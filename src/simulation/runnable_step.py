@@ -1,9 +1,11 @@
 from graphs.base_graph import BaseGraph
 
+
 class RunnableStep():
     """
     docstring
     """
+
     def __init__(self):
         self.complexity: str = None
         self.function = None

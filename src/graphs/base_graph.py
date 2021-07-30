@@ -1,6 +1,7 @@
 import pickle
 import networkx as nx
 
+
 class BaseGraph():
     """
     Base Graph for this framework.
@@ -25,11 +26,11 @@ class BaseGraph():
         # metric dict
         self.G.graph['metrics'] = {}
 
-
     # Edge functionality
+
     def get_edge(self, u_node: int, v_node: int, **params) -> float or None:
         edge = self.G.get_edge_data(u_node, v_node)
-        return None if edge == None else edge['weight']
+        return None if edge is None else edge['weight']
 
     def get_last_added_edge(self):
         raise NotImplementedError
@@ -72,13 +73,13 @@ class BaseGraph():
     def get_dictionary_of_graph(self, name: str) -> list:
         return self.G.graph[name]
 
-    def get_edge_weight(self) -> dict: 
+    def get_edge_weight(self) -> dict:
         return self.G.graph['edge_weight']
 
-    def get_weight_edge(self) -> dict: 
+    def get_weight_edge(self) -> dict:
         return self.G.graph['weight_edge']
 
-    def get_community_nodes(self) -> dict: 
+    def get_community_nodes(self) -> dict:
         return self.G.graph['community_nodes']
 
     def get_metric_dict(self) -> dict:
@@ -97,7 +98,8 @@ class BaseGraph():
         assert type(weights) == dict
 
         graph = nx.Graph()
-        graph.add_weighted_edges_from(list(map(lambda k: (*k[0], k[1]), weights.items())))
+        graph.add_weighted_edges_from(
+            list(map(lambda k: (*k[0], k[1]), weights.items())))
 
         return graph
 
