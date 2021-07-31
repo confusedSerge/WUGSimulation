@@ -1,5 +1,6 @@
 import networkx as nx
 import pickle
+import numpy as np
 
 from graphs.base_graph import BaseGraph
 
@@ -27,6 +28,7 @@ class AnnotatedGraph(BaseGraph):
 
         # differently weighted edges. Need to be addressed through params in functions
         self.G.graph['edge_soft_weight'] = {}  # only important for wug
+        self.G.graph['edge_added_weights'] = {}  # only important for wug
 
         self.G.graph['distribution'] = 'simulated'  # only important for wug
 
@@ -45,14 +47,26 @@ class AnnotatedGraph(BaseGraph):
         """
         Adds an edge to the graph.
         # TODO Add possibility to add edges to specific weight dict
-        # TODO Change to BaseGraph implementation
 
         Args:
             :param u_node: first node
             :param v_node: second node
             :param weight: weight
         """
-        self.add_edges([(node_u, node_v, weight)])
+        u, v = sorted([node_u, node_v])
+        self.G.graph['edge_weight'][(u, v)] = weight
+        self.G.graph['edge_soft_weight'][(u, v)] = weight - 2.5
+
+        if self.G.graph['edge_added_weights'].get((u, v), None) is None:
+            self.G.graph['edge_added_weights'][(u, v)] = []
+        self.G.graph['edge_added_weights'][(u, v)].append(weight)
+
+        weight_to_add = np.median(self.G.graph['edge_added_weights'].get((u, v), [weight]))
+        self.G.add_weighted_edges_from([(u, v, weight_to_add)])
+
+        if self.G.graph['weight_edge'].get(weight, None) is None:
+            self.G.graph['weight_edge'][weight] = []
+        self.G.graph['weight_edge'][weight].append((u, v))
 
     def add_edges(self, edge_list: list, **params) -> None:
         """
@@ -64,36 +78,18 @@ class AnnotatedGraph(BaseGraph):
         Args:
             :param edge_list: edges to add
         """
-        if len(edge_list) == 0:
-            return
         for edge in edge_list:
-            assert len(edge) == 3
-
-        self.G.add_weighted_edges_from(edge_list)
-        self.last_edge = edge_list[-1]
-        self.judgements += len(edge_list)
-
-        # update edge/weight dicts
-        for u, v, w in edge_list:
-            u, v = sorted([u, v])
-
-            self.G.graph['edge_weight'][(u, v)] = w
-            self.G.graph['edge_soft_weight'][(u, v)] = w - 2.5
-
-            if self.G.graph['weight_edge'].get(w, None) == None:
-                self.G.graph['weight_edge'][w] = []
-            self.G.graph['weight_edge'][w].append((u, v))
+            self.add_edge(*edge)
 
     def get_last_added_edge(self):
         return self.last_edge
 
     def get_last_added_node(self):
         # TODO This is not correct?!
-        return self.last_edge[1] if self.last_edge != None else None 
+        return self.last_edge[1] if self.last_edge is not None else None
 
     def get_num_added_edges(self) -> int:
         return self.judgements
-
 
     def get_nx_graph_copy(self, weight: str) -> nx.Graph:
         """

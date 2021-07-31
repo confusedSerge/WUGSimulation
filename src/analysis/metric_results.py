@@ -26,17 +26,17 @@ class MetricResults():
 
     def get_values(self, name_metric: str, *axes):
         """
-        Gets the values for given point on the axes. 
+        Gets the values for given point on the axes.
         The n-th axis value describes the n-th axis.
         >>>args=(None, 1, 1)
             is going to be the same as a[:, 1, 1, ...]
-        args can be of type slice(), int (=position), None (all values along axis), or tuple describing (start, stop [, step]),  
+        args can be of type slice(), int (=position), None (all values along axis), or tuple describing (start, stop [, step]),
         """
         if name_metric not in self.metric_dict.keys():
             raise KeyError
 
         assert len(axes) <= len(self.metric_dict[name_metric].shape)
-        if len(axes) == 0 or axes == None:
+        if len(axes) == 0 or axes is None:
             return self.metric_dict[name_metric]
 
         axes = self._gen_slice_tuple(name_metric, axes)
@@ -61,7 +61,6 @@ class MetricResults():
 
         self.metric_dict[name_metric] = np.append(self.metric_dict[name_metric], values, axis=axis)
 
-
     def get_axes_info(self, name_metric: str):
         if name_metric not in self.metric_info_dict.keys():
             raise KeyError
@@ -75,16 +74,16 @@ class MetricResults():
     # ===Eval Functions===
     def mean(self, name_metric: str, axes_value: tuple, axis_mean: int):
         return np.nanmean(self.get_values(name_metric, axes_value), axis=axis_mean)
-    
+
     def median(self, name_metric: str, axes_value: tuple, axis_mean: tuple):
         return np.nanmedian(self.get_values(name_metric, axes_value), axis=axis_mean)
 
     def std(self, name_metric: str, axes_value: tuple, axis_mean: tuple):
         return np.nanstd(self.get_values(name_metric, axes_value), axis=axis_mean)
-    
+
     def var(self, name_metric: str, axes_value: tuple, axis_mean: tuple):
         return np.nanvar(self.get_values(name_metric, axes_value), axis=axis_mean)
-    
+
     def max(self, name_metric: str, axes_value: tuple, *axes):
         """
         Note, argmax only works, if no NaNs in the given array
@@ -98,20 +97,21 @@ class MetricResults():
         """
         val = self.get_values(name_metric, *axes)
         return np.nanmin(val), np.argmin(val)
-    
-    #===Util Functions===
+
+    # ===Util Functions===
     def _gen_slice_tuple(self, name_metric: str, axes: tuple):
         axes = list(axes)
         for c, v in enumerate(axes):
             if type(axes[c]) is int or isinstance(axes[c], slice):
                 pass
-            elif axes[c] == None:
+            elif axes[c] is None:
                 axes[c] = slice(self.metric_dict[name_metric].shape[c])
             elif len(axes[c]) == 2:
                 axes[c] = slice(axes[c][0], axes[c][1])
             elif len(axes[c]) == 3:
                 axes[c] = slice(axes[c][0], axes[c][1], axes[c][2])
         return tuple(axes)
+
 
 if __name__ == "__main__":
     res = MetricResults()

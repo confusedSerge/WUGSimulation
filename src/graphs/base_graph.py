@@ -5,10 +5,10 @@ import networkx as nx
 class BaseGraph():
     """
     Base Graph for this framework.
-    All graph-classes should inherit from this class, 
+    All graph-classes should inherit from this class,
         as this class implements the bare minimum functionality,
         that a graphs needs to work with the current framework.
-    Thus also allowing for new graphs to be used with this framework! 
+    Thus also allowing for new graphs to be used with this framework!
     """
 
     def __init__(self):
@@ -42,7 +42,7 @@ class BaseGraph():
         self.G.graph['edge_weight'][(u, v)] = weight
         self.G.graph['edge_soft_weight'][(u, v)] = weight - 2.5
 
-        if self.G.graph['weight_edge'].get(weight, None) == None:
+        if self.G.graph['weight_edge'].get(weight, None) is None:
             self.G.graph['weight_edge'][weight] = []
         self.G.graph['weight_edge'][weight].append((u, v))
 

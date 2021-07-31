@@ -8,7 +8,7 @@ import numpy as np
 This module contains different stopping criterion functions and can be extended to new ones.
 All method signatures should look like this:
     def name(graph: BaseGraph, params: dict) -> bool:
-Each stopping criterion function should only return a boolean, that indicates, if the criterion is reached  
+Each stopping criterion function should only return a boolean, that indicates, if the criterion is reached
 """
 
 
@@ -23,7 +23,7 @@ def cluster_connected(graph: BaseGraph, params: dict) -> bool:
     Args:
         :param graph: Graph to check on
         :param cluster_min_size: minimum size of cluster to consider, default = 5
-        :param min_num_edges: minimum number of edges between clusters, 
+        :param min_num_edges: minimum number of edges between clusters,
             can be int for number of edges, or 'fully' for fully connected clusters; default = 1
         :param min_size_one_cluster: int at which this function considers the only cluster as big enough
         :return flag: if stopping criterion is met
@@ -97,6 +97,7 @@ def percentage_edges_found(graph: BaseGraph, params: dict) -> bool:
 
     return graph.get_number_edges() >= (percentage * number_edges)
 
+
 def edges_added(graph: BaseGraph, params: dict) -> bool:
     """
     Rather simple stopping criterion, where it checks how many edges were added to the graph.
@@ -111,9 +112,10 @@ def edges_added(graph: BaseGraph, params: dict) -> bool:
 
     return graph.get_num_added_edges() >= number_edges
 
+
 def bootstraping(graph: BaseGraph, params: dict) -> bool:
     """
-    Checks if for a given statistic the confidence interval bounds 
+    Checks if for a given statistic the confidence interval bounds
         is higher than the target interval bounds.
 
     Args:
@@ -122,12 +124,12 @@ def bootstraping(graph: BaseGraph, params: dict) -> bool:
         :param sample_size: samples per round
         :param alpha: percentile
         :param bound: (target lower, target upper) bound
-        :param stat_func: statistical function to be used 
+        :param stat_func: statistical function to be used
         :param stat_params: statistical params
     """
     rounds = params.get('rounds', None)
-    assert type(rounds) == int    
-    
+    assert type(rounds) == int
+
     sample_size = params.get('sample_size', None)
     assert type(sample_size) == int
 
@@ -152,5 +154,3 @@ def bootstraping(graph: BaseGraph, params: dict) -> bool:
     stats.sort()
     percentile = np.percentile(stats, [((1.0 - alpha) / 2.0) * 100, (alpha + ((1.0 - alpha) / 2.0)) * 100])
     return bound[0] <= percentile[0] and bound[1] <= percentile[1]
-
-    

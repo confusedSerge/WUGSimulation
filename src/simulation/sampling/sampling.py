@@ -7,7 +7,7 @@ from simulation.sampling.annotator import Annotator
 
 class Sampling(RunnableStep):
     """
-    Note, using 'per-annotator' will perform the sampling per annotator, 
+    Note, using 'per-annotator' will perform the sampling per annotator,
         which could result in more sampled edges as expected, if the values are not adjusted
     """
 
@@ -57,7 +57,7 @@ class Sampling(RunnableStep):
         """
         Rung given sampling
         """
-        assert callable(self.function) and self.params != None
+        assert callable(self.function) and self.params is not None
         self.current_annotator_dist[self.annotator_dist](
             graph, annotated_graph)
 
@@ -80,7 +80,7 @@ class Sampling(RunnableStep):
 
         for i in range(r):
             edge_list[i - r] = (*edge_list[i - r][:2],
-                        annotator.error_prone_sampling(edge_list[i - r]))
+                                annotator.error_prone_sampling(edge_list[i - r]))
 
         annotated_graph.add_edges(
             self._sample_edge_list(graph, annotated_graph))
