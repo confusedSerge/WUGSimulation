@@ -21,6 +21,7 @@ _apd_time_steps = []
 
 def apd_convergence(graph: BaseGraph, params: dict) -> bool:
     """
+    # TODO: Add change of rmse to mse
     Calculates the APD (Average Pointwise Distance) of a graph (edge weights describing the distance)
     and checks if the absolute change between a given timeframe of APD is not greater than a given treshold.
     # TODO: what should the x value be? timesteps, judgements, ...current is timesteps
@@ -65,6 +66,7 @@ _entropy_time_steps = []
 
 def entropy_approx_convergence(graph: BaseGraph, params: dict) -> bool:
     """
+    # TODO: Add change of rmse to mse
     Calculates the approximate entropy of an unclustered graph
     and checks if the absolute change between a given timeframe of Entropy is not greater than a given treshold.
     Args:

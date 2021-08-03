@@ -67,7 +67,7 @@ def cluster_correlation_search(G, s=10, max_attempts=200, max_iters=5000, initia
         # print('loss_init: ', loss_init)
         classes.sort(key=lambda x: -len(x))  # sort by size
         end_time = time.time()
-        stats['runtime'] = (end_time - start_time)/60
+        stats['runtime'] = (end_time - start_time) / 60
         return classes, stats
 
     # Initialize custom fitness function object
@@ -123,7 +123,7 @@ def cluster_correlation_search(G, s=10, max_attempts=200, max_iters=5000, initia
     classes.sort(key=lambda x: -len(x))  # sort by size
 
     end_time = time.time()
-    stats['runtime'] = (end_time - start_time)/60
+    stats['runtime'] = (end_time - start_time) / 60
 
     return classes, stats
 
