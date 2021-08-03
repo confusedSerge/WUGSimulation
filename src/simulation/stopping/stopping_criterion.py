@@ -1,6 +1,7 @@
 from graphs.base_graph import BaseGraph
 from simulation.stopping.utils.stopping_utils import check_connectivity_two_clusters
 from simulation.stopping.utils.stopping_utils import random_sample as _rs
+from simulation.stopping.utils.stopping_utils import jensen_shannon_divergence as _jsd
 
 import numpy as np
 
@@ -154,3 +155,48 @@ def bootstraping(graph: BaseGraph, params: dict) -> bool:
     stats.sort()
     percentile = np.percentile(stats, [((1.0 - alpha) / 2.0) * 100, (alpha + ((1.0 - alpha) / 2.0)) * 100])
     return bound[0] <= percentile[0] and bound[1] <= percentile[1]
+
+
+def bootstraping_jsd(graph: BaseGraph, params: dict) -> bool:
+    """
+    Checks if the Jensen–Shannon divergence confidence interval is small enough,
+    by checking if the n-th percentile is below some threshold.
+    As the sampled graph needs to be clustered for JSD, a clustering method should be provided.
+
+    Args:
+        :param graph: to check on
+        :param rounds: rounds to perform sampling
+        :param sample_size: samples per round
+        :param alpha: percentile
+        :param bound: target upper bound
+        :param clustering_func: statistical function to be used
+        :param clustering_params: statistical params
+    """
+    rounds = params.get('rounds', None)
+    assert type(rounds) == int
+
+    sample_size = params.get('sample_size', None)
+    assert type(sample_size) == int
+
+    alpha = params.get('alpha', None)
+    assert type(alpha) == float
+
+    bound = params.get('bound', None)
+    assert type(bound) == float and bound <= 1.0
+
+    clustering_func = params.get('clustering_func', None)
+    assert callable(clustering_func)
+
+    clustering_params = params.get('clustering_params', None)
+    assert type(clustering_params) == dict
+
+    stats = []
+    for _ in rounds:
+        g = BaseGraph()
+        g.add_edges(_rs(graph, sample_size))
+        g.update_community_nodes_membership(clustering_func(g, clustering_params))
+        stats.append(_jsd(graph, g))
+
+    stats.sort()
+    percentile = np.percentile(stats, [((1.0 - alpha) / 2.0) * 100, (alpha + ((1.0 - alpha) / 2.0)) * 100])
+    return percentile[1] <= bound

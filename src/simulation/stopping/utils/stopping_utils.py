@@ -3,6 +3,7 @@ import random
 from collections import Counter
 from graphs.base_graph import BaseGraph
 from sklearn.metrics import mean_squared_error
+from scipy.spatial.distance import jensenshannon
 
 
 def length_padding(list1: list, list2: list) -> (list, list):
@@ -121,3 +122,25 @@ def mse_mean(time_series: list) -> float:
 def rmse_mean(time_series: list) -> float:
     _mean = [np.mean(time_series)] * len(time_series)
     return mean_squared_error(time_series, _mean, squared=False)
+
+
+def jensen_shannon_divergence(reference_graph: BaseGraph, graph: BaseGraph) -> float:
+    """
+    Calculates the Jensen Shannon Divergence between two clustered graphs
+
+    Args:
+        :param reference_graph: reference graph
+        :param graph: graph to check against reference
+        :returns float: Jensen Shannon Distance value
+    """
+    # get community probability vec
+    ref_cluster_prob = [com / reference_graph.get_number_nodes() for com in reference_graph.get_community_sizes()]
+    g_cluster_prob = [com / graph.get_number_nodes() for com in graph.get_community_sizes()]
+
+    # size them to same size
+    for _ in range(len(g_cluster_prob), len(ref_cluster_prob)):
+        g_cluster_prob.append(0.0)
+    for _ in range(len(ref_cluster_prob), len(g_cluster_prob)):
+        ref_cluster_prob.append(0.0)
+
+    return jensenshannon(ref_cluster_prob, g_cluster_prob, base=2)**2
