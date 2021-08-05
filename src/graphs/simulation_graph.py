@@ -46,16 +46,19 @@ class SimulationGraph(BaseGraph):
                 edge_list.append((i, j, int(self.adjacency_matrix[i][j])))
                 edge_weight[(i, j)] = int(self.adjacency_matrix[i][j])
 
-                if weight_edge.get(int(self.adjacency_matrix[i][j]), None) == None:
+                if weight_edge.get(int(self.adjacency_matrix[i][j]), None) is None:
                     weight_edge[int(self.adjacency_matrix[i][j])] = []
                 weight_edge[int(self.adjacency_matrix[i][j])].append((i, j))
 
         # community-node dict
         community_nodes = {}
+        node_community = {}
         for node_id, label in enumerate(self.labels):
-            if community_nodes.get(label, None) == None:
+            if community_nodes.get(label, None) is None:
                 community_nodes[label] = []
             community_nodes[label].append(node_id)
+            node_community[node_id] = label
+
         # ===Calculation Phase END===
 
         # ===Build Phase===
@@ -67,14 +70,15 @@ class SimulationGraph(BaseGraph):
 
         # add rest of information
         self.G.graph['community_nodes'] = community_nodes
+        self.G.graph['node_community'] = node_community
         # ===Build Phase===
 
     def _gen_graph_from_params(self, communities: list, communities_probability: list = None, distribution: Distribution = None):
         # ===Guard Phase===
-        if distribution == None:
+        if distribution is None:
             raise AssertionError
 
-        if communities_probability == None:
+        if communities_probability is None:
             communities_probability = np.ones(
                 (len(communities), len(communities)), np.int)
         # ===Guard Phase End===

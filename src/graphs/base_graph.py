@@ -13,10 +13,12 @@ class BaseGraph():
 
     def __init__(self):
         self.G = nx.Graph(directed=False)
+        # should be replaced by node_community dict
         self.labels = []
 
         # community/node dict
         self.G.graph['community_nodes'] = {}
+        self.G.graph['node_community'] = {}
 
         # edge/weight dicts (should be base weights)
         self.G.graph['edge_weight'] = {}
@@ -64,6 +66,9 @@ class BaseGraph():
     def get_number_edges(self) -> int:
         return len(self.G.edges)
 
+    def get_community_of_node(self, node: int) -> int:
+        return self.G.graph['node_community'][node]
+
     def get_number_communities(self) -> int:
         return len(self.G.graph['community_nodes'])
 
@@ -82,6 +87,9 @@ class BaseGraph():
     def get_community_nodes(self) -> dict:
         return self.G.graph['community_nodes']
 
+    def get_node_community(self) -> dict:
+        return self.G.graph['node_community']
+
     def get_metric_dict(self) -> dict:
         return self.G.graph['metrics']
 
@@ -92,6 +100,10 @@ class BaseGraph():
     def update_community_nodes_membership(self, new_community_nodes: dict) -> None:
         assert type(new_community_nodes) == dict
         self.G.graph['community_nodes'] = new_community_nodes
+
+        for k, v in new_community_nodes.items():
+            for nodes in v:
+                self.G.graph['node_community'][nodes] = k
 
     def get_nx_graph_copy(self, weight: str) -> nx.Graph:
         weights = self.G.graph.get(weight, None)
@@ -121,4 +133,5 @@ class BaseGraph():
         return graph
 
     def __str__(self):
-        raise NotImplementedError()
+        return 'Number of Nodes: {}\nNumber of Edges: {}\nNumber of Communities: {}'\
+            .format(self.get_number_nodes(), self.get_number_edges(), self.get_number_communities())

@@ -4,6 +4,7 @@ import matplotlib.patches as mpatches
 
 from graphs.base_graph import BaseGraph
 
+
 def draw_graph_graphviz(graph: BaseGraph, plot_title: str, edge_label_flag: bool = False, save_flag: bool = False, path: str = None) -> None:
     """
     Draws the Graph using graphviz as layout position information.
@@ -17,6 +18,7 @@ def draw_graph_graphviz(graph: BaseGraph, plot_title: str, edge_label_flag: bool
     """
     pos = nx.drawing.nx_agraph.graphviz_layout(graph.G)
     _draw_graph(graph, pos, plot_title, edge_label_flag, save_flag, path)
+
 
 def draw_graph_spring(graph: BaseGraph, plot_title: str, edge_label_flag: bool = False, save_flag: bool = False, path: str = None) -> None:
     """
@@ -32,9 +34,10 @@ def draw_graph_spring(graph: BaseGraph, plot_title: str, edge_label_flag: bool =
     pos = nx.spring_layout(graph.G, scale=50)
     _draw_graph(graph, pos, plot_title, edge_label_flag, save_flag, path)
 
+
 def _draw_graph(graph: BaseGraph, pos, plot_title: str, edge_label_flag: bool = False, save_flag: bool = False, path: str = None) -> None:
-    px = 1/plt.rcParams['figure.dpi'] 
-    plt.figure(figsize=(800*px, 800*px))
+    px = 1 / plt.rcParams['figure.dpi']
+    plt.figure(figsize=(800 * px, 800 * px))
 
     options = {"node_size": 250, "alpha": 0.8}
 
@@ -44,7 +47,7 @@ def _draw_graph(graph: BaseGraph, pos, plot_title: str, edge_label_flag: bool = 
 
     for k, v in reversed(graph.get_weight_edge().items()):
         nx.draw_networkx_edges(
-            graph.G, pos, edgelist=v, edge_color=_get_edge_color(k))
+            graph.G, pos, edgelist=v, edge_color=_get_edge_color(int(k)))
 
     if edge_label_flag:
         nx.draw_networkx_edge_labels(
@@ -54,9 +57,8 @@ def _draw_graph(graph: BaseGraph, pos, plot_title: str, edge_label_flag: bool = 
     plt.figtext(.12, .02, str(graph))
     plt.title(plot_title)
 
-
     if save_flag:
-        if path == None:
+        if path is None:
             raise NotADirectoryError("No name given")
         plt.savefig(path)
     else:
@@ -69,9 +71,10 @@ def _draw_graph(graph: BaseGraph, pos, plot_title: str, edge_label_flag: bool = 
 def _get_node_shape(i: int) -> str:
     return 'so^>v<dph8'[i % 10]
 
+
 def _get_node_color(i: int) -> str:
     return 'bgrcmyk'[i % 7]
 
+
 def _get_edge_color(i: int) -> str:
     return ['white', 'lightgray', 'darkgray', 'dimgray', 'black'][i % 5]
-

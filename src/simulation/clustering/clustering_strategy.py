@@ -82,7 +82,7 @@ def new_correlation_clustering(graph: BaseGraph, params: dict) -> dict:
     assert type(max_attempts) == int
 
     max_iters = params.get('max_iters', 500)
-    assert type(max_iters) == int
+    assert type(max_iters) == int or max_iters == np.inf
 
     split_flag = params.get('split_flag', True)
     assert type(split_flag) == bool

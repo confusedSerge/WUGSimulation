@@ -1,9 +1,14 @@
+import numpy as np
+
+from scipy.spatial.distance import jensenshannon
+from sklearn.metrics import adjusted_rand_score as ari
+
 from graphs.base_graph import BaseGraph
 from simulation.stopping.utils.stopping_utils import check_connectivity_two_clusters
-from simulation.stopping.utils.stopping_utils import random_sample as _rs
-from simulation.stopping.utils.stopping_utils import jensen_shannon_divergence as _jsd
+from simulation.stopping.utils.stopping_utils import random_sample_cluster as _rsc
+from simulation.stopping.utils.stopping_utils import pertubate as _pertubate
+from simulation.stopping.utils.stopping_utils import gen_labels as _gen_labels
 
-import numpy as np
 
 """
 This module contains different stopping criterion functions and can be extended to new ones.
@@ -161,42 +166,79 @@ def bootstraping_jsd(graph: BaseGraph, params: dict) -> bool:
     """
     Checks if the Jensen–Shannon divergence confidence interval is small enough,
     by checking if the n-th percentile is below some threshold.
-    As the sampled graph needs to be clustered for JSD, a clustering method should be provided.
+    Provided graph should be clustered.
 
     Args:
         :param graph: to check on
+        :param min_sample_size: minimum number node in graph
         :param rounds: rounds to perform sampling
         :param sample_size: samples per round
         :param alpha: percentile
         :param bound: target upper bound
-        :param clustering_func: statistical function to be used
-        :param clustering_params: statistical params
     """
-    rounds = params.get('rounds', None)
+    min_sample_size = params.get('min_sample_size', 100)
+    assert type(min_sample_size) == int
+
+    rounds = params.get('rounds', 30)
     assert type(rounds) == int
 
-    sample_size = params.get('sample_size', None)
+    sample_size = params.get('sample_size', 150)
     assert type(sample_size) == int
 
-    alpha = params.get('alpha', None)
+    alpha = params.get('alpha', 0.95)
     assert type(alpha) == float
 
-    bound = params.get('bound', None)
+    bound = params.get('bound', 0.05)
     assert type(bound) == float and bound <= 1.0
 
-    clustering_func = params.get('clustering_func', None)
-    assert callable(clustering_func)
-
-    clustering_params = params.get('clustering_params', None)
-    assert type(clustering_params) == dict
+    if graph.get_number_nodes() < min_sample_size:
+        return False
 
     stats = []
-    for _ in rounds:
-        g = BaseGraph()
-        g.add_edges(_rs(graph, sample_size))
-        g.update_community_nodes_membership(clustering_func(g, clustering_params))
-        stats.append(_jsd(graph, g))
+    for _ in range(rounds):
+        stats.append(jensenshannon(graph.get_community_sizes(), _rsc(graph, sample_size), base=2)**2)
 
     stats.sort()
     percentile = np.percentile(stats, [((1.0 - alpha) / 2.0) * 100, (alpha + ((1.0 - alpha) / 2.0)) * 100])
+    print(percentile)
     return percentile[1] <= bound
+
+
+def bootstraping_perturbation_ari(graph: BaseGraph, params: dict) -> bool:
+    """
+    Calculates the robustness based on the average ari score.
+    This method is a slight modification to the proposed method from:
+        'Bootstrap clustering for graph partitioning' from Philippe Gambette, Alain Gu ́enoche
+
+    Args:
+        :param graph: to check on
+        :param min_sample_size: minimum number node in graph
+        :param range: tuple of min max weights
+        :param share: number of edges to manipulate
+        :param rounds: rounds to perform sampling
+        :param lower_bound: target lower bound
+    """
+    min_sample_size = params.get('min_sample_size', 100)
+    assert type(min_sample_size) == int
+
+    rounds = params.get('rounds', 30)
+    assert type(rounds) == int
+
+    _range = params.get('range', (1, 4))
+    assert type(_range) == tuple
+
+    share = params.get('share', 0.1)
+    assert type(share) == float
+
+    lower_bound = params.get('lower_bound', 0.95)
+    assert type(lower_bound) == float and lower_bound <= 1.0
+
+    if graph.get_number_nodes() < min_sample_size:
+        return False
+
+    stats = []
+    for _ in range(rounds):
+        new_graph = _pertubate(graph, _range, share)
+        stats.append(ari(gen_labels(graph), gen_labels(new_graph)))
+
+    return lower_bound <= np.nanmean(aris)

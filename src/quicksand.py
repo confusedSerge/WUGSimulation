@@ -1,24 +1,17 @@
 import numpy as np
-from collections import Counter
-import matplotlib.pyplot as plt
+import random
+from itertools import combinations
+import pickle
 
-lam = list(np.arange(0, 1.1, 0.1))
-samples = 10**5
+from graphs.simulation_graph_sampler import SimulationGraphSampler
+from simulation.stopping.stopping_criterion import bootstraping_jsd
 
-for _lambda_param in lam:
-    _lambda_param = round(_lambda_param, 2)
-    res = np.random.poisson(_lambda_param, samples)
-    res = [np.min([a, 3]) for a in res]
-    res = Counter(res)
-    print(_lambda_param, res)
+n = 100
+k = 3
+log = 0.9
+size_communities = ('log_iter', {'std_dev': log, 'threshold': 5})
+distribution = ['binomial', 3, 0.99]
 
-    x = []
-    y = []
-    for k, v in sorted(res.items(), key=lambda pair: pair[0]):
-        x.append(k)
-        y.append(v / samples)
-
-    plt.plot(x, y, label=_lambda_param)
-
-plt.legend()
-plt.show()
+# graph = SimulationGraphSampler(n, k, size_communities, distribution).sample_simulation_graph()
+# # for i in range(n):
+# #     print(bootstraping_jsd(true, {'min_sample_size': 100, 'rounds': 30, 'sample_size': 150, 'alpha': 0.95, 'bound': 0.05}))

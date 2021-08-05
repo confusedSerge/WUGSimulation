@@ -10,11 +10,14 @@ data
 # ignor doc folder
 doc
 
-#ignore pycache
+# ignore pycache
 __pycache__
 
-#ignore other dir
+# ignore other dir
 other
 
-#ignore pycodestyle config file
+# ignore pycodestyle config file
 tox.ini
+
+# ignore ipynbs
+.ipynb_checkpoints

@@ -124,6 +124,22 @@ def rmse_mean(time_series: list) -> float:
     return mean_squared_error(time_series, _mean, squared=False)
 
 
+def random_sample_cluster(graph: BaseGraph, sample_size: int) -> list:
+    """
+    Random samples cluster distribution from provided graph.
+
+    Args:
+        :param graph: Clustered Graph
+        :param sample_size: Number of nodes to sample with replacement
+    """
+    community_sizes: list = [0] * graph.get_number_communities()
+
+    for node in np.random.choice(graph.G.nodes(), sample_size):
+        community_sizes[graph.get_community_of_node(node)] += 1
+
+    return community_sizes
+
+
 def jensen_shannon_divergence(reference_graph: BaseGraph, graph: BaseGraph) -> float:
     """
     Calculates the Jensen Shannon Divergence between two clustered graphs
@@ -144,3 +160,29 @@ def jensen_shannon_divergence(reference_graph: BaseGraph, graph: BaseGraph) -> f
         ref_cluster_prob.append(0.0)
 
     return jensenshannon(ref_cluster_prob, g_cluster_prob, base=2)**2
+
+
+def pertubate(graph: BaseGraph, range_judgements: tuple = (1, 4), share: float = 0.1) -> BaseGraph:
+    new_graph: BaseGraph = BaseGraph()
+    edges = list(graph.G.edges())
+
+    for edge in edges:
+        new_graph.add_edge(*edge, graph.get_edge(*edge))
+    try:
+        mod_edge = [edges[i] for i in np.random.choice(len(edges), int(len(edges) * share), replace=False)]
+    except ValueError:
+        mod_edge = edges
+
+    for edge in mod_edge:
+        weight = np.median([new_graph.get_edge(*edge), random.randint(range_judgements[0], range_judgements[1])])
+        new_graph.add_edge(*edge, weight)
+
+    return new_graph
+
+
+def gen_labels(graph: BaseGraph) -> list:
+    labels = [-1] * (max(graph.G.nodes()) + 1)
+
+    for k, v in graph.G.graph['node_community'].items():
+        labels[k] = v
+    return labels

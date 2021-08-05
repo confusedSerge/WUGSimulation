@@ -54,8 +54,6 @@ class AnnotatedGraph(BaseGraph):
             :param weight: weight
         """
         u, v = sorted([node_u, node_v])
-        self.G.graph['edge_weight'][(u, v)] = weight
-        self.G.graph['edge_soft_weight'][(u, v)] = weight - 2.5
 
         if self.G.graph['edge_added_weights'].get((u, v), None) is None:
             self.G.graph['edge_added_weights'][(u, v)] = []
@@ -64,9 +62,12 @@ class AnnotatedGraph(BaseGraph):
         weight_to_add = np.median(self.G.graph['edge_added_weights'].get((u, v), [weight]))
         self.G.add_weighted_edges_from([(u, v, weight_to_add)])
 
-        if self.G.graph['weight_edge'].get(weight, None) is None:
-            self.G.graph['weight_edge'][weight] = []
-        self.G.graph['weight_edge'][weight].append((u, v))
+        self.G.graph['edge_weight'][(u, v)] = weight_to_add
+        self.G.graph['edge_soft_weight'][(u, v)] = weight_to_add - 2.5
+
+        if self.G.graph['weight_edge'].get(weight_to_add, None) is None:
+            self.G.graph['weight_edge'][weight_to_add] = []
+        self.G.graph['weight_edge'][weight_to_add].append((u, v))
 
     def add_edges(self, edge_list: list, **params) -> None:
         """
@@ -113,8 +114,7 @@ class AnnotatedGraph(BaseGraph):
         Args:
             :param new_community_nodes: new membership dict
         """
-        assert type(new_community_nodes) == dict
-        self.G.graph['community_nodes'] = new_community_nodes
+        super().update_community_nodes_membership(new_community_nodes)
 
         # -1 resembles that this node is not yet in the graph
         for k, v in self.G.graph['community_nodes'].items():
