@@ -13,7 +13,7 @@ Each sampling function should return a list of sampled edges
 
 def random_sampling(graph: BaseGraph, params: dict) -> list:
     """
-    Random sampling. 
+    Random sampling.
     As described in TACL paper 'Word Usage Graphs (WUGs):Measuring Changes in Patterns of Contextual Word Meaning'
 
     This implementation takes n radom edges (:sample_size:) from the TrueGraph and returns it.
@@ -22,12 +22,12 @@ def random_sampling(graph: BaseGraph, params: dict) -> list:
         :param trueGraph: TrueGraph to sample
         :param sample_size: number of edges to sample
         :return sampled_edge_list: sampled edges with weights as [(u, v, w)...]
-    
+
     """
     assert isinstance(graph, BaseGraph)
 
     sample_size = params.get('sample_size', None)
-    assert sample_size != None and type(sample_size) == int
+    assert sample_size is not None and type(sample_size) == int
 
     sampled_edge_list = []
 
@@ -36,6 +36,7 @@ def random_sampling(graph: BaseGraph, params: dict) -> list:
         sampled_edge_list.append((u, v, graph.get_edge(u, v)))
 
     return sampled_edge_list
+
 
 def page_rank(graph: BaseGraph, params: dict) -> list:
     """
@@ -64,9 +65,9 @@ def page_rank(graph: BaseGraph, params: dict) -> list:
     if callable(last_node):
         last_node = last_node()
 
-    assert type(last_node) == int or last_node == None 
+    assert type(last_node) == int or last_node is None
 
-    if last_node == None:
+    if last_node is None:
         last_node = random.sample(graph.G.nodes(), 1)[0]
     # ===END Guard===
 
