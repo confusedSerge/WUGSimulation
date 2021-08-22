@@ -168,14 +168,16 @@ def pertubate(graph: BaseGraph, range_judgements: tuple = (1, 4), share: float =
 
     for edge in edges:
         new_graph.add_edge(*edge, graph.get_edge(*edge))
+
     try:
         mod_edge = [edges[i] for i in np.random.choice(len(edges), int(len(edges) * share), replace=False)]
     except ValueError:
         mod_edge = edges
 
     for edge in mod_edge:
-        weight = np.median([new_graph.get_edge(*edge), random.randint(range_judgements[0], range_judgements[1])])
-        new_graph.add_edge(*edge, weight)
+        we = new_graph.get_edge_weight_history(*edge)
+        we.append(random.randint(range_judgements[0], range_judgements[1]))
+        new_graph.add_edge(*edge, np.median(we))
 
     return new_graph
 

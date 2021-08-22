@@ -3,6 +3,7 @@ import pickle
 import numpy as np
 from graphs.base_graph import BaseGraph
 
+
 def load_graph_from_path_file(path_list: list):
     _pl = np.array(path_list)
     _graphs = np.empty(_pl.shape, dtype=BaseGraph)
@@ -14,7 +15,7 @@ def load_graph_from_path_file(path_list: list):
             _graphs[it.multi_index] = pickle.load(file)
         file.close()
     return _graphs
-            
+
 
 def load_graph_from_path_dir(path_list: list, suffix, sort_func, shape):
     _pl = np.array(path_list, dtype=str)
@@ -32,7 +33,6 @@ def load_graph_from_path_dir(path_list: list, suffix, sort_func, shape):
                     fg.close()
         graphs.sort(key=sort_func)
         if len(graphs) != shape[-1]:
-            graphs.extend([graphs[-1]]*(shape[-1] - len(graphs)))
+            graphs.extend([graphs[-1]] * (shape[-1] - len(graphs)))
         _graphs[it.multi_index[:2]] = np.array(graphs)
     return _graphs
-            

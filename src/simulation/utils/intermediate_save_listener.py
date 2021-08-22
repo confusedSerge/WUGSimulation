@@ -1,6 +1,7 @@
 import os
 import pickle
 
+from copy import deepcopy
 from graphs.base_graph import BaseGraph
 from simulation.runnable_step import RunnableStep
 
@@ -19,6 +20,8 @@ class IntermediateSaveListener(RunnableStep):
 
         self.path: str = ''
         self.id_prefix: str = ''
+
+        self.preprocessing_steps: list[RunnableStep] = []
 
     def add_listener(self, checkpoints: list, path: str, id_prefix: str, function_to_listen):
         self.checker = lambda cp, cc: cc <= cp
@@ -44,15 +47,26 @@ class IntermediateSaveListener(RunnableStep):
 
         return self
 
+    def add_preprocessing_step(self, step: RunnableStep):
+        self.preprocessing_steps.append(step)
+        return self
+
     def run(self, graph: BaseGraph, annotated_graph: BaseGraph) -> None:
-        assert len(self.checkpoints) > 0 and self.path != '' and self.path != None and self.id_prefix != '' and self.id_prefix != None
-        if not self.checkpoint_index < len(self.checkpoints): return
+        assert len(self.checkpoints) > 0 and self.path != '' and self.path is not None and self.id_prefix != '' and self.id_prefix is not None
+        if not self.checkpoint_index < len(self.checkpoints):
+            return
 
         if not self.checker(self.function_to_listen(), self.checkpoints[self.checkpoint_index]):
             return
 
+        _annotated_graph = deepcopy(annotated_graph)
+
+        if len(self.preprocessing_steps) > 0:
+            for step in self.preprocessing_steps:
+                step.run(graph, _annotated_graph)
+
         with open('{}/{}{}.graph'.format(self.path, self.id_prefix, self.checkpoints[self.checkpoint_index]), 'wb') as file:
-            pickle.dump(annotated_graph, file)
+            pickle.dump(_annotated_graph, file)
         file.close()
 
         self.checkpoint_index += 1

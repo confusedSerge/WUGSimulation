@@ -3,8 +3,11 @@ import random
 
 from collections import Counter
 from scipy.stats import entropy
+from scipy.spatial.distance import jensenshannon
+from sklearn.metrics import adjusted_rand_score as ari
 
 from graphs.base_graph import BaseGraph
+from analysis.utils.metrics_utils import random_sample_cluster, pertubate, gen_labels
 
 
 def entropy_clustered(graph: BaseGraph, params: dict) -> float:
@@ -78,7 +81,7 @@ def invers_entropy_distance(graph: BaseGraph, params: dict) -> float:
     """
     Calculates the inverse entropy distance between the approximate entropy and real entropy is used.
 
-    Args:        
+    Args:
         :param graph: graph to check against reference
         :threshold: which edge value should be regarded
         :returns float: value of the metric
@@ -100,7 +103,7 @@ def apd(graph: BaseGraph, params: dict) -> float:
 
     for _ in range(sample_size):
         u, v = sorted(random.sample(graph.G.nodes(), 2))
-        if graph.get_edge(u, v) != None:
+        if graph.get_edge(u, v) is not None:
             sampled_edge_list.append(graph.get_edge(u, v))
 
     if len(sampled_edge_list) == 0:
@@ -137,7 +140,7 @@ def hpd(graph: BaseGraph, params: dict) -> float:
 
     for _ in range(sample_size):
         u, v = sorted(random.sample(graph.G.nodes(), 2))
-        if graph.get_edge(u, v) != None:
+        if graph.get_edge(u, v) is not None:
             sampled_edge_list.append(graph.get_edge(u, v))
 
     count_edges = [v for k, v in Counter(sampled_edge_list).items()]
@@ -160,3 +163,84 @@ def hpd_normalized(graph: BaseGraph, params: dict) -> float:
     norm_factor = params.get('norm_factor', 4)
 
     return hpd(graph, params) / np.log2(norm_factor)
+
+
+def cluster_number(graph: BaseGraph, params: dict) -> float:
+    """Returns the number of clusters of a graph.
+    Note: This is just for completness sake here.
+
+    Args:
+        graph (BaseGraph): Graph on which to take the number from
+        params (dict): -
+
+    Returns:
+        float: number of clusters
+    """
+    return graph.get_number_communities()
+
+
+def bootstraping_jsd(graph: BaseGraph, params: dict) -> float:
+    """Calculates the bootstraped jsd confidence interval and returns the upper bound.
+    This is equivalent to the stopping criterion, but returns the actual value of the upper percentile.
+
+    Args:
+        graph (BaseGraph): Graph on which to calculate the confidence interval
+        params (dict): should contain {rounds, sample_size, alpha}
+
+    Returns:
+        float: returns the upper percentile
+    """
+
+    rounds = params.get('rounds', 30)
+    assert type(rounds) == int
+
+    sample_size = params.get('sample_size', 150)
+    assert type(sample_size) == int
+
+    alpha = params.get('alpha', 0.95)
+    assert type(alpha) == float
+
+    stats = []
+    for _ in range(rounds):
+        stats.append(jensenshannon(graph.get_community_sizes(), random_sample_cluster(graph, sample_size), base=2)**2)
+
+    stats.sort()
+    percentile = np.percentile(stats, [((1.0 - alpha) / 2.0) * 100, (alpha + ((1.0 - alpha) / 2.0)) * 100])
+    return percentile[1]
+
+
+def bootstraping_perturbation_ari(graph: BaseGraph, params: dict) -> float:
+    """Calculates the robustness of the given graph, based on Gambettes method.
+    This is equivalent to the stopping criterion, but returns the actual value of the mean.
+
+
+    Args:
+        graph (BaseGraph): Graph on which to calculate the mean
+        params (dict): should contain {range, share, rounds, clustering_func, clustering_params}
+
+    Returns:
+        float: mean ARI score
+    """
+    rounds = params.get('rounds', 30)
+    assert type(rounds) == int
+
+    _range = params.get('range', (1, 4))
+    assert type(_range) == tuple
+
+    share = params.get('share', 0.1)
+    assert type(share) == float
+
+    clustering_func = params.get('clustering_func', None)
+    assert callable(clustering_func)
+
+    clustering_params = params.get('clustering_params', {})
+    assert type(clustering_params) == dict
+
+    stats = []
+    for _ in range(rounds):
+        new_graph = pertubate(graph, _range, share)
+        cl = clustering_func(new_graph, clustering_params)
+        new_graph.update_community_nodes_membership(cl)
+        stats.append(ari(gen_labels(graph), gen_labels(new_graph)))
+
+    return np.nanmean(stats)

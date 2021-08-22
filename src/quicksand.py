@@ -6,12 +6,10 @@ import pickle
 from graphs.simulation_graph_sampler import SimulationGraphSampler
 from simulation.stopping.stopping_criterion import bootstraping_jsd
 
-n = 100
-k = 3
-log = 0.9
-size_communities = ('log_iter', {'std_dev': log, 'threshold': 5})
-distribution = ['binomial', 3, 0.99]
+from visualization.graph_visualization import draw_graph_graphviz as draw
 
-# graph = SimulationGraphSampler(n, k, size_communities, distribution).sample_simulation_graph()
-# # for i in range(n):
-# #     print(bootstraping_jsd(true, {'min_sample_size': 100, 'rounds': 30, 'sample_size': 150, 'alpha': 0.95, 'bound': 0.05}))
+with open('data/graphs/kw32/sim/randomsampling/n100_k1_log0.1-0-randomsampling_cc_nosplit/n100_k1_log0.1-0-randomsampling_cc_nosplit_j400.graph', 'rb') as file:
+    graph = pickle.load(file)
+file.close()
+
+draw(graph, 'Test')

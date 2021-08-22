@@ -9,6 +9,7 @@ All method signatures should look like this:
 Each sampling function should return a list of sampled edges
 """
 
+
 def dwug_sampling(graph: BaseGraph, annotated_graph: BaseGraph, params: dict) -> list:
     """
     Uses the DWUG sampling strategy, as described in the paper.
@@ -27,10 +28,12 @@ def dwug_sampling(graph: BaseGraph, annotated_graph: BaseGraph, params: dict) ->
     assert isinstance(annotated_graph, BaseGraph)
 
     percentage_nodes = params.get('percentage_nodes', None)
-    assert (type(percentage_nodes) == float and 0.0 <= percentage_nodes <= 1.0) or (type(percentage_nodes) == int and 0 <= percentage_nodes <= graph.get_number_nodes())
+    assert (type(percentage_nodes) == float and 0.0 <= percentage_nodes <= 1.0) or (
+        type(percentage_nodes) == int and 0 <= percentage_nodes <= graph.get_number_nodes())
 
     percentage_edges = params.get('percentage_edges', None)
-    assert (type(percentage_edges) == float and 0.0 <= percentage_edges <= 1.0) or (type(percentage_edges) == int and 0 <= percentage_edges <= graph.get_number_edges())
+    assert (type(percentage_edges) == float and 0.0 <= percentage_edges <= 1.0) or (
+        type(percentage_edges) == int and 0 <= percentage_edges <= graph.get_number_edges())
     min_size_mc = params.get('min_size_mc', None)
     assert type(min_size_mc) == int
 

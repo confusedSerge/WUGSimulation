@@ -25,14 +25,21 @@ class BaseGraph():
         self.G.graph['weight_edge'] = {}
         self.G.graph['edge_soft_weight'] = {}
 
+        # edge weight history
+        self.G.graph['edge_weight_history'] = {}
+
         # metric dict
         self.G.graph['metrics'] = {}
 
     # Edge functionality
 
     def get_edge(self, u_node: int, v_node: int, **params) -> float or None:
+        u, v = sorted([u_node, v_node])
         edge = self.G.get_edge_data(u_node, v_node)
         return None if edge is None else edge['weight']
+
+    def get_edge_weight_history(self, u_node: int, v_node: int, **params) -> list:
+        return self.G.graph['edge_weight_history'].get((u_node, v_node), [])
 
     def get_last_added_edge(self):
         raise NotImplementedError
@@ -47,6 +54,10 @@ class BaseGraph():
         if self.G.graph['weight_edge'].get(weight, None) is None:
             self.G.graph['weight_edge'][weight] = []
         self.G.graph['weight_edge'][weight].append((u, v))
+
+        if self.G.graph['edge_weight_history'].get((u, v), None) is None:
+            self.G.graph['edge_weight_history'][(u, v)] = []
+        self.G.graph['edge_weight_history'][(u, v)].append(weight)
 
     def add_edges(self, edge_list: list, **params) -> None:
         for edge in edge_list:

@@ -189,7 +189,7 @@ def bootstraping_jsd(graph: BaseGraph, params: dict) -> bool:
     assert type(alpha) == float
 
     bound = params.get('bound', 0.05)
-    assert type(bound) == float and bound <= 1.0
+    assert type(bound) == float and 0.0 <= bound <= 1.0
 
     if graph.get_number_nodes() < min_sample_size:
         return False
@@ -200,7 +200,6 @@ def bootstraping_jsd(graph: BaseGraph, params: dict) -> bool:
 
     stats.sort()
     percentile = np.percentile(stats, [((1.0 - alpha) / 2.0) * 100, (alpha + ((1.0 - alpha) / 2.0)) * 100])
-    print(percentile)
     return percentile[1] <= bound
 
 
@@ -216,7 +215,10 @@ def bootstraping_perturbation_ari(graph: BaseGraph, params: dict) -> bool:
         :param range: tuple of min max weights
         :param share: number of edges to manipulate
         :param rounds: rounds to perform sampling
+        :param clustering_func: clustering function pointer
+        :param clustering_params: clustering parameter dict
         :param lower_bound: target lower bound
+        :return: if mean ARI score over bound
     """
     min_sample_size = params.get('min_sample_size', 100)
     assert type(min_sample_size) == int
@@ -233,12 +235,20 @@ def bootstraping_perturbation_ari(graph: BaseGraph, params: dict) -> bool:
     lower_bound = params.get('lower_bound', 0.95)
     assert type(lower_bound) == float and lower_bound <= 1.0
 
+    clustering_func = params.get('clustering_func', None)
+    assert callable(clustering_func)
+
+    clustering_params = params.get('clustering_params', {})
+    assert type(clustering_params) == dict
+
     if graph.get_number_nodes() < min_sample_size:
         return False
 
     stats = []
     for _ in range(rounds):
         new_graph = _pertubate(graph, _range, share)
-        stats.append(ari(gen_labels(graph), gen_labels(new_graph)))
+        cl = clustering_func(new_graph, clustering_params)
+        new_graph.update_community_nodes_membership(cl)
+        stats.append(ari(_gen_labels(graph), _gen_labels(new_graph)))
 
-    return lower_bound <= np.nanmean(aris)
+    return lower_bound <= np.nanmean(stats)

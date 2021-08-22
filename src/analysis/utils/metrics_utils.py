@@ -1,4 +1,6 @@
 import numpy as np
+import random
+
 from collections import Counter
 from graphs.base_graph import BaseGraph
 from networkx import Graph
@@ -160,3 +162,47 @@ def kld(p: BaseGraph, q: BaseGraph, threshold: float) -> float:
 
 def kld_normalized(p: BaseGraph, q: BaseGraph, threshold: float) -> float:
     return 1 - np.exp(-kld(p, q, threshold))
+
+
+def random_sample_cluster(graph: BaseGraph, sample_size: int) -> list:
+    """
+    Random samples cluster distribution from provided graph.
+
+    Args:
+        :param graph: Clustered Graph
+        :param sample_size: Number of nodes to sample with replacement
+    """
+    community_sizes: list = [0] * graph.get_number_communities()
+
+    for node in np.random.choice(graph.G.nodes(), sample_size):
+        community_sizes[graph.get_community_of_node(node)] += 1
+
+    return community_sizes
+
+
+def pertubate(graph: BaseGraph, range_judgements: tuple = (1, 4), share: float = 0.1) -> BaseGraph:
+    new_graph: BaseGraph = BaseGraph()
+    edges = list(graph.G.edges())
+
+    for edge in edges:
+        new_graph.add_edge(*edge, graph.get_edge(*edge))
+
+    try:
+        mod_edge = [edges[i] for i in np.random.choice(len(edges), int(len(edges) * share), replace=False)]
+    except ValueError:
+        mod_edge = edges
+
+    for edge in mod_edge:
+        we = new_graph.get_edge_weight_history(*edge)
+        we.append(random.randint(range_judgements[0], range_judgements[1]))
+        new_graph.add_edge(*edge, np.median(we))
+
+    return new_graph
+
+
+def gen_labels(graph: BaseGraph) -> list:
+    labels = [-1] * (max(graph.G.nodes()) + 1)
+
+    for k, v in graph.G.graph['node_community'].items():
+        labels[k] = v
+    return labels

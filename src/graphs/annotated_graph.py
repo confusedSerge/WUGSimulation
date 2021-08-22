@@ -41,7 +41,8 @@ class AnnotatedGraph(BaseGraph):
             :param v_node: second node
             :return float: weight
         """
-        return self.G.graph['edge_weight'].get((u_node, v_node), None)
+        u, v = sorted([u_node, v_node])
+        return self.G.graph['edge_weight'].get((u, v), None)
 
     def add_edge(self, node_u: int, node_v: int, weight: float, **params) -> None:
         """
@@ -69,12 +70,15 @@ class AnnotatedGraph(BaseGraph):
             self.G.graph['weight_edge'][weight_to_add] = []
         self.G.graph['weight_edge'][weight_to_add].append((u, v))
 
+        self.last_edge = [int(node_u), int(node_v)]
+        self.judgements += 1
+
     def add_edges(self, edge_list: list, **params) -> None:
         """
         Adds an list of edges to the graph.
 
         Expected input of list:
-            [(node1: int, node2:int, weight: float)]
+            [(node1: int, node2:int, weight: float), ...]
 
         Args:
             :param edge_list: edges to add
