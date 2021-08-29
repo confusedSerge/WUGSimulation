@@ -103,6 +103,18 @@ def jensen_shannon_divergence(reference_graph: BaseGraph, graph: BaseGraph, para
     return (1 - inverse_jensen_shannon_distance(reference_graph, graph, params))**2
 
 
+def inverse_jensen_shannon_divergence(reference_graph: BaseGraph, graph: BaseGraph, params: dict) -> float:
+    """
+    Calculates the inverse Jensen Shannon Divergence between two clustered graphs
+
+    Args:
+        :param reference_graph: reference graph
+        :param graph: graph to check against reference
+        :returns float: Jensen Shannon Distance value
+    """
+    return (1 - jensen_shannon_divergence(reference_graph, graph, params))
+
+
 def cluster_size_diff_stripped(reference_graph: BaseGraph, graph: BaseGraph, params: dict) -> float:
     """
     Calculates the inverse normalized sum of the difference between each graphs cluster sizes.

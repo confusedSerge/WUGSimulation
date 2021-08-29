@@ -90,7 +90,8 @@ class AnnotatedGraph(BaseGraph):
         return self.last_edge
 
     def get_last_added_node(self):
-        # TODO This is not correct?!
+        # The correctness depends on how it is seen
+        # In this case, last added node == last visited node
         return self.last_edge[1] if self.last_edge is not None else None
 
     def get_num_added_edges(self) -> int:

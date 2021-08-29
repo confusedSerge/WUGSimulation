@@ -82,3 +82,54 @@ def page_rank(graph: BaseGraph, params: dict) -> list:
         last_node = next_node
 
     return sampled_edge_list
+
+
+def modified_randomwalk(graph: BaseGraph, params: dict) -> list:
+    """This is a modified Randomwalk, which performs a random walk on the graph,
+        but changes between the found nodes set and not found nodes set, from which the next destination is chosen.
+
+        It is assumed, that the sample size is divisble by two!
+    Args:
+        graph (BaseGraph): Graph, on which the walk should be performed
+        params (dict): Contains the parameters for sample_size, start_node, function that returns nodes of annotated graph
+
+    Returns:
+        list: edge list containing the the found edges
+    """
+    sample_size = params.get('sample_size', None)
+    assert type(sample_size) == int and sample_size > 0
+    sample_size = int(sample_size / 2)
+
+    last_node = params.get('start', None)
+    if callable(last_node):
+        last_node = last_node()
+
+    assert type(last_node) == int or last_node is None
+
+    if last_node is None:
+        last_node = random.sample(graph.G.nodes(), 1)[0]
+
+    contained_set = params.get('conntained_func', None)
+    assert callable(contained_set)
+    contained_set = set(contained_set()).union({last_node})
+    not_contained_set = set(graph.G.nodes()).difference(contained_set)
+
+    sampled_edge_list = []
+
+    for _ in range(sample_size):
+        # Explore uknown set, if possible
+        if len(not_contained_set) > 0:
+            unknown_node = random.sample(not_contained_set, 1)[0]
+        else:
+            unknown_node = random.sample(contained_set.difference({last_node}), 1)[0]
+        sampled_edge_list.append((last_node, unknown_node, graph.get_edge(last_node, unknown_node)))
+
+        # return back to known set
+        last_node = random.sample(contained_set.difference({unknown_node}), 1)[0]
+        sampled_edge_list.append((unknown_node, last_node, graph.get_edge(unknown_node, last_node)))
+
+        # add uknown node to known set
+        not_contained_set = not_contained_set.difference({unknown_node})
+        contained_set = contained_set.union({unknown_node})
+
+    return sampled_edge_list
