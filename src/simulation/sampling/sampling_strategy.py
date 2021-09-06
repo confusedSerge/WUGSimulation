@@ -133,3 +133,44 @@ def modified_randomwalk(graph: BaseGraph, params: dict) -> list:
         contained_set = contained_set.union({unknown_node})
 
     return sampled_edge_list
+
+
+def multiple_edges_randomwalk(graph: BaseGraph, params: dict) -> list:
+    """Random Walk with multiple edges sampled per visited node.
+    A random sampled edge will be walked.
+
+    The last edge in the list, symbolizes the last edge traversed.
+    Rounds stands for how often edges will be traversed.
+
+    Args:
+        graph (BaseGraph): Graph to sample from
+        params (dict): dict containing (rounds,  sample_per_node, start)
+
+    Returns:
+        list: sampled edges with weights [[u, v, w], ...]
+    """
+    # ===Guard===
+    rounds = params.get('rounds', None)
+    assert type(rounds) == int and rounds > 0
+
+    sample_per_node = params.get('sample_per_node', None)
+    assert type(sample_per_node) == int and sample_per_node > 0
+
+    last_node = params.get('start', None)
+    if callable(last_node):
+        last_node = last_node()
+
+    assert type(last_node) == int or last_node is None
+
+    if last_node is None:
+        last_node = random.sample(graph.G.nodes(), 1)[0]
+    # ===END Guard===
+
+    sampled_edge_list = []
+
+    for _ in range(rounds):
+        # choose next start and following node
+        sampled_edge_list.extend([[last_node, next_node, graph.get_edge(last_node, next_node)] for next_node in random.sample(list(graph.G.nodes() - {last_node}), sample_per_node)])
+        last_node = sampled_edge_list[-1][1]
+
+    return sampled_edge_list

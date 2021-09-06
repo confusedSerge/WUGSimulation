@@ -5,7 +5,7 @@ import matplotlib.patches as mpatches
 from graphs.base_graph import BaseGraph
 
 
-def draw_graph_graphviz(graph: BaseGraph, plot_title: str, edge_label_flag: bool = False, save_flag: bool = False, path: str = None) -> None:
+def draw_graph_graphviz(graph: BaseGraph, plot_title: str, edge_label_flag: bool = False, certain_weights=lambda x: True, save_flag: bool = False, path: str = None) -> None:
     """
     Draws the Graph using graphviz as layout position information.
 
@@ -17,10 +17,10 @@ def draw_graph_graphviz(graph: BaseGraph, plot_title: str, edge_label_flag: bool
         :param path: where to save the plot
     """
     pos = nx.drawing.nx_agraph.graphviz_layout(graph.G)
-    _draw_graph(graph, pos, plot_title, edge_label_flag, save_flag, path)
+    _draw_graph(graph, pos, plot_title, edge_label_flag, certain_weights, save_flag, path)
 
 
-def draw_graph_spring(graph: BaseGraph, plot_title: str, edge_label_flag: bool = False, save_flag: bool = False, path: str = None) -> None:
+def draw_graph_spring(graph: BaseGraph, plot_title: str, edge_label_flag: bool = False, certain_weights=lambda x: True, save_flag: bool = False, path: str = None) -> None:
     """
     Draws the Graph using spring as layout position information.
 
@@ -32,10 +32,10 @@ def draw_graph_spring(graph: BaseGraph, plot_title: str, edge_label_flag: bool =
         :param path: where to save the plot
     """
     pos = nx.spring_layout(graph.G, scale=50)
-    _draw_graph(graph, pos, plot_title, edge_label_flag, save_flag, path)
+    _draw_graph(graph, pos, plot_title, edge_label_flag, certain_weights, save_flag, path)
 
 
-def _draw_graph(graph: BaseGraph, pos, plot_title: str, edge_label_flag: bool = False, save_flag: bool = False, path: str = None) -> None:
+def _draw_graph(graph: BaseGraph, pos, plot_title: str, edge_label_flag: bool = False, certain_weights=lambda x: True, save_flag: bool = False, path: str = None) -> None:
     px = 1 / plt.rcParams['figure.dpi']
     plt.figure(figsize=(800 * px, 800 * px))
 
@@ -46,8 +46,9 @@ def _draw_graph(graph: BaseGraph, pos, plot_title: str, edge_label_flag: bool = 
             graph.G, pos, nodelist=v, node_color=_get_node_color(k), node_shape=_get_node_shape(k), label=len(v), **options)
 
     for k, v in reversed(graph.get_weight_edge().items()):
-        nx.draw_networkx_edges(
-            graph.G, pos, edgelist=v, edge_color=_get_edge_color(int(k)))
+        if certain_weights(k):
+            nx.draw_networkx_edges(
+                graph.G, pos, edgelist=v, edge_color=_get_edge_color(int(k)))
 
     if edge_label_flag:
         nx.draw_networkx_edge_labels(
