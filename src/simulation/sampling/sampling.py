@@ -11,10 +11,14 @@ class Sampling(RunnableStep):
         which could result in more sampled edges as expected, if the values are not adjusted
     """
 
-    def __init__(self):
+    def __init__(self, annotations_per_edge: int = 1):
         super().__init__()
         self.annotators: list = []
         self.annotator_dist: str = 'none'
+        self.clean_up_func = None
+
+        # How often an edge will be annotated by annotators
+        self.annotations_per_edge = annotations_per_edge
 
         # none: sampling will be done without annotators,
         # per: sampling will be done per annotator,
@@ -55,7 +59,7 @@ class Sampling(RunnableStep):
 
     def run(self, graph: BaseGraph, annotated_graph: BaseGraph) -> None:
         """
-        Rung given sampling
+        Run given sampling
         """
         assert callable(self.function) and self.params is not None
         self.current_annotator_dist[self.annotator_dist](
@@ -80,7 +84,7 @@ class Sampling(RunnableStep):
 
         for i in range(r):
             edge_list[i - r] = (*edge_list[i - r][:2],
-                                annotator.error_prone_sampling(edge_list[i - r]))
+                                self.annotators[-1].error_prone_sampling(edge_list[i - r]))
 
         annotated_graph.add_edges(
             self._sample_edge_list(graph, annotated_graph))
@@ -110,8 +114,10 @@ class Sampling(RunnableStep):
     def _sample_edge_list(self, graph: BaseGraph, annotated_graph: BaseGraph) -> list:
         if self.complexity == 'simple':
             edge_list = self.function(graph, self.params)
-        if self.complexity == 'adv':
+        elif self.complexity == 'adv':
             edge_list = self.function(graph, annotated_graph, self.params)
+        else:
+            edge_list = []
 
         return edge_list
 
@@ -119,5 +125,5 @@ class Sampling(RunnableStep):
         """
         Cleanup of sampling
         """
-        if callable(self.sampling_clean_up_func):
-            self.sampling_clean_up_func()
+        if callable(self.clean_up_func):
+            self.clean_up_func()
