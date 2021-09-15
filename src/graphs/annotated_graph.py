@@ -1,5 +1,4 @@
 import networkx as nx
-import pickle
 import numpy as np
 
 from graphs.base_graph import BaseGraph
@@ -96,6 +95,17 @@ class AnnotatedGraph(BaseGraph):
 
     def get_num_added_edges(self) -> int:
         return self.judgements
+
+    def get_weight_edge(self) -> dict:
+        edge_weights = self.G.graph['edge_weight']
+
+        weights_edges = dict()
+        for k, v in edge_weights.items():
+            if weights_edges.get(v, None) is None:
+                weights_edges[v] = []
+            weights_edges[v].append(k)
+
+        return weights_edges
 
     def get_nx_graph_copy(self, weight: str) -> nx.Graph:
         """

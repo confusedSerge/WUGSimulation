@@ -94,12 +94,13 @@ class Sampling(RunnableStep):
 
         edge_list = self._sample_edge_list(graph, annotated_graph)
 
+        annotated_edge_list = []
         for j in range(len(edge_list)):
-            annotator = np.random.choice(self.annotators)
-            edge_list[j] = (*edge_list[j][:2],
-                            annotator.error_prone_sampling(edge_list[j][2]))
+            for _ in range(self.annotations_per_edge):
+                annotator = np.random.choice(self.annotators)
+                annotated_edge_list.append((*edge_list[j][:2], annotator.error_prone_sampling(edge_list[j][2])))
 
-        annotated_graph.add_edges(edge_list)
+        annotated_graph.add_edges(annotated_edge_list)
 
     def _run_per_annotator(self, graph: BaseGraph, annotated_graph: BaseGraph) -> None:
         assert len(self.annotators) > 0

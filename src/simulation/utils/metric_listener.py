@@ -38,6 +38,8 @@ class MetricListener(RunnableStep):
         self.metric_steps: list = []
         self.preprocessing_steps: list[RunnableStep] = []
 
+        self.graph_metrics = False
+
     def add_simple_metric(self, identifier: str, function, params: dict):
         assert callable(function) and type(params) == dict
         self.metric_steps.append(('simple', identifier, function, params))
@@ -57,6 +59,10 @@ class MetricListener(RunnableStep):
         self.preprocessing_steps.append(step)
         return self
 
+    def add_graph_metrics(self):
+        self.graph_metrics = True
+        return self
+
     def run(self, graph: BaseGraph, annotated_graph: BaseGraph) -> None:
         if not self.checkpoint_index < len(self.checkpoints) or len(self.metric_steps) == 0:
             return
@@ -73,6 +79,9 @@ class MetricListener(RunnableStep):
         stats = [str(self.checkpoints[self.checkpoint_index])]
         for step in self.metric_steps:
             stats.append(str(self._calc(step, graph, _annotated_graph)))
+
+        if self.graph_metrics:
+            stats.extend(self._graph_metrics(_annotated_graph))
 
         if self.checkpoint_index == 0:
             self._add_header()
@@ -103,6 +112,32 @@ class MetricListener(RunnableStep):
 
         return 0.0
 
+    def _graph_metrics(self, graph: BaseGraph):
+        graph_stats = []
+
+        # add num edges
+        graph_stats.append(len(graph.G.edges()))
+
+        # add number annotations
+        annotations_per_edge = graph.G.graph.get('edge_added_weights', None)
+        if annotations_per_edge is None:
+            annotations_per_edge = graph.G.graph.get('edge_weight_history', None)
+
+        if annotations_per_edge is None:
+            annotations_per_edge = {}
+
+        num_annotations = {}
+        for k, v in annotations_per_edge.items():
+            n_a = len(v)
+            if num_annotations.get(n_a, None) is None:
+                num_annotations[n_a] = 0
+            num_annotations[n_a] += 1
+
+        graph_stats.append([v for (k, v) in sorted(num_annotations.items())])
+        graph_stats.append(graph.G.degree())
+
+        return graph_stats
+
     def _make_csv(self):
         try:
             os.makedirs(self.path)
@@ -118,6 +153,9 @@ class MetricListener(RunnableStep):
         identifier = ['Checkpoint']
         for step in self.metric_steps:
             identifier.append(step[1])
+
+        if self.graph_metrics:
+            identifier.extend(['Edges', 'Annotations', 'Deg'])
 
         with open(self.metric_file, 'a+') as file:
             file.write(',\t'.join(identifier))

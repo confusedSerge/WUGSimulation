@@ -1,36 +1,28 @@
-import numpy as np
-import random
-import pickle
-from itertools import combinations
-
-from graphs.base_graph import BaseGraph
 from graphs.annotated_graph import AnnotatedGraph
-
-from simulation.sampling.sampling_strategy import multiple_edges_randomwalk
-from simulation.clustering.clustering_strategy import chinese_whisper_clustering
-
+from simulation.clustering.clustering_strategy import chinese_whisper_clustering as cw
 from visualization.graph_visualization import draw_graph_graphviz as draw
 
-# basegraph
-basegraph = BaseGraph()
-edges = combinations([*range(100)], 2)
+annotated_graph = AnnotatedGraph(100)
+annotated_graph.add_edges([[0, 1, 4], [0, 1, 1], [1, 2, 4], [2, 0, 4], [2, 3, 4]])
 
-for edge in edges:
-    basegraph.add_edge(*edge, 4)
+cl = cw(annotated_graph, {'weights': 'edge_soft_weight'})
+annotated_graph.update_community_nodes_membership(cl)
 
-clusters = chinese_whisper_clustering(basegraph, {'weights': 'edge_soft_weight'})
-basegraph.update_community_nodes_membership(clusters)
+# draw(annotated_graph, 'Example', edge_label_flag=True)
 
-draw(basegraph, 'K5')
+annotated_graph.add_edges([[0, 1, 1], [1, 2, 1], [2, 0, 1]])
 
-# sampling
-ann = AnnotatedGraph(basegraph.get_number_nodes())
+cl = cw(annotated_graph, {'weights': 'edge_soft_weight'})
+annotated_graph.update_community_nodes_membership(cl)
 
-for ii in range(100):
-    edge_list = multiple_edges_randomwalk(basegraph, {'rounds': 2, 'start': ann.get_last_added_node, 'sample_per_node': 5})
-    ann.add_edges(edge_list)
+# draw(annotated_graph, 'Example', edge_label_flag=True)
 
-    clusters = chinese_whisper_clustering(ann, {'weights': 'edge_soft_weight'})
-    ann.update_community_nodes_membership(clusters)
+annotated_graph.add_edges([[0, 1, 4], [1, 2, 1], [2, 0, 1]])
 
-    draw(ann, 'Step {}'.format(ii))
+cl = cw(annotated_graph, {'weights': 'edge_soft_weight'})
+annotated_graph.update_community_nodes_membership(cl)
+
+print(annotated_graph.G.degree())
+print(len(annotated_graph.G.edges))
+print(annotated_graph.G.graph.get('bla', None))
+draw(annotated_graph, 'Example', edge_label_flag=True)
