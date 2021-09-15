@@ -14,7 +14,7 @@ doc
 __pycache__
 
 # ignore other dir
-other
+# other
 
 # ignore pycodestyle config file
 tox.ini
