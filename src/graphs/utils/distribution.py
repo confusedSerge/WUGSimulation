@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class Distribution:
 
     def get_distribution(self):

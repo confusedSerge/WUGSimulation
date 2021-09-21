@@ -9,7 +9,7 @@ from graspologic.simulations import sbm
 
 class SimulationGraph(BaseGraph):
 
-    def __init__(self, communities: int, communities_probability: list = None, distribution: Distribution = None):
+    def __init__(self, communities: list, communities_probability: list = None, distribution: Distribution = None):
         """
         Simulation graph class.
 
@@ -79,8 +79,7 @@ class SimulationGraph(BaseGraph):
             raise AssertionError
 
         if communities_probability is None:
-            communities_probability = np.ones(
-                (len(communities), len(communities)), np.int)
+            communities_probability = np.ones((len(communities), len(communities)), np.int)
         # ===Guard Phase End===
 
         return *sbm(n=communities, p=communities_probability, wt=distribution.get_distribution(

@@ -1,8 +1,38 @@
+import graph_tool
+from graph_tool.draw import graph_draw
+
 import networkx as nx
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 
 from graphs.base_graph import BaseGraph
+from visualization.utils.utils import generate_graphtool_graph as _gen_gtg
+
+
+def draw_graph_gt(graph: BaseGraph, title: str = None):
+    r""" Draws graph based on graph-tools draw function.
+
+    Parameters
+    ----------
+    graph: BaseGraph or one of its subtypes
+    title: Where to store the image. If not provided opens an interactive window.
+    """
+    _graph, _, _ = _gen_gtg(graph)
+
+    edge_color_map = {1: (0.9, 0.9, 0.9, 0.9), 2: (0.6, 0.6, 0.6, 1), 3: (0.3, 0.3, 0.3, 1), 4: (0, 0, 0, 1)}
+    edge_pen_map = {1: 0.3, 2: 0.6, 3: 0.9, 4: 2}
+
+    edge_color = _graph.new_edge_property('vector<double>')
+    edge_pen = _graph.new_edge_property('double')
+    edge_order = _graph.new_edge_property('int')
+
+    for e in _graph.edges():
+        edge_color[e] = edge_color_map[int(_graph.ep.weight[e])]
+        edge_pen[e] = edge_pen_map[int(_graph.ep.weight[e])]
+        edge_order[e] = _graph.ep.weight[e]
+
+    graph_draw(_graph, pos=_graph.vp.pos, edge_color=edge_color, edge_pen_width=edge_pen, eorder=edge_order,
+               vertex_fill_color=_graph.vp['community'], output=title)
 
 
 def draw_graph_graphviz(graph: BaseGraph, plot_title: str, edge_label_flag: bool = False, certain_weights=lambda x: True, save_flag: bool = False, path: str = None) -> None:

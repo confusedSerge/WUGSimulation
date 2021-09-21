@@ -1,4 +1,7 @@
+from collections import Counter
 import numpy as np
+
+from graph_tool.inference.blockmodel import BlockState
 
 from graphs.base_graph import BaseGraph
 from simulation.clustering.utils.cluster_correlation_search import cluster_correlation_search as _old_cluster_correlation_search
@@ -9,6 +12,8 @@ from community.community_louvain import best_partition as _louvain_partition
 from networkx import connected_components
 from simulation.clustering.utils.utils import sort_len_nodes as _clsort
 from simulation.clustering.utils.utils import louvain_cluster_sort as _lvsort
+from simulation.clustering.utils.utils import generate_graphtool_graph as _ggg
+from simulation.clustering.utils.utils import minimize as _minimize
 
 """
 This module contains different clustering functions and can be extended to new ones.
@@ -158,3 +163,33 @@ def louvain_method_clustering(graph: BaseGraph, params: dict) -> dict:
     G = graph.get_nx_graph_copy(weights)
     # partition: list = sorted(_louvain_partition(G).items(), key=lambda x: x[0])
     return _lvsort(_louvain_partition(G))
+
+
+def sbm_clustering(graph: BaseGraph, params: dict) -> dict:
+    r''' Provides WSBM clustering
+
+    Parameter
+    ---------
+
+    graph: Graph to be clustered
+    params: dict containing arguments passed to clustering
+        - distribution: which distribution should be used to minimize
+    '''
+    distribution = params.get('distribution', 'discrete-binomial')
+
+    gt_graph, nx2gt, gt2nx = _ggg(graph)
+    state: BlockState = _minimize(gt_graph, distribution)
+
+    block2clusterid_map = {}
+    for i, (k, v) in enumerate(dict(sorted(Counter(state.get_blocks().get_array()).items(), key=lambda item: item[1], reverse=True)).items()):
+        block2clusterid_map[k] = i
+
+    communities = {}
+    for i, block_id in enumerate(state.get_blocks().get_array()):
+        nx_vertex_id = gt2nx[i]
+        community_id = block2clusterid_map[block_id]
+        if communities.get(community_id, None) is None:
+            communities[community_id] = []
+        communities[community_id].append(nx_vertex_id)
+
+    return dict(sorted(communities.items()))

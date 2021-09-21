@@ -116,7 +116,7 @@ class BaseGraph():
             for nodes in v:
                 self.G.graph['node_community'][nodes] = k
 
-    def get_nx_graph_copy(self, weight: str) -> nx.Graph:
+    def get_nx_graph_copy(self, weight: str = 'edge_weight') -> nx.Graph:
         weights = self.G.graph.get(weight, None)
         assert type(weights) == dict
 
