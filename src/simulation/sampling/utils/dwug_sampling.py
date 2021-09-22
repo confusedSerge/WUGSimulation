@@ -2,9 +2,10 @@ import random
 import numpy as np
 
 from graphs.base_graph import BaseGraph
+from simulation.sampling.sampling_strategy import random_sampling
 
 
-def dwug_sampling(sample_graph: BaseGraph, annotated_graph: BaseGraph, percentage_nodes: float or int, percentage_edges: float or int, min_size_mc: int, num_flag: bool = False) -> list:
+def dwug_sampling(sample_graph: BaseGraph, annotated_graph: BaseGraph, percentage_nodes: float or int, percentage_edges: float or int, min_size_mc: int, num_flag: bool = False, random_sample_empty_round: int = 0) -> list:
     """
     Uses the DWUG sampling strategy, as described in the paper.
 
@@ -15,11 +16,17 @@ def dwug_sampling(sample_graph: BaseGraph, annotated_graph: BaseGraph, percentag
         :param percentage_edges: percentage of edges to add this round
         :param min_size_mc: minimum size of cluster to be considered as multi-cluster
         :param num_flag: if :percentage_nodes: & :percentage_edges: are the actual number of nodes/edges to be used  (optional)
+        :param random_sample_empty_round: if set, on empty rounds the amount of edges will be random sampled
     """
     if annotated_graph.get_number_edges() == 0:
         # initial exploration
         return _z_sampling_round(sample_graph, percentage_nodes, percentage_edges, num_flag)
-    return _n_sampling_round(sample_graph, annotated_graph, min_size_mc, percentage_nodes, percentage_edges, num_flag)
+    edges = _n_sampling_round(sample_graph, annotated_graph, min_size_mc, percentage_nodes, percentage_edges, num_flag)
+
+    if len(edges) == 0 and random_sample_empty_round > 0:
+        edges = random_sampling(sample_graph, {'sample_size': random_sample_empty_round})
+
+    return edges
 
 
 def _z_sampling_round(sample_graph: BaseGraph, percentage_nodes: float, percentage_edges: float, num_flag: bool) -> list:

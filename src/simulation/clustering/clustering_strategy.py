@@ -5,7 +5,7 @@ from graph_tool.inference.blockmodel import BlockState
 
 from graphs.base_graph import BaseGraph
 from simulation.clustering.utils.cluster_correlation_search import cluster_correlation_search as _old_cluster_correlation_search
-from simulation.clustering.utils.new_cluster_correlation_search import cluster_correlation_search as _new_cluster_correlation_search
+from simulation.clustering.utils.multithreaded_correlation_clustering import cluster_correlation_search as _new_cluster_correlation_search
 from chinese_whispers import chinese_whispers as _chinese_whispers
 from chinese_whispers import aggregate_clusters as _aggregate_clusters
 from community.community_louvain import best_partition as _louvain_partition
@@ -74,6 +74,7 @@ def new_correlation_clustering(graph: BaseGraph, params: dict) -> dict:
         :param max_iters: number of iterations for optimization
         :param split_flag: optional flag, if non evidence cluster should be splitted
         :param ru_old_cluster: optional flag, if old cluster should be reused
+        :param cores: optional, cores to be used for clustering search, default 4
         :return labels: dict with label-node key-value pairs
     """
     # ===Guard Phase===
@@ -94,12 +95,15 @@ def new_correlation_clustering(graph: BaseGraph, params: dict) -> dict:
 
     ru_old_cluster = params.get('ru_old_cluster', False)
     assert type(ru_old_cluster) == bool
+
+    cores = params.get('cores', 4)
+    assert type(cores) == int
     # ===Guard Phase===
 
     initial = [set(v) for k, v in sorted(graph.get_community_nodes().items())] if ru_old_cluster else []
 
     clusters, stats = _new_cluster_correlation_search(G=graph.get_nx_graph_copy(
-        weights), s=s, max_attempts=max_attempts, max_iters=max_iters, initial=initial, split_flag=split_flag)
+        weights), s=s, max_attempts=max_attempts, max_iters=max_iters, initial=initial, split_flag=split_flag, max_processor_count=cores)
 
     community_node = {}
     for cluster_id, cluster in enumerate(clusters):
