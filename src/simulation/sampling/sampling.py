@@ -82,6 +82,9 @@ class Sampling(RunnableStep):
 
         edge_list = self._sample_edge_list(graph, annotated_graph)
 
+        if len(edge_list) == 0:
+            return
+
         n = int(len(edge_list) / len(self.annotators))
         r = len(edge_list) % len(self.annotators)
 
@@ -102,6 +105,9 @@ class Sampling(RunnableStep):
 
         edge_list = self._sample_edge_list(graph, annotated_graph)
 
+        if len(edge_list) == 0:
+            return
+
         annotated_edge_list = []
         for j in range(len(edge_list)):
             for _ in range(self.annotations_per_edge):
@@ -115,6 +121,9 @@ class Sampling(RunnableStep):
 
         for annotator in self.annotators:
             edge_list = self._sample_edge_list(graph, annotated_graph)
+            if len(edge_list) == 0:
+                continue
+
             for j in range(len(edge_list)):
                 edge_list[j] = (*edge_list[j][:2],
                                 annotator.error_prone_sampling(*edge_list[j]))

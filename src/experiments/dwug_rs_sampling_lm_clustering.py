@@ -25,6 +25,7 @@ from simulation.utils.intermediate_save_listener import IntermediateSaveListener
 
 
 def dwug_sim(graph_path: str, rounds: int, annotations_per_edge: int):
+    error = 0
     path_true = 'experiment_data/{}'.format(graph_path)
     path_out = '{}_results/dwug_rs/{}'.format(path_true, '{}')
     file_suffix = '.graph'
@@ -64,7 +65,7 @@ def dwug_sim(graph_path: str, rounds: int, annotations_per_edge: int):
             bootstraping_jsd_param = {'sample_size': 100}
 
             # Listeners LM
-            clustering_step_lm = Clustering().add_clustering_strategy(louvain_method_clustering, {'fmap': lambda x: x - 2.5 if x > 2.5 else 0})
+            clustering_step_lm = Clustering().add_clustering_strategy(louvain_method_clustering, {})
 
             name_metric_rs = '{}-{}-{}-dwug_rs_lm'.format(name.replace(file_suffix, ''), _round + 1, annotations_per_edge)
             name_metric_rs_judgement = '{}-{}-{}-dwug_rs_lm_j'.format(name.replace(file_suffix, ''), _round + 1, annotations_per_edge)
@@ -72,7 +73,7 @@ def dwug_sim(graph_path: str, rounds: int, annotations_per_edge: int):
             metric_lm = MetricListener(name_metric_rs, path_out.format(name_metric_rs), checkpoints, annotated_graph.get_num_added_edges)\
                 .skip_only_zeros()\
                 .add_simple_metric('bootstrap_jsd', bootstraping_jsd, bootstraping_jsd_param)\
-                .add_simple_metric('gambette_01', bootstraping_perturbation_ari, {'share': 0.1, 'clustering_func': louvain_method_clustering, 'clustering_params': {'fmap': lambda x: x - 2.5 if x > 2.5 else 0}})\
+                .add_simple_metric('gambette_01', bootstraping_perturbation_ari, {'share': 0.1, 'clustering_func': louvain_method_clustering, 'clustering_params': {}})\
                 .add_simple_metric('cluster_number', cluster_number, {})\
                 .add_comparison_metric('jsd', jensen_shannon_divergence, {})\
                 .add_comparison_metric('ari', adjusted_rand_index, {})\

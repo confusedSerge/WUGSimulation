@@ -25,6 +25,7 @@ from simulation.utils.intermediate_save_listener import IntermediateSaveListener
 
 
 def dwug_sim(graph_path: str, rounds: int, annotations_per_edge: int):
+    error = 0
     path_true = 'experiment_data/{}'.format(graph_path)
     path_out = '{}_results/dwug/{}'.format(path_true, '{}')
     file_suffix = '.graph'
