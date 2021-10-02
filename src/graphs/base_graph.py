@@ -116,13 +116,17 @@ class BaseGraph():
             for nodes in v:
                 self.G.graph['node_community'][nodes] = k
 
-    def get_nx_graph_copy(self, weight: str = 'edge_weight') -> nx.Graph:
+    def get_nx_graph_copy(self, weight: str = 'edge_weight', fmap=lambda x: x) -> nx.Graph:
         weights = self.G.graph.get(weight, None)
         assert type(weights) == dict
 
         graph = nx.Graph()
-        graph.add_weighted_edges_from(
-            list(map(lambda k: (*k[0], k[1]), weights.items())))
+
+        if weights is not None:
+            graph.add_weighted_edges_from(list(map(lambda k: (*k[0], k[1]), weights.items())))
+        else:
+            assert callable(fmap)
+            graph.add_weighted_edges_from(list(map(lambda k: (*k[0], fmap(k[1])), self.G.graph['edge_weight'].items())))
 
         return graph
 

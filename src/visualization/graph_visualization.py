@@ -32,7 +32,7 @@ def draw_graph_gt(graph: BaseGraph, title: str = None):
         edge_order[e] = _graph.ep.weight[e]
 
     graph_draw(_graph, pos=_graph.vp.pos, edge_color=edge_color, edge_pen_width=edge_pen, eorder=edge_order,
-               vertex_fill_color=_graph.vp['community'], output=title)
+               vertex_fill_color=_graph.vp['community'], vertex_size=24, output=title)
 
 
 def draw_graph_graphviz(graph: BaseGraph, plot_title: str, edge_label_flag: bool = False, certain_weights=lambda x: True, save_flag: bool = False, path: str = None) -> None:

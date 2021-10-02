@@ -33,6 +33,10 @@ def random_sampling(graph: BaseGraph, params: dict) -> list:
 
     for _ in range(sample_size):
         u, v = sorted(random.sample(graph.G.nodes(), 2))
+
+        if u == v:
+            v = random.sample(list(graph.G.nodes() - {u}), 1)[0]
+
         sampled_edge_list.append((u, v, graph.get_edge(u, v)))
 
     return sampled_edge_list
@@ -76,7 +80,12 @@ def page_rank(graph: BaseGraph, params: dict) -> list:
     for _ in range(sample_size):
         # choose next start and following node
         last_node = np.random.choice([last_node, random.sample(graph.G.nodes(), 1)[0]], p=[1 - tp_coef, tp_coef])
-        next_node = random.sample(graph.G.nodes(), 1)[0]
+        next_node = random.sample(list(graph.G.nodes() - {last_node}), 1)[0]
+
+        if last_node == next_node:
+            print('WTF?')
+            print(last_node in list(graph.G.nodes() - {last_node}))
+            exit()
 
         sampled_edge_list.append((last_node, next_node, graph.get_edge(last_node, next_node)))
         last_node = next_node

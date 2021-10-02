@@ -53,7 +53,6 @@ def cluster_correlation_search(G, s=10, max_attempts=200, max_iters=5000, initia
     loss_init = Linear_loss.loss(init_state)
 
     if loss_init == 0.0:
-        print('loss_init: ', loss_init)
         classes.sort(key=lambda x: -len(x))  # sort by size
         end_time = time.time()
         stats['runtime'] = (end_time - start_time) / 60
@@ -63,6 +62,8 @@ def cluster_correlation_search(G, s=10, max_attempts=200, max_iters=5000, initia
     l2s[loss_init].append((init_state, len(classes)))
 
     # Initialize multiprocessing.Pool()
+    if max_processor_count == 0:
+        max_processor_count = mp.cpu_count()
     pool = mp.Pool(max_processor_count)
 
     # `pool.apply`
@@ -77,7 +78,6 @@ def cluster_correlation_search(G, s=10, max_attempts=200, max_iters=5000, initia
 
     id = np.random.choice(range(len(l2s[min(l2s.keys())])))
     best_state, best_fitness = l2s[min(l2s.keys())][id], min(l2s.keys())
-    print('loss: ', best_fitness)
 
     best_state = best_state[0]
 

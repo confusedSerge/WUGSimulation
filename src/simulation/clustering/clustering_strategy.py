@@ -159,13 +159,18 @@ def louvain_method_clustering(graph: BaseGraph, params: dict) -> dict:
     Args:
         :param graph: graph to clusters
         :param weights: weights to be used for clustering
+        :param fmap: mapping of edge weights
         :return labels: dict with label-node key-value pairs
     """
     weights = params.get('weights', 'edge_weight')
     assert type(weights) == str
 
-    G = graph.get_nx_graph_copy(weights)
-    # partition: list = sorted(_louvain_partition(G).items(), key=lambda x: x[0])
+    fmap = params.get('fmap', None)
+
+    if fmap is not None and callable(fmap):
+        G = graph.get_nx_graph_copy(fmap=fmap)
+    else:
+        G = graph.get_nx_graph_copy(weights)
     return _lvsort(_louvain_partition(G))
 
 

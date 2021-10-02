@@ -41,7 +41,13 @@ class AnnotatedGraph(BaseGraph):
             :return float: weight
         """
         u, v = sorted([u_node, v_node])
-        return self.G.graph['edge_weight'].get((u, v), None)
+        weight = self.G.graph['edge_added_weights'].get((u, v), None)
+
+        if weight is None:
+            return None
+
+        weight = np.nanmedian(weight)
+        return 0 if np.isnan(weight) else weight
 
     def add_edge(self, node_u: int, node_v: int, weight: float, **params) -> None:
         """
@@ -54,12 +60,19 @@ class AnnotatedGraph(BaseGraph):
             :param weight: weight
         """
         u, v = sorted([node_u, node_v])
+        nweight = weight if weight != 0 else np.nan
 
         if self.G.graph['edge_added_weights'].get((u, v), None) is None:
             self.G.graph['edge_added_weights'][(u, v)] = []
-        self.G.graph['edge_added_weights'][(u, v)].append(weight)
+        self.G.graph['edge_added_weights'][(u, v)].append(nweight)
 
-        weight_to_add = np.median(self.G.graph['edge_added_weights'].get((u, v), [weight]))
+        weight_to_add = np.nanmedian(self.G.graph['edge_added_weights'].get((u, v), [nweight]))
+
+        if np.isnan(weight_to_add):
+            self.last_edge = [int(node_u), int(node_v)]
+            self.judgements += 1
+            return
+
         self.G.add_weighted_edges_from([(u, v, weight_to_add)])
 
         self.G.graph['edge_weight'][(u, v)] = weight_to_add
@@ -97,17 +110,18 @@ class AnnotatedGraph(BaseGraph):
         return self.judgements
 
     def get_weight_edge(self) -> dict:
-        edge_weights = self.G.graph['edge_weight']
+        edge_weights = self.G.graph['edge_added_weights']
 
         weights_edges = dict()
         for k, v in edge_weights.items():
-            if weights_edges.get(v, None) is None:
-                weights_edges[v] = []
-            weights_edges[v].append(k)
+            ac_weight = np.nanmedian(v)
+            if weights_edges.get(ac_weight, None) is None:
+                weights_edges[ac_weight] = []
+            weights_edges[ac_weight].append(k)
 
         return weights_edges
 
-    def get_nx_graph_copy(self, weight: str) -> nx.Graph:
+    def get_nx_graph_copy(self, weight: str = '', fmap=lambda x: x) -> nx.Graph:
         """
         Creates a new nx.Graph with specified weight dict.
 
@@ -115,10 +129,15 @@ class AnnotatedGraph(BaseGraph):
             :param weight: which weight dict to use to populate the nx.Graphs edges
         """
         weights = self.G.graph.get(weight, None)
-        assert type(weights) == dict
+        assert type(weights) == dict or weights is None
 
         graph = nx.Graph()
-        graph.add_weighted_edges_from(list(map(lambda k: (*k[0], k[1]), weights.items())))
+
+        if weights is not None:
+            graph.add_weighted_edges_from(list(map(lambda k: (*k[0], k[1]), weights.items())))
+        else:
+            assert callable(fmap)
+            graph.add_weighted_edges_from(list(map(lambda k: (*k[0], fmap(k[1])), self.G.graph['edge_weight'].items())))
 
         return graph
 

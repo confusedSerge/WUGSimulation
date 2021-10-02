@@ -21,6 +21,7 @@ def dwug_sampling(graph: BaseGraph, annotated_graph: BaseGraph, params: dict) ->
         :param percentage_edges: percentage of edges to add this round
         :param min_size_mc: minimum size of cluster to be considered as multi-cluster
         :param num_flag: if :percentage_nodes: & :percentage_edges: are the actual number of nodes/edges to be used  (optional)
+        :param random_sample_empty_round: optional, how many edges should be random sampled, if no edges are sampled by dwug
         :return sampled_edge_list: sampled edges with weights as [(u, v, w)...]
     """
     # ===Guard Phase===
@@ -39,6 +40,8 @@ def dwug_sampling(graph: BaseGraph, annotated_graph: BaseGraph, params: dict) ->
 
     num_flag = params.get('num_flag', False)
     assert type(num_flag) == bool
+
+    random_sample_empty_round = params.get('random_sample_empty_round', 0)
     # ===Guard Phase over===
 
-    return u_dwug_sampling(graph, annotated_graph, percentage_nodes, percentage_edges, min_size_mc, num_flag)
+    return u_dwug_sampling(graph, annotated_graph, percentage_nodes, percentage_edges, min_size_mc, num_flag, random_sample_empty_round)

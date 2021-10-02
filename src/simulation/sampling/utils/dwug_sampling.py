@@ -107,14 +107,14 @@ def _check_node_cluster_con(graph: BaseGraph, node: int, cluster: list) -> bool:
 
 def _exploration_phase(sample_graph: BaseGraph, nodes: list, max_edges: float) -> list:
     # RandomWalk till percentage edges found
-    if len(nodes) == 0:
+    if len(nodes) == 0 or len(nodes) == 1:
         return []
 
     sampled_edge_list = []
     last_node = random.choice(nodes)
 
     while len(sampled_edge_list) < max_edges:
-        next_node = random.choice(nodes)
+        next_node = random.choice(np.delete(nodes, np.where(nodes == last_node)))
         sampled_edge_list.append((last_node, next_node, sample_graph.get_edge(last_node, next_node)))
         last_node = next_node
 

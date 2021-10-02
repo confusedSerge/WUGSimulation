@@ -1,6 +1,9 @@
 # ignore virtual env
 venv
 
+# log data
+log
+
 # ignore vscode
 .vscode
 

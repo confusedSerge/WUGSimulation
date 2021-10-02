@@ -4,6 +4,7 @@ import pickle
 from copy import deepcopy
 from graphs.base_graph import BaseGraph
 from simulation.runnable_step import RunnableStep
+from visualization.graph_visualization import draw_graph_gt as draw
 
 
 class IntermediateSaveListener(RunnableStep):
@@ -22,6 +23,8 @@ class IntermediateSaveListener(RunnableStep):
         self.id_prefix: str = ''
 
         self.preprocessing_steps: list[RunnableStep] = []
+        self.plot_save = False
+        self.skip_oz = False
 
     def add_listener(self, checkpoints: list, path: str, id_prefix: str, function_to_listen):
         self.checker = lambda cp, cc: cc <= cp
@@ -51,7 +54,19 @@ class IntermediateSaveListener(RunnableStep):
         self.preprocessing_steps.append(step)
         return self
 
+    def save_draw(self):
+        self.plot_save = True
+        return self
+
+    def skip_only_zeros(self):
+        self.skip_oz = True
+        return self
+
     def run(self, graph: BaseGraph, annotated_graph: BaseGraph) -> None:
+        if self.skip_oz and len(annotated_graph.G.edges()) == 0:
+            print('No edges added, skipping')
+            return
+
         assert len(self.checkpoints) > 0 and self.path != '' and self.path is not None and self.id_prefix != '' and self.id_prefix is not None
         if not self.checkpoint_index < len(self.checkpoints):
             return
@@ -69,6 +84,7 @@ class IntermediateSaveListener(RunnableStep):
             pickle.dump(_annotated_graph, file)
         file.close()
 
+        draw(_annotated_graph, '{}/{}{}.png'.format(self.path, self.id_prefix, self.checkpoints[self.checkpoint_index]))
         self.checkpoint_index += 1
 
     def clean_up(self):

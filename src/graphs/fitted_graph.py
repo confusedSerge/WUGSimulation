@@ -72,7 +72,8 @@ class FittedGraph(BaseGraph):
                     self.adjacency_matrix[ii][jj] += 1
 
     def _generate_graph_from_dict(self, fitted_dict: dict):
-        pdf, parameters = generate_pdf_parameter_dicts(fitted_dict['communities'], fitted_dict['distribution'], fitted_dict['infered_param_inside'], fitted_dict['infered_param_outside'], fitted_dict.get('n', 0))
+        pdf = fitted_dict['pdf']
+        parameters = fitted_dict['param']
         communities_probability = np.ones((fitted_dict['communities'], fitted_dict['communities']), dtype=int)
 
         return *sbm(n=fitted_dict['community_size'], p=communities_probability, wt=pdf, wtargs=parameters, return_labels=True), communities_probability

@@ -12,6 +12,14 @@ class Sampling(RunnableStep):
     """
 
     def __init__(self, annotations_per_edge: int = 1):
+        '''Init Sampling step.
+
+        Parameters
+        ----------
+
+        annotations_per_edge: number of annotations_per_edge.
+            Currently only works for random annotators
+        '''
         super().__init__()
         self.annotators: list = []
         self.annotator_dist: str = 'none'
@@ -80,11 +88,11 @@ class Sampling(RunnableStep):
         for i, annotator in enumerate(self.annotators):
             for j in range(n):
                 edge_list[j + i * n] = (*edge_list[j + i * n][:2],
-                                        annotator.error_prone_sampling(edge_list[j + i * n][2]))
+                                        annotator.error_prone_sampling(*edge_list[j + i * n]))
 
         for i in range(r):
             edge_list[i - r] = (*edge_list[i - r][:2],
-                                self.annotators[-1].error_prone_sampling(edge_list[i - r]))
+                                self.annotators[-1].error_prone_sampling(*edge_list[i - r]))
 
         annotated_graph.add_edges(
             self._sample_edge_list(graph, annotated_graph))
@@ -98,7 +106,7 @@ class Sampling(RunnableStep):
         for j in range(len(edge_list)):
             for _ in range(self.annotations_per_edge):
                 annotator = np.random.choice(self.annotators)
-                annotated_edge_list.append((*edge_list[j][:2], annotator.error_prone_sampling(edge_list[j][2])))
+                annotated_edge_list.append((*edge_list[j][:2], annotator.error_prone_sampling(*edge_list[j])))
 
         annotated_graph.add_edges(annotated_edge_list)
 
@@ -109,7 +117,7 @@ class Sampling(RunnableStep):
             edge_list = self._sample_edge_list(graph, annotated_graph)
             for j in range(len(edge_list)):
                 edge_list[j] = (*edge_list[j][:2],
-                                annotator.error_prone_sampling(edge_list[j][2]))
+                                annotator.error_prone_sampling(*edge_list[j]))
             annotated_graph.add_edges(edge_list)
 
     def _sample_edge_list(self, graph: BaseGraph, annotated_graph: BaseGraph) -> list:

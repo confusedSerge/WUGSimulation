@@ -37,8 +37,9 @@ class MetricListener(RunnableStep):
 
         self.metric_steps: list = []
         self.preprocessing_steps: list[RunnableStep] = []
+        self.skip_oz = False
 
-        self.graph_metrics = False
+        self.graph_metrics = True
 
     def add_simple_metric(self, identifier: str, function, params: dict):
         assert callable(function) and type(params) == dict
@@ -59,11 +60,19 @@ class MetricListener(RunnableStep):
         self.preprocessing_steps.append(step)
         return self
 
-    def add_graph_metrics(self):
-        self.graph_metrics = True
+    def deactivate_graph_metrics(self):
+        self.graph_metrics = False
+        return self
+
+    def skip_only_zeros(self):
+        self.skip_oz = True
         return self
 
     def run(self, graph: BaseGraph, annotated_graph: BaseGraph) -> None:
+        if self.skip_oz and len(annotated_graph.G.edges()) == 0:
+            print('No edges added, skipping')
+            return
+
         if not self.checkpoint_index < len(self.checkpoints) or len(self.metric_steps) == 0:
             return
 
@@ -116,25 +125,16 @@ class MetricListener(RunnableStep):
         graph_stats = []
 
         # add num edges
+        graph_stats.append(len(graph.G.nodes()))
+
+        # add num edges
         graph_stats.append(len(graph.G.edges()))
 
-        # add number annotations
-        annotations_per_edge = graph.G.graph.get('edge_added_weights', None)
-        if annotations_per_edge is None:
-            annotations_per_edge = graph.G.graph.get('edge_weight_history', None)
+        # add num edges
+        graph_stats.append(graph.get_num_added_edges())
 
-        if annotations_per_edge is None:
-            annotations_per_edge = {}
-
-        num_annotations = {}
-        for k, v in annotations_per_edge.items():
-            n_a = len(v)
-            if num_annotations.get(n_a, None) is None:
-                num_annotations[n_a] = 0
-            num_annotations[n_a] += 1
-
-        graph_stats.append([v for (k, v) in sorted(num_annotations.items())])
-        graph_stats.append(graph.G.degree())
+        for ii, stats in enumerate(graph_stats):
+            graph_stats[ii] = str(stats)
 
         return graph_stats
 
@@ -155,7 +155,7 @@ class MetricListener(RunnableStep):
             identifier.append(step[1])
 
         if self.graph_metrics:
-            identifier.extend(['Edges', 'Annotations', 'Deg'])
+            identifier.extend(['Nodes', 'Edges', 'Judgements'])
 
         with open(self.metric_file, 'a+') as file:
             file.write(',\t'.join(identifier))
