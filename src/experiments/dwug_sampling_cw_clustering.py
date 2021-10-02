@@ -114,5 +114,3 @@ def dwug_sim(graph_path: str, rounds: int, annotations_per_edge: int):
 
 if __name__ == '__main__':
     dwug_sim(sys.argv[1], int(sys.argv[2]), int(sys.argv[3]))
-
-
