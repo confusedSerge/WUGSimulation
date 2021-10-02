@@ -89,7 +89,24 @@ def dwug_sim(graph_path: str, rounds: int, annotations_per_edge: int):
                 .add_step(metric_sbm)\
                 .add_step(listener_sbm)\
 
-            simulation.run(graph, annotated_graph)
+            try:
+                simulation.run(graph, annotated_graph)
+            except Exception as exception_name:
+                _out_error = path_out.format('graph_error.csv')
+                print(_out_error)
+
+                if error == 0:
+                    header = ['Name', 'Round', 'Error']
+                    with open(_out_error, 'w+', newline='') as error_file:
+                        writer = csv.writer(error_file)
+                        writer.writerow(header)
+                        error += 1
+                    error_file.close()
+
+                with open(_out_error, 'a+', newline='') as error_file:
+                    writer = csv.writer(error_file)
+                    writer.writerow([str(name), str(_round + 1), exception_name])
+                error_file.close()
 
 
 if __name__ == '__main__':
