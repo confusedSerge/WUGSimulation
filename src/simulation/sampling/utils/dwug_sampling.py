@@ -99,7 +99,7 @@ def _combination_phase(sample_graph: BaseGraph, annotated_graph: BaseGraph, node
 def _check_node_cluster_con(graph: BaseGraph, node: int, cluster: list) -> bool:
     for c_node in cluster:
         u, v = sorted([node, c_node])
-        if graph.get_edge(u, v) != None:
+        if graph.get_edge(u, v) is not None:
             return True
 
     return False
@@ -114,7 +114,7 @@ def _exploration_phase(sample_graph: BaseGraph, nodes: list, max_edges: float) -
     last_node = random.choice(nodes)
 
     while len(sampled_edge_list) < max_edges:
-        next_node = random.choice(np.delete(nodes, np.where(nodes == last_node)))
+        next_node = random.choice(np.delete(np.array(nodes), np.where(np.array(nodes) == last_node)))
         sampled_edge_list.append((last_node, next_node, sample_graph.get_edge(last_node, next_node)))
         last_node = next_node
 

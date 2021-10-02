@@ -2,6 +2,8 @@ import os
 import sys
 import pickle
 import numpy as np
+import csv
+import traceback
 
 sys.path.append('src')
 
@@ -90,11 +92,11 @@ def dwug_sim(graph_path: str, rounds: int, annotations_per_edge: int):
                 .add_step(metric_ccc)\
                 .add_step(listener_ccc)\
 
+
             try:
                 simulation.run(graph, annotated_graph)
-            except Exception as exception_name:
+            except Exception as ex:
                 _out_error = path_out.format('graph_error.csv')
-                print(_out_error)
 
                 if error == 0:
                     header = ['Name', 'Round', 'Error']
@@ -106,7 +108,7 @@ def dwug_sim(graph_path: str, rounds: int, annotations_per_edge: int):
 
                 with open(_out_error, 'a+', newline='') as error_file:
                     writer = csv.writer(error_file)
-                    writer.writerow([str(name), str(_round + 1), exception_name])
+                    writer.writerow([str(name), str(_round + 1), traceback.format_exception(type(ex), ex, ex.__traceback__)])
                 error_file.close()
 
 
