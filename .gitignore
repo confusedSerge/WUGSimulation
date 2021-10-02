@@ -25,5 +25,8 @@ tox.ini
 # ignore ipynbs
 .ipynb_checkpoints
 
-# ingore notebooks
+# ignore notebooks
 src/scripts/notebooks
+
+# ignore experiment
+experiment_data/
