@@ -221,7 +221,7 @@ def bootstraping_perturbation_ari(graph: BaseGraph, params: dict) -> float:
     Returns:
         float: mean ARI score
     """
-    rounds = params.get('rounds', 30)
+    rounds = params.get('rounds', 10)
     assert type(rounds) == int
 
     _range = params.get('range', (1, 4))
