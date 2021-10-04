@@ -71,7 +71,8 @@ class IntermediateSaveListener(RunnableStep):
                 pickle.dump(gaph, file)
             file.close()
 
-            draw(gaph, draw_path)
+            if self.plot_save:
+                draw(gaph, draw_path)
 
     def run(self, graph: BaseGraph, annotated_graph: BaseGraph) -> None:
         if self.skip_oz and len(annotated_graph.G.edges()) == 0:
@@ -93,7 +94,11 @@ class IntermediateSaveListener(RunnableStep):
 
         if self.tail_write:
             graph_path = '{}/{}{}.graph'.format(self.path, self.id_prefix, self.checkpoints[self.checkpoint_index])
-            draw_path = '{}/{}{}.png'.format(self.path, self.id_prefix, self.checkpoints[self.checkpoint_index])
+            if self.plot_save:
+                draw_path = '{}/{}{}.png'.format(self.path, self.id_prefix, self.checkpoints[self.checkpoint_index])
+            else:
+                draw_path = ''
+
             self.graphs.append((_annotated_graph, graph_path, draw_path))
 
         else:
@@ -101,7 +106,8 @@ class IntermediateSaveListener(RunnableStep):
                 pickle.dump(_annotated_graph, file)
             file.close()
 
-            draw(_annotated_graph, '{}/{}{}.png'.format(self.path, self.id_prefix, self.checkpoints[self.checkpoint_index]))
+            if self.plot_save:
+                draw(_annotated_graph, '{}/{}{}.png'.format(self.path, self.id_prefix, self.checkpoints[self.checkpoint_index]))
 
         self.checkpoint_index += 1
 
