@@ -89,7 +89,7 @@ def randomwalk_sim(graph_path: str, rounds: int, annotations_per_edge: int):
                 .skip_only_zeros()\
                 .add_preprocessing_step(clustering_step_cc_split)\
                 .add_listener(checkpoints, path_out.format(name_metric_rs), name_metric_rs_judgement, annotated_graph.get_num_added_edges)\
-                .save_draw()
+                
 
             # Listeners CC No-Split
             clustering_step_cc_nosplit = Clustering().add_clustering_strategy(new_correlation_clustering, {'weights': 'edge_soft_weight', 'max_attempts': 1000, 'max_iters': 5000, 'split_flag': False, 'cores': 0})
@@ -110,7 +110,7 @@ def randomwalk_sim(graph_path: str, rounds: int, annotations_per_edge: int):
                 .skip_only_zeros()\
                 .add_preprocessing_step(clustering_step_cc_nosplit)\
                 .add_listener(checkpoints, path_out.format(name_metric_rs), name_metric_rs_judgement, annotated_graph.get_num_added_edges)\
-                .save_draw()
+                
 
             # Listeners CCC
             clustering_step_ccc = Clustering().add_clustering_strategy(connected_components_clustering, {'weights': 'edge_soft_weight'})
@@ -131,7 +131,7 @@ def randomwalk_sim(graph_path: str, rounds: int, annotations_per_edge: int):
                 .skip_only_zeros()\
                 .add_preprocessing_step(clustering_step_ccc)\
                 .add_listener(checkpoints, path_out.format(name_metric_rs), name_metric_rs_judgement, annotated_graph.get_num_added_edges)\
-                .save_draw()
+                
 
             # Listeners CW
             clustering_step_cw = Clustering().add_clustering_strategy(chinese_whisper_clustering, {'weights': 'edge_soft_weight'})
@@ -152,7 +152,7 @@ def randomwalk_sim(graph_path: str, rounds: int, annotations_per_edge: int):
                 .skip_only_zeros()\
                 .add_preprocessing_step(clustering_step_cw)\
                 .add_listener(checkpoints, path_out.format(name_metric_rs), name_metric_rs_judgement, annotated_graph.get_num_added_edges)\
-                .save_draw()
+                
 
             # Listeners LM
             clustering_step_lm = Clustering().add_clustering_strategy(louvain_method_clustering, {})
@@ -173,7 +173,7 @@ def randomwalk_sim(graph_path: str, rounds: int, annotations_per_edge: int):
                 .skip_only_zeros()\
                 .add_preprocessing_step(clustering_step_lm)\
                 .add_listener(checkpoints, path_out.format(name_metric_rs), name_metric_rs_judgement, annotated_graph.get_num_added_edges)\
-                .save_draw()
+                
 
             # Listeners LM
             clustering_step_sbm = Clustering().add_clustering_strategy(sbm_clustering, {})
@@ -194,7 +194,7 @@ def randomwalk_sim(graph_path: str, rounds: int, annotations_per_edge: int):
                 .skip_only_zeros()\
                 .add_preprocessing_step(clustering_step_sbm)\
                 .add_listener(checkpoints, path_out.format(name_metric_rs), name_metric_rs_judgement, annotated_graph.get_num_added_edges)\
-                .save_draw()
+                
 
             # Simulation
             simulation = Simulation(600, break_on_sc=True, tail_write=True, verbose=True)\

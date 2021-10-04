@@ -86,8 +86,7 @@ def dwug_sim(graph_path: str, rounds: int, annotations_per_edge: int):
 
             listener_sbm = IntermediateSaveListener(tail_write=True)\
                 .skip_only_zeros()\
-                .add_listener(checkpoints, path_out.format(name_metric_rs), name_metric_rs_judgement, annotated_graph.get_num_added_edges)\
-                .save_draw()
+                .add_listener(checkpoints, path_out.format(name_metric_rs), name_metric_rs_judgement, annotated_graph.get_num_added_edges)
 
             # Simulation
             simulation = Simulation(600, break_on_sc=True, tail_write=True, verbose=True)\
