@@ -72,7 +72,11 @@ def dwug_sim(graph_path: str, rounds: int, annotations_per_edge: int):
             name_metric_rs = '{}-{}-{}-dwug_rs_lm'.format(name.replace(file_suffix, ''), _round + 1, annotations_per_edge)
             name_metric_rs_judgement = '{}-{}-{}-dwug_rs_lm_j'.format(name.replace(file_suffix, ''), _round + 1, annotations_per_edge)
 
-            metric_lm = MetricListener(name_metric_rs, path_out.format(name_metric_rs), checkpoints, annotated_graph.get_num_added_edges)\
+            if os.path.exists(os.path.join(os.getcwd(), path_out.format(name_metric_rs))):
+                print('Graph Exists, Skipping')
+                continue
+
+            metric_lm = MetricListener(name_metric_rs, path_out.format(name_metric_rs), checkpoints, annotated_graph.get_num_added_edges, tail_write=True)\
                 .skip_only_zeros()\
                 .add_simple_metric('bootstrap_jsd', bootstraping_jsd, bootstraping_jsd_param)\
                 .add_simple_metric('gambette_01', bootstraping_perturbation_ari, {'share': 0.1, 'clustering_func': louvain_method_clustering, 'clustering_params': {}})\
@@ -80,13 +84,13 @@ def dwug_sim(graph_path: str, rounds: int, annotations_per_edge: int):
                 .add_comparison_metric('jsd', jensen_shannon_divergence, {})\
                 .add_comparison_metric('ari', adjusted_rand_index, {})\
 
-            listener_lm = IntermediateSaveListener()\
+            listener_lm = IntermediateSaveListener(tail_write=True)\
                 .skip_only_zeros()\
                 .add_listener(checkpoints, path_out.format(name_metric_rs), name_metric_rs_judgement, annotated_graph.get_num_added_edges)\
                 .save_draw()
 
             # Simulation
-            simulation = Simulation(600, break_on_sc=False, verbose=True)\
+            simulation = Simulation(600, break_on_sc=True, tail_write=True, verbose=True)\
                 .add_step(sampling_step)\
                 .add_step(clustering_step_lm)\
                 .add_step(metric_lm)\

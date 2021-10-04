@@ -71,8 +71,12 @@ def modifiedrandomwalk_sim(graph_path: str, rounds: int, annotations_per_edge: i
 
             name_metric_rs = '{}-{}-{}-modifiedrandomwalk_cc_split'.format(name.replace(file_suffix, ''), _round + 1, annotations_per_edge)
             name_metric_rs_judgement = '{}-{}-{}-modifiedrandomwalk_cc_split_j'.format(name.replace(file_suffix, ''), _round + 1, annotations_per_edge)
+            
+            if os.path.exists(os.path.join(os.getcwd(), path_out.format(name_metric_rs))):
+                print('Graph Exists, Skipping')
+                continue
 
-            metric_cc_split = MetricListener(name_metric_rs, path_out.format(name_metric_rs), checkpoints, annotated_graph.get_num_added_edges)\
+            metric_cc_split = MetricListener(name_metric_rs, path_out.format(name_metric_rs), checkpoints, annotated_graph.get_num_added_edges, tail_write=True)\
                 .skip_only_zeros()\
                 .add_preprocessing_step(clustering_step_cc_split)\
                 .add_simple_metric('bootstrap_jsd', bootstraping_jsd, bootstraping_jsd_param)\
@@ -81,7 +85,7 @@ def modifiedrandomwalk_sim(graph_path: str, rounds: int, annotations_per_edge: i
                 .add_comparison_metric('jsd', jensen_shannon_divergence, {})\
                 .add_comparison_metric('ari', adjusted_rand_index, {})\
 
-            listener_cc_split = IntermediateSaveListener()\
+            listener_cc_split = IntermediateSaveListener(tail_write=True)\
                 .skip_only_zeros()\
                 .add_preprocessing_step(clustering_step_cc_split)\
                 .add_listener(checkpoints, path_out.format(name_metric_rs), name_metric_rs_judgement, annotated_graph.get_num_added_edges)\
@@ -93,7 +97,7 @@ def modifiedrandomwalk_sim(graph_path: str, rounds: int, annotations_per_edge: i
             name_metric_rs = '{}-{}-{}-modifiedrandomwalk_cc_nosplit'.format(name.replace(file_suffix, ''), _round + 1, annotations_per_edge)
             name_metric_rs_judgement = '{}-{}-{}-modifiedrandomwalk_cc_nosplit_j'.format(name.replace(file_suffix, ''), _round + 1, annotations_per_edge)
 
-            metric_cc_nosplit = MetricListener(name_metric_rs, path_out.format(name_metric_rs), checkpoints, annotated_graph.get_num_added_edges)\
+            metric_cc_nosplit = MetricListener(name_metric_rs, path_out.format(name_metric_rs), checkpoints, annotated_graph.get_num_added_edges, tail_write=True)\
                 .skip_only_zeros()\
                 .add_preprocessing_step(clustering_step_cc_nosplit)\
                 .add_simple_metric('bootstrap_jsd', bootstraping_jsd, bootstraping_jsd_param)\
@@ -102,7 +106,7 @@ def modifiedrandomwalk_sim(graph_path: str, rounds: int, annotations_per_edge: i
                 .add_comparison_metric('jsd', jensen_shannon_divergence, {})\
                 .add_comparison_metric('ari', adjusted_rand_index, {})\
 
-            listener_cc_nosplit = IntermediateSaveListener()\
+            listener_cc_nosplit = IntermediateSaveListener(tail_write=True)\
                 .skip_only_zeros()\
                 .add_preprocessing_step(clustering_step_cc_nosplit)\
                 .add_listener(checkpoints, path_out.format(name_metric_rs), name_metric_rs_judgement, annotated_graph.get_num_added_edges)\
@@ -114,7 +118,7 @@ def modifiedrandomwalk_sim(graph_path: str, rounds: int, annotations_per_edge: i
             name_metric_rs = '{}-{}-{}-modifiedrandomwalk_ccc'.format(name.replace(file_suffix, ''), _round + 1, annotations_per_edge)
             name_metric_rs_judgement = '{}-{}-{}-modifiedrandomwalk_ccc_j'.format(name.replace(file_suffix, ''), _round + 1, annotations_per_edge)
 
-            metric_ccc = MetricListener(name_metric_rs, path_out.format(name_metric_rs), checkpoints, annotated_graph.get_num_added_edges)\
+            metric_ccc = MetricListener(name_metric_rs, path_out.format(name_metric_rs), checkpoints, annotated_graph.get_num_added_edges, tail_write=True)\
                 .skip_only_zeros()\
                 .add_preprocessing_step(clustering_step_ccc)\
                 .add_simple_metric('bootstrap_jsd', bootstraping_jsd, bootstraping_jsd_param)\
@@ -123,7 +127,7 @@ def modifiedrandomwalk_sim(graph_path: str, rounds: int, annotations_per_edge: i
                 .add_comparison_metric('jsd', jensen_shannon_divergence, {})\
                 .add_comparison_metric('ari', adjusted_rand_index, {})\
 
-            listener_ccc = IntermediateSaveListener()\
+            listener_ccc = IntermediateSaveListener(tail_write=True)\
                 .skip_only_zeros()\
                 .add_preprocessing_step(clustering_step_ccc)\
                 .add_listener(checkpoints, path_out.format(name_metric_rs), name_metric_rs_judgement, annotated_graph.get_num_added_edges)\
@@ -135,7 +139,7 @@ def modifiedrandomwalk_sim(graph_path: str, rounds: int, annotations_per_edge: i
             name_metric_rs = '{}-{}-{}-modifiedrandomwalk_cw'.format(name.replace(file_suffix, ''), _round + 1, annotations_per_edge)
             name_metric_rs_judgement = '{}-{}-{}-modifiedrandomwalk_cw_j'.format(name.replace(file_suffix, ''), _round + 1, annotations_per_edge)
 
-            metric_cw = MetricListener(name_metric_rs, path_out.format(name_metric_rs), checkpoints, annotated_graph.get_num_added_edges)\
+            metric_cw = MetricListener(name_metric_rs, path_out.format(name_metric_rs), checkpoints, annotated_graph.get_num_added_edges, tail_write=True)\
                 .skip_only_zeros()\
                 .add_preprocessing_step(clustering_step_cw)\
                 .add_simple_metric('bootstrap_jsd', bootstraping_jsd, bootstraping_jsd_param)\
@@ -144,7 +148,7 @@ def modifiedrandomwalk_sim(graph_path: str, rounds: int, annotations_per_edge: i
                 .add_comparison_metric('jsd', jensen_shannon_divergence, {})\
                 .add_comparison_metric('ari', adjusted_rand_index, {})\
 
-            listener_cw = IntermediateSaveListener()\
+            listener_cw = IntermediateSaveListener(tail_write=True)\
                 .skip_only_zeros()\
                 .add_preprocessing_step(clustering_step_cw)\
                 .add_listener(checkpoints, path_out.format(name_metric_rs), name_metric_rs_judgement, annotated_graph.get_num_added_edges)\
@@ -156,7 +160,7 @@ def modifiedrandomwalk_sim(graph_path: str, rounds: int, annotations_per_edge: i
             name_metric_rs = '{}-{}-{}-modifiedrandomwalk_lm'.format(name.replace(file_suffix, ''), _round + 1, annotations_per_edge)
             name_metric_rs_judgement = '{}-{}-{}-modifiedrandomwalk_lm_j'.format(name.replace(file_suffix, ''), _round + 1, annotations_per_edge)
 
-            metric_lm = MetricListener(name_metric_rs, path_out.format(name_metric_rs), checkpoints, annotated_graph.get_num_added_edges)\
+            metric_lm = MetricListener(name_metric_rs, path_out.format(name_metric_rs), checkpoints, annotated_graph.get_num_added_edges, tail_write=True)\
                 .skip_only_zeros()\
                 .add_preprocessing_step(clustering_step_lm)\
                 .add_simple_metric('bootstrap_jsd', bootstraping_jsd, bootstraping_jsd_param)\
@@ -165,7 +169,7 @@ def modifiedrandomwalk_sim(graph_path: str, rounds: int, annotations_per_edge: i
                 .add_comparison_metric('jsd', jensen_shannon_divergence, {})\
                 .add_comparison_metric('ari', adjusted_rand_index, {})\
 
-            listener_lm = IntermediateSaveListener()\
+            listener_lm = IntermediateSaveListener(tail_write=True)\
                 .skip_only_zeros()\
                 .add_preprocessing_step(clustering_step_lm)\
                 .add_listener(checkpoints, path_out.format(name_metric_rs), name_metric_rs_judgement, annotated_graph.get_num_added_edges)\
@@ -177,7 +181,7 @@ def modifiedrandomwalk_sim(graph_path: str, rounds: int, annotations_per_edge: i
             name_metric_rs = '{}-{}-{}-modifiedrandomwalk_sbm'.format(name.replace(file_suffix, ''), _round + 1, annotations_per_edge)
             name_metric_rs_judgement = '{}-{}-{}-modifiedrandomwalk_sbm_j'.format(name.replace(file_suffix, ''), _round + 1, annotations_per_edge)
 
-            metric_sbm = MetricListener(name_metric_rs, path_out.format(name_metric_rs), checkpoints, annotated_graph.get_num_added_edges)\
+            metric_sbm = MetricListener(name_metric_rs, path_out.format(name_metric_rs), checkpoints, annotated_graph.get_num_added_edges, tail_write=True)\
                 .skip_only_zeros()\
                 .add_preprocessing_step(clustering_step_sbm)\
                 .add_simple_metric('bootstrap_jsd', bootstraping_jsd, bootstraping_jsd_param)\
@@ -186,14 +190,14 @@ def modifiedrandomwalk_sim(graph_path: str, rounds: int, annotations_per_edge: i
                 .add_comparison_metric('jsd', jensen_shannon_divergence, {})\
                 .add_comparison_metric('ari', adjusted_rand_index, {})\
 
-            listener_sbm = IntermediateSaveListener()\
+            listener_sbm = IntermediateSaveListener(tail_write=True)\
                 .skip_only_zeros()\
                 .add_preprocessing_step(clustering_step_sbm)\
                 .add_listener(checkpoints, path_out.format(name_metric_rs), name_metric_rs_judgement, annotated_graph.get_num_added_edges)\
                 .save_draw()
 
             # Simulation
-            simulation = Simulation(600, break_on_sc=False, verbose=True)\
+            simulation = Simulation(600, break_on_sc=True, tail_write=True, verbose=True)\
                 .add_step(sampling_step)\
                 .add_step(metric_cc_split)\
                 .add_step(listener_cc_split)\

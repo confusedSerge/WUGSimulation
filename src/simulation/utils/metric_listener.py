@@ -13,7 +13,7 @@ class MetricListener(RunnableStep):
         Metric Methods should be of the same Signature as defined in the analysis module. 
     """
 
-    def __init__(self, name: str, path: str, checkpoints: list, function_to_listen):
+    def __init__(self, name: str, path: str, checkpoints: list, function_to_listen, tail_write: bool = False):
         """Init
 
         Args:
@@ -28,12 +28,16 @@ class MetricListener(RunnableStep):
         self.checkpoints: list = checkpoints
         self.checkpoint_index = 0
 
+        self.tail_write = tail_write
+        self.stats_list = []
+
         self.name: str = name
         self.path: str = path
 
         self.metric_file: str = '{}/{}.csv'.format(self.path, self.name)
 
-        self._make_csv()
+        if not self.tail_write:
+            self._make_csv()
 
         self.metric_steps: list = []
         self.preprocessing_steps: list[RunnableStep] = []
@@ -68,6 +72,13 @@ class MetricListener(RunnableStep):
         self.skip_oz = True
         return self
 
+    def get_break(self):
+        return not self.checkpoint_index < len(self.checkpoints)
+
+    def tail_write_function(self):
+        self._make_csv()
+        self._write_stats(self.stats_list)
+
     def run(self, graph: BaseGraph, annotated_graph: BaseGraph) -> None:
         if self.skip_oz and len(annotated_graph.G.edges()) == 0:
             print('No edges added, skipping')
@@ -93,12 +104,15 @@ class MetricListener(RunnableStep):
             stats.extend(self._graph_metrics(_annotated_graph))
 
         if self.checkpoint_index == 0:
-            self._add_header()
+            if self.tail_write:
+                self.stats_list.append(self._get_header())
+            else:
+                self._add_header()
 
-        with open(self.metric_file, 'a+') as file:
-            file.write(',\t'.join(stats))
-            file.write('\n')
-        file.close()
+        if self.tail_write:
+            self.stats_list.append(stats)
+        else:
+            self._write_stats([stats])
 
         self.checkpoint_index += 1
 
@@ -161,3 +175,20 @@ class MetricListener(RunnableStep):
             file.write(',\t'.join(identifier))
             file.write('\n')
         file.close()
+
+    def _get_header(self):
+        identifier = ['Checkpoint']
+        for step in self.metric_steps:
+            identifier.append(step[1])
+
+        if self.graph_metrics:
+            identifier.extend(['Nodes', 'Edges', 'Judgements'])
+
+        return identifier
+
+    def _write_stats(self, all_stats):
+        for stats in all_stats:
+            with open(self.metric_file, 'a+') as file:
+                file.write(',\t'.join(stats))
+                file.write('\n')
+            file.close()

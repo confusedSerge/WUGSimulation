@@ -12,7 +12,7 @@ class IntermediateSaveListener(RunnableStep):
     Listener for simulation, where for given checkpoints the graph is saved.
     """
 
-    def __init__(self):
+    def __init__(self, tail_write: bool = False):
         self.checker = None
         self.function_to_listen = None
 
@@ -21,6 +21,9 @@ class IntermediateSaveListener(RunnableStep):
 
         self.path: str = ''
         self.id_prefix: str = ''
+
+        self.tail_write = tail_write
+        self.graphs = []
 
         self.preprocessing_steps: list[RunnableStep] = []
         self.plot_save = False
@@ -62,6 +65,14 @@ class IntermediateSaveListener(RunnableStep):
         self.skip_oz = True
         return self
 
+    def tail_write_function(self):
+        for gaph, graph_path, draw_path in self.graphs:
+            with open(graph_path, 'wb') as file:
+                pickle.dump(gaph, file)
+            file.close()
+
+            draw(gaph, draw_path)
+
     def run(self, graph: BaseGraph, annotated_graph: BaseGraph) -> None:
         if self.skip_oz and len(annotated_graph.G.edges()) == 0:
             print('No edges added, skipping')
@@ -80,11 +91,18 @@ class IntermediateSaveListener(RunnableStep):
             for step in self.preprocessing_steps:
                 step.run(graph, _annotated_graph)
 
-        with open('{}/{}{}.graph'.format(self.path, self.id_prefix, self.checkpoints[self.checkpoint_index]), 'wb') as file:
-            pickle.dump(_annotated_graph, file)
-        file.close()
+        if self.tail_write:
+            graph_path = '{}/{}{}.graph'.format(self.path, self.id_prefix, self.checkpoints[self.checkpoint_index])
+            draw_path = '{}/{}{}.png'.format(self.path, self.id_prefix, self.checkpoints[self.checkpoint_index])
+            self.graphs.append((_annotated_graph, graph_path, draw_path))
 
-        draw(_annotated_graph, '{}/{}{}.png'.format(self.path, self.id_prefix, self.checkpoints[self.checkpoint_index]))
+        else:
+            with open('{}/{}{}.graph'.format(self.path, self.id_prefix, self.checkpoints[self.checkpoint_index]), 'wb') as file:
+                pickle.dump(_annotated_graph, file)
+            file.close()
+
+            draw(_annotated_graph, '{}/{}{}.png'.format(self.path, self.id_prefix, self.checkpoints[self.checkpoint_index]))
+
         self.checkpoint_index += 1
 
     def clean_up(self):

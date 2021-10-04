@@ -15,5 +15,11 @@ class RunnableStep():
     def run(self, graph: BaseGraph, annotated_graph: BaseGraph) -> None:
         raise NotImplementedError
 
+    def get_break(self):
+        return False
+
+    def tail_write_function(self):
+        return
+
     def clean_up(self):
         raise NotImplementedError
