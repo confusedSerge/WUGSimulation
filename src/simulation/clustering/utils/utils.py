@@ -36,20 +36,12 @@ def louvain_cluster_sort(node2cluster: dict) -> dict:
 
 
 def generate_graphtool_graph(graph: BaseGraph):
-    position_information = _calc_positional_information(graph.G.copy())
-    graph_tool_graph, nx2gt_vertex_id, gt2nx_vertex_id = _nxgraph_to_graphtoolgraph(graph.G.copy(), position_information, graph.get_node_community())
+    graph_tool_graph, nx2gt_vertex_id, gt2nx_vertex_id = _nxgraph_to_graphtoolgraph(graph.G.copy(), graph.get_node_community())
 
     return graph_tool_graph, nx2gt_vertex_id, gt2nx_vertex_id
 
 
-def _calc_positional_information(graph: nx.Graph):
-    edges_negative = [(i, j) for (i, j) in graph.edges() if graph[i][j]['weight'] < 2.5]
-    graph.remove_edges_from(edges_negative)
-
-    return nx.nx_agraph.graphviz_layout(graph, prog='sfdp')
-
-
-def _nxgraph_to_graphtoolgraph(graph: nx.Graph, position_dict: dict, community: dict):
+def _nxgraph_to_graphtoolgraph(graph: nx.Graph, community: dict):
     graph_tool_graph = graph_tool.Graph(directed=False)
 
     nx2gt_vertex_id = dict()
@@ -78,12 +70,6 @@ def _nxgraph_to_graphtoolgraph(graph: nx.Graph, position_dict: dict, community: 
     for k, v in community.items():
         communities[nx2gt_vertex_id[k]] = v
     graph_tool_graph.vp['community'] = communities
-
-    vertex_position = graph_tool_graph.new_vertex_property('vector<double>')
-    for i, (k, v) in enumerate(position_dict.items()):
-        vertex_list = [vertex for vertex in graph_tool_graph.get_vertices() if graph_tool_graph.vp.id[graph_tool_graph.vertex(vertex)] == k][0]
-        vertex_position[graph_tool_graph.vertex(vertex_list)] = v
-    graph_tool_graph.vp.pos = vertex_position
 
     return graph_tool_graph, nx2gt_vertex_id, gt2nx_vertex_id
 
