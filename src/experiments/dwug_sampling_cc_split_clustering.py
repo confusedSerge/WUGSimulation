@@ -67,7 +67,7 @@ def dwug_sim(graph_path: str, rounds: int, annotations_per_edge: int):
             bootstraping_jsd_param = {'sample_size': 100}
 
             # Listeners CC No-Split
-            clustering_step_cc_split = Clustering().add_clustering_strategy(new_correlation_clustering, {'weights': 'edge_soft_weight', 'max_attempts': 1000, 'max_iters': 5000, 'split_flag': True, 'cores': 0})
+            clustering_step_cc_split = Clustering().add_clustering_strategy(new_correlation_clustering, {'weights': 'edge_soft_weight', 'max_attempts': 1000, 'max_iters': 5000, 'split_flag': True, 'cores': 1})
 
             name_metric_rs = '{}-{}-{}-dwug_cc_split'.format(name.replace(file_suffix, ''), _round + 1, annotations_per_edge)
             name_metric_rs_judgement = '{}-{}-{}-dwug_cc_split_j'.format(name.replace(file_suffix, ''), _round + 1, annotations_per_edge)
@@ -79,7 +79,7 @@ def dwug_sim(graph_path: str, rounds: int, annotations_per_edge: int):
             metric_cc_split = MetricListener(name_metric_rs, path_out.format(name_metric_rs), checkpoints, annotated_graph.get_num_added_edges, tail_write=True)\
                 .skip_only_zeros()\
                 .add_simple_metric('bootstrap_jsd', bootstraping_jsd, bootstraping_jsd_param)\
-                .add_simple_metric('gambette_01', bootstraping_perturbation_ari, {'share': 0.1, 'clustering_func': new_correlation_clustering, 'clustering_params': {'weights': 'edge_soft_weight', 'max_attempts': 1000, 'max_iters': 5000, 'split_flag': True, 'cores': 0}})\
+                .add_simple_metric('gambette_01', bootstraping_perturbation_ari, {'share': 0.1, 'clustering_func': new_correlation_clustering, 'clustering_params': {'weights': 'edge_soft_weight', 'max_attempts': 1000, 'max_iters': 5000, 'split_flag': True, 'cores': 1}})\
                 .add_simple_metric('cluster_number', cluster_number, {})\
                 .add_comparison_metric('jsd', jensen_shannon_divergence, {})\
                 .add_comparison_metric('ari', adjusted_rand_index, {})\

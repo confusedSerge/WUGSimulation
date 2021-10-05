@@ -67,7 +67,7 @@ def randomsampling_sim(graph_path: str, rounds: int, annotations_per_edge: int):
             bootstraping_jsd_param = {'sample_size': 100}
 
             # Listeners CC Split
-            clustering_step_cc_split = Clustering().add_clustering_strategy(new_correlation_clustering, {'weights': 'edge_soft_weight', 'max_attempts': 1000, 'max_iters': 5000, 'split_flag': True, 'cores': 0})
+            clustering_step_cc_split = Clustering().add_clustering_strategy(new_correlation_clustering, {'weights': 'edge_soft_weight', 'max_attempts': 1000, 'max_iters': 5000, 'split_flag': True, 'cores': 1})
 
             name_metric_rs = '{}-{}-{}-randomsampling_cc_split'.format(name.replace(file_suffix, ''), _round + 1, annotations_per_edge)
             name_metric_rs_judgement = '{}-{}-{}-randomsampling_cc_split_j'.format(name.replace(file_suffix, ''), _round + 1, annotations_per_edge)
@@ -80,7 +80,7 @@ def randomsampling_sim(graph_path: str, rounds: int, annotations_per_edge: int):
                 .skip_only_zeros()\
                 .add_preprocessing_step(clustering_step_cc_split)\
                 .add_simple_metric('bootstrap_jsd', bootstraping_jsd, bootstraping_jsd_param)\
-                .add_simple_metric('gambette_01', bootstraping_perturbation_ari, {'share': 0.1, 'clustering_func': new_correlation_clustering, 'clustering_params': {'weights': 'edge_soft_weight', 'max_attempts': 1000, 'max_iters': 5000, 'split_flag': True, 'cores': 0}})\
+                .add_simple_metric('gambette_01', bootstraping_perturbation_ari, {'share': 0.1, 'clustering_func': new_correlation_clustering, 'clustering_params': {'weights': 'edge_soft_weight', 'max_attempts': 1000, 'max_iters': 5000, 'split_flag': True, 'cores': 1}})\
                 .add_simple_metric('cluster_number', cluster_number, {})\
                 .add_comparison_metric('jsd', jensen_shannon_divergence, {})\
                 .add_comparison_metric('ari', adjusted_rand_index, {})\
@@ -92,7 +92,7 @@ def randomsampling_sim(graph_path: str, rounds: int, annotations_per_edge: int):
                 
 
             # Listeners CC No-Split
-            clustering_step_cc_nosplit = Clustering().add_clustering_strategy(new_correlation_clustering, {'weights': 'edge_soft_weight', 'max_attempts': 1000, 'max_iters': 5000, 'split_flag': False, 'cores': 0})
+            clustering_step_cc_nosplit = Clustering().add_clustering_strategy(new_correlation_clustering, {'weights': 'edge_soft_weight', 'max_attempts': 1000, 'max_iters': 5000, 'split_flag': False, 'cores': 1})
 
             name_metric_rs = '{}-{}-{}-randomsampling_cc_nosplit'.format(name.replace(file_suffix, ''), _round + 1, annotations_per_edge)
             name_metric_rs_judgement = '{}-{}-{}-randomsampling_cc_nosplit_j'.format(name.replace(file_suffix, ''), _round + 1, annotations_per_edge)
@@ -101,7 +101,7 @@ def randomsampling_sim(graph_path: str, rounds: int, annotations_per_edge: int):
                 .skip_only_zeros()\
                 .add_preprocessing_step(clustering_step_cc_nosplit)\
                 .add_simple_metric('bootstrap_jsd', bootstraping_jsd, bootstraping_jsd_param)\
-                .add_simple_metric('gambette_01', bootstraping_perturbation_ari, {'share': 0.1, 'clustering_func': new_correlation_clustering, 'clustering_params': {'weights': 'edge_soft_weight', 'max_attempts': 1000, 'max_iters': 5000, 'split_flag': False, 'cores': 0}})\
+                .add_simple_metric('gambette_01', bootstraping_perturbation_ari, {'share': 0.1, 'clustering_func': new_correlation_clustering, 'clustering_params': {'weights': 'edge_soft_weight', 'max_attempts': 1000, 'max_iters': 5000, 'split_flag': False, 'cores': 1}})\
                 .add_simple_metric('cluster_number', cluster_number, {})\
                 .add_comparison_metric('jsd', jensen_shannon_divergence, {})\
                 .add_comparison_metric('ari', adjusted_rand_index, {})\
