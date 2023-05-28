@@ -2,7 +2,7 @@
 
 ![Custom Randomwalk with Gambettes Stopping Criterion](/other/images/output.png)
 
-This repository contains the code for the my bachelor thesis on the topic of ["Optimizing human annotation of word usage graphs in a realistic simulation environment"](http://dx.doi.org/10.18419/opus-11848) at the University of Stuttgart. In this thesis, I developed a simulation environment for the annotation of word usage graphs (WUGs) and evaluated the performance (Section 7) of different sampling strategies (Section 5.3), clustering strategies (Section 5.4) and stopping criteria (Section 5.5) for the annotation process. The annotation process in itself was also simulated using observations (Section 4) made on real world data (Section 3).
+This repository contains code for my bachelor thesis on the topic of ["Optimizing human annotation of word usage graphs in a realistic simulation environment"](http://dx.doi.org/10.18419/opus-11848) at the University of Stuttgart. In this thesis, I developed a simulation environment for the annotation of word usage graphs (WUGs) and evaluated the performance (Section 7) of different sampling strategies (Section 5.3), clustering strategies (Section 5.4) and stopping criteria (Section 5.5) for the annotation process. The annotation process in itself was also simulated using observations (Section 4) made on real world data (Section 3).
 
 ## Installation
 
